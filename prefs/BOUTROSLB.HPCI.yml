@@ -1,0 +1,6 @@
+---
+comment: "Tests hang smoker"
+match:
+  distribution: "^BOUTROSLB/HPCI"
+disabled: 1
+

@@ -1,0 +1,7 @@
+---
+match:
+  distribution: ^YAMATO/QDBM-File
+pl:
+  expect:
+    - "libqdbm link type: [1]"
+    - "\n"

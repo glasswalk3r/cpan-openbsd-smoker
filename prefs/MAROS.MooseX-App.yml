@@ -1,0 +1,5 @@
+---
+comment: "Tests hang smoker"
+match:
+  distribution: "^MAROS/MooseX-App"
+disabled: 1

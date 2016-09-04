@@ -1,0 +1,5 @@
+---
+comment: "Hangs smoker"
+match:
+  distribution: '^DOY/IO-Pty-Easy'
+disabled: 1

@@ -1,0 +1,5 @@
+---
+comment: "Hangs smoker"
+match:
+  distribution: '^STEVEB/Devel-Examine-Subs'
+disabled: 1

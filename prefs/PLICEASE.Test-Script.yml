@@ -1,0 +1,6 @@
+---
+comment: "Tests hang smoker"
+match:
+  distribution: "^PLICEASE/Test-Script"
+disabled: 1
+

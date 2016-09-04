@@ -1,0 +1,5 @@
+---
+comment: "Tests hang smoker"
+match:
+  distribution: "^DOM/Wiki-Toolkit-Plugin-Ping"
+disabled: 1

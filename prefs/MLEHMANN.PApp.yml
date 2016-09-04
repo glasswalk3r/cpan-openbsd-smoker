@@ -1,0 +1,5 @@
+---
+comment: "Hangs smoker"
+match:
+  distribution: '^MLEHMANN/PApp'
+disabled: 1

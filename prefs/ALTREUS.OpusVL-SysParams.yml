@@ -1,0 +1,5 @@
+---
+comment: "Tests hang smoker"
+match:
+  distribution: "^ALTREUS/OpusVL-SysParams"
+disabled: 1

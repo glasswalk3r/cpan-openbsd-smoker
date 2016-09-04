@@ -1,0 +1,5 @@
+---
+comment: "Hangs smoker"
+match:
+  distribution: '^JPIERCE/EZDBI'
+disabled: 1

@@ -1,0 +1,5 @@
+---
+comment: "Don't build mod_perl if required by some other module"
+match:
+  distribution: '/mod_perl-\d'
+disabled: 1
