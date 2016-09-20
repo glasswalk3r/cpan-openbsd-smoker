@@ -1,8 +1,9 @@
-#!/usr/bin/perl
-
+#!/usr/bin/env perl
 use warnings;
 use strict;
-use YAML::XS qw(DumpFile);
+use YAML::XS 0.73 qw(DumpFile);
+use File::HomeDir 1.00;
+use File::Spec;
 
 my $name = shift;
 die "must receive a distro as parameter" unless(defined($name));
@@ -16,5 +17,5 @@ my %data = ( comment => 'Tests hang smoker',
              match => { distribution => $distribution },
              disabled => 1 );
 
-DumpFile( "/home/arfreitas/.cpan/prefs/$filename", \%data );
+DumpFile( File::Spec->catfile( File::HomeDir->my_home, '.cpan', 'prefs', $filename), \%data );
 
