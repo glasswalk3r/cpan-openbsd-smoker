@@ -2,6 +2,7 @@
 CPAN_MIRROR=${1}
 USER=${2}
 PERL=${3}
+BUILD_DIR=${4}
 PROCESSORS=2
 
 function create_profile() {
@@ -19,7 +20,7 @@ END
     echo "Create the .bashrc"
     (cat <<END
 export CPAN_SQLITE_NO_LOG_FILES=1
-export PATH=/home/foo/bin:$PATH
+export PATH=/home/${USER}/bin:$PATH
 
 function start_smoker() {
     echo 'Cleaning up previous execution...'
@@ -32,13 +33,16 @@ END
 
 function config_cpan() {
     USER=${1}
+    BUILD_DIR=${2}
+    CPAN_BUILD_DIR="/${BUILD_DIR}/${USER}"
+    mkdir "${CPAN_BUILD_DIR}"
     mkdir -p "/home/${USER}/.cpan/CPAN"
     (cat <<BLOCK
 $CPAN::Config = {
   'applypatch' => q[],
   'auto_commit' => q[0],
   'build_cache' => q[100],
-  'build_dir' => q[/cpan_build/${USER}],
+  'build_dir' => q[/${CPAN_BUILD_DIR}],
   'build_dir_reuse' => q[0],
   'build_requires_install_policy' => q[yes],
   'bzip2' => q[/usr/local/bin/bzip2],
@@ -112,8 +116,10 @@ echo "Configuring ${USER}"
 create_profile ${USER}
 # some tests fails on OpenBSD and that's expected since the oficial Perl tests are changed
 perlbrew install ${PERL} --notest -j ${PROCESSORS}
-config_cpan ${USER}
+config_cpan ${USER} "${BUILD_DIR}"
+mkdir "${HOME}/bin"
 perlbrew install-cpanm
+perlbrew switch ${PERL}
 cpanm YAML::XS CPAN::SQLite Module::Version Log::Log4perl
 # not sure if cpanm can handle bundles
 (echo 'install Bundle::CPAN') | cpan
