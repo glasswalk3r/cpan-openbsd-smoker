@@ -34,6 +34,7 @@ else
         su ${user} "/tmp/config_user.sh ${CPAN_MIRROR} ${user} ${USERS[${user}] ${BUILD_DIR}"
         cp /tmp/cpan-openbsd-smoker/bin/send_reports.pl "/home/${user}/bin"
         cp /tmp/cpan-openbsd-smoker/bin/block.pl "/home/${user}/bin"
+        cp /tmp/cpan-openbsd-smoker/
     done
 
     rm -f /tmp/config_user.sh

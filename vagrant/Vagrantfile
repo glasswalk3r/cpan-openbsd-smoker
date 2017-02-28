@@ -84,16 +84,18 @@ Vagrant.configure("2") do |config|
   # Please consider that each user that will run the Smoker will use a CPU. That's not entirely true, but a single CPU should be enough for a smoker process
   # If you want more users, add more CPUs
   # The vagrant user will run metabase-relayd, but this daemon user very little CPU too (when not executing).
-  var openbsd_mirror="http://openbsd.c3sl.ufpr.br"
-  var cpan_mirror="http://linorg.usp.br/CPAN"
-  var user_1="foo"
-  var user_2="bar"
-  var perl_1="perl-5.20.3"
-  var perl_2="perl-5.24.1"
-  var cpan_build_dir="/mnt/cpan_build_dir"
+  openbsd_mirror="http://openbsd.c3sl.ufpr.br"
+  cpan_mirror="http://linorg.usp.br/CPAN"
+  user_1="foo"
+  user_2="bar"
+  perl_1="perl-5.20.3"
+  perl_2="perl-5.24.1"
+  processors=2
+  cpan_build_dir="/mnt/cpan_build_dir"
   config.vm.provision "file", source: "bin/config_user.sh", destination: "/tmp/config_user.sh"
   config.vm.provision "shell", inline: "chmod a+rx /tmp/config_user.sh"
-  config.vm.provision "shell", path: "scripts/config_smoker.sh", args: [openbsd_mirror, cpan_mirror, user_1, perl_1, user_2, perl_2, cpan_build_dir]
+  config.vm.provision "shell", path: "scripts/config_smoker.sh", args: [openbsd_mirror, cpan_mirror, user_1, perl_1, user_2, perl_2, cpan_build_dir, processors]
+  config.vm.provision "shell", path: "scripts/vagrant_user.sh", args: [cpan_mirror, processors], privileged: false
   config.vm.provision "file", source: "metabase/metabase_id.json", destination: "/home/vagrant/.metabase/metabase_id.json"
   config.vm.provision "shell", inline: "chown vagrant.vagrant /home/vagrant/.metabase/metabase_id.json; chmod 400 /home/vagrant/.metabase/metabase_id.json"
 end

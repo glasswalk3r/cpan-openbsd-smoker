@@ -3,7 +3,7 @@ CPAN_MIRROR=${1}
 PROCESSORS=${2}
 idempotent_control='/home/vagrant/.vagrant_provision'
 
-if [ -f "${idempotent_control}" ]
+if ! [ -f "${idempotent_control}" ]
 then
     echo "Configuring vagrant user"
     echo "Installing Perlbrew"

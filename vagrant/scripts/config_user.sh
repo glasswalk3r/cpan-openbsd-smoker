@@ -3,7 +3,7 @@ CPAN_MIRROR=${1}
 USER=${2}
 PERL=${3}
 BUILD_DIR=${4}
-PROCESSORS=2
+PROCESSORS=${5}
 
 function create_profile() {
     USER=${1}
@@ -35,6 +35,7 @@ function config_cpan() {
     USER=${1}
     BUILD_DIR=${2}
     CPAN_BUILD_DIR="/${BUILD_DIR}/${USER}"
+    PREFS_DIR="/home/${USER}/.cpan/prefs"
     mkdir "${CPAN_BUILD_DIR}"
     mkdir -p "/home/${USER}/.cpan/CPAN"
     (cat <<BLOCK
@@ -81,7 +82,7 @@ $CPAN::Config = {
   'perl5lib_verbosity' => q[none],
   'prefer_external_tar' => q[1],
   'prefer_installer' => q[MB],
-  'prefs_dir' => q[/home/${USER}/.cpan/prefs],
+  'prefs_dir' => q[${PREFS_DIR}],
   'prerequisites_policy' => q[follow],
   'recommends_policy' => q[1],
   'scan_cache' => q[atstart],
