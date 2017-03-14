@@ -3,7 +3,7 @@ CPAN_MIRROR=${1}
 USER=${2}
 PERL=${3}
 BUILD_DIR=${4}
-PROCESSORS=${5}
+PROCESSORS=2
 
 function create_profile() {
     USER=${1}
@@ -114,11 +114,14 @@ BLOCK
 }
 
 echo "Configuring ${USER}"
+echo "Installing Perlbrew"
+curl -L https://install.perlbrew.pl | bash
 create_profile ${USER}
+source "/home/${USER}/.bash_profile"
 # some tests fails on OpenBSD and that's expected since the oficial Perl tests are changed
 perlbrew install ${PERL} --notest -j ${PROCESSORS}
 config_cpan ${USER} "${BUILD_DIR}"
-mkdir "${HOME}/bin"
+mkdir "/home/${USER}/bin"
 perlbrew install-cpanm
 perlbrew switch ${PERL}
 cpanm YAML::XS CPAN::SQLite Module::Version Log::Log4perl
