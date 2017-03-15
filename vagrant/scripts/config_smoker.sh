@@ -35,11 +35,15 @@ else
         groupadd "${user}"
         # login group fullname password
         adduser -batch "${user}" "${user}" "${user^}" "${user}"
+        olddir=$PWD
         
         if [ -e "/tmp/config_user.sh" ]
         then
-            echo "executing su ${user}" "/tmp/config_user.sh ${CPAN_MIRROR} ${user} ${USERS[${user}]} ${BUILD_DIR}"
-            su ${user} "/tmp/config_user.sh ${CPAN_MIRROR} ${user} ${USERS[${user}]} ${BUILD_DIR}"
+            # required to avoid permission errors
+            cd "/home/${user}"
+            pwd
+            echo "executing su ${user} -c " "/tmp/config_user.sh ${CPAN_MIRROR} ${user} ${USERS[${user}]} ${BUILD_DIR}"
+            su ${user} -c "/tmp/config_user.sh ${CPAN_MIRROR} ${user} ${USERS[${user}]} ${BUILD_DIR}"
             user_bin="/home/${user}/bin"
             
             if [ -d "${user_bin}" ]
@@ -52,8 +56,11 @@ else
             
         else
             echo "/tmp/config_user.sh not available, cannot continue"
+            ls -l /tmp
             exit 1
         fi
+        
+        cd "${olddir}"
     done
 
     rm -f /tmp/config_user.sh

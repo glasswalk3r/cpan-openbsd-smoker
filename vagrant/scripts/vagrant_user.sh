@@ -39,6 +39,9 @@ multiple=1
 END
     ) > "/home/${USER}/.bash_profile"
     touch "${idempotent_control}"
+    cp -v /tmp/metabase_id.json /home/vagrant/.metabase/metabase_id.json
+    chmod 400 /home/vagrant/.metabase/metabase_id.json
+    echo "Finished"
 fi
 
 echo "Updating local CPAN mirror..."

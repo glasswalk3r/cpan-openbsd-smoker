@@ -34,12 +34,17 @@ END
 function config_cpan() {
     USER=${1}
     BUILD_DIR=${2}
-    CPAN_BUILD_DIR="/${BUILD_DIR}/${USER}"
+    CPAN_BUILD_DIR="${BUILD_DIR}/${USER}"
     PREFS_DIR="/home/${USER}/.cpan/prefs"
-    mkdir "${CPAN_BUILD_DIR}"
+    
+    if ! [ -d "${CPAN_BUILD_DIR}" ]
+    then
+        mkdir "${CPAN_BUILD_DIR}"
+    fi
+    
     mkdir -p "/home/${USER}/.cpan/CPAN"
+    echo '$CPAN::Config = {' > "/home/${USER}/.cpan/CPAN/MyConfig.pm"
     (cat <<BLOCK
-$CPAN::Config = {
   'applypatch' => q[],
   'auto_commit' => q[0],
   'build_cache' => q[100],
@@ -98,7 +103,7 @@ $CPAN::Config = {
   'test_report' => q[0],
   'trust_test_report_history' => q[0],
   'unzip' => q[/usr/local/bin/unzip],
-  'urllist' => [q[file:///minicpan], q[http://www.cpan.org/]],
+  'urllist' => [q[file:///minicpan]],
   'use_prompt_default' => q[0],
   'use_sqlite' => q[1],
   'version_timeout' => q[15],
@@ -109,7 +114,7 @@ $CPAN::Config = {
 1;
 __END__
 BLOCK
-) > "/home/${USER}/.cpan/CPAN/MyConfig.pm"
+) >> "/home/${USER}/.cpan/CPAN/MyConfig.pm"
 
 }
 
@@ -121,7 +126,12 @@ source "/home/${USER}/.bash_profile"
 # some tests fails on OpenBSD and that's expected since the oficial Perl tests are changed
 perlbrew install ${PERL} --notest -j ${PROCESSORS}
 config_cpan ${USER} "${BUILD_DIR}"
-mkdir "/home/${USER}/bin"
+
+if ! [ -d "/home/${USER}/bin" ]
+then
+    mkdir "/home/${USER}/bin"
+fi
+
 perlbrew install-cpanm
 perlbrew switch ${PERL}
 cpanm YAML::XS CPAN::SQLite Module::Version Log::Log4perl
@@ -131,4 +141,12 @@ cpanm YAML::XS CPAN::SQLite Module::Version Log::Log4perl
 cpanm Task::CPAN::Reporter CPAN::Reporter::Smoker Test::Reporter::Transport::Socket
 echo 'Enabling test reporting'
 (echo 'o conf test_report 1'; echo 'o conf commit') | cpan
-echo 'User ready to smoke tests by executing "start_smoker" in a shell'
+echo 'User is almost ready to smoke tests by executing "start_smoker" in a shell'
+echo <<BLOCK
+Remember to execute the following next steps:
+1 - Configure passwords for the new users with passwd
+2 - Spend some time validating tests smoked. Tests will not be submitted automatically, but saved to a local directory before submission. This will give you a chance to validate the smoker configuration first.
+3 - Once everything is fine, start the metabase-relayd application with the vagrant user
+4 - Submit reports with the script bin/send_reports.pl
+5 - If some distribution halts the smoker, block it with bin/block.pl
+BLOCK
