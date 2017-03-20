@@ -1,33 +1,14 @@
 #!perl
 use warnings;
 use strict;
-use Test::Reporter;
-use Test::Reporter::Transport::Socket;
-use Term::ProgressBar;
+use Test::Reporter 1.62;
+use Test::Reporter::Transport::Socket 0.32;
+use Term::ProgressBar 2.18;
 use Getopt::Long;
 use Pod::Usage 1.69;
 use Set::Tiny 0.04;
 use File::Spec;
 # VERSION
-
-#    COPYRIGHT AND LICENCE
-#
-#    This software is copyright (c) 2017 of Alceu Rodrigues de Freitas Junior, arfreitas@cpan.org
-#
-#    This file is part of CPAN OpenBSD Smoker.
-#
-#    CPAN OpenBSD Smoker is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    CPAN OpenBSD Smoker is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License
-#    along with CPAN OpenBSD Smoker.  If not, see <http://www.gnu.org/licenses/>.
 
 my ($help, $reports, $host, $version, $port, $GRADE);
 $help = $version = 0;
@@ -73,7 +54,7 @@ sub grades_handler {
     my ($opt_name, $opt_value) = @_;
     # See CPAN::Reporter for grades definitions
     my $grades = Set::Tiny(qw(pass fail unknown na));
-    die "Invalid grade value passed as parameter: '$value'" unless($set->has($opt_value));
+    die "Invalid grade value passed as parameter: '$opt_value'" unless($grades->has($opt_value));
     $GRADE = $opt_value;
 }
 
@@ -180,5 +161,30 @@ You can selective report your tests. For instance, you might be unsure about sen
 
 This program requires that somewhere near your machine you have a L<metabase-relayd> server running. This script will use L<Test::Reporter::Transport::Socket> to
 send the reports. Reports are sent pretty quickly (depending on how busy is the metabase-relayd).
+
+=back
+
+=head1 AUTHOR
+
+Alceu Rodrigues de Freitas Junior, E<lt>arfreitas@cpan.orgE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2017 of Alceu Rodrigues de Freitas Junior, arfreitas@cpan.org
+
+This file is part of CPAN OpenBSD Smoker.
+
+CPAN OpenBSD Smoker is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+CPAN OpenBSD Smoker is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with CPAN OpenBSD Smoker.  If not, see <http://www.gnu.org/licenses/>.
 
 =cut

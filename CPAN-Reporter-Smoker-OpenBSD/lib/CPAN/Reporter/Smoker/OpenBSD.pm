@@ -1,4 +1,5 @@
 package CPAN::Reporter::Smoker::OpenBSD;
+# VERSION
 
 =pod
 

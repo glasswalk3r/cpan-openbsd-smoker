@@ -8,25 +8,6 @@ use Getopt::Long;
 use Pod::Usage 1.69;
 # VERSION
 
-#    COPYRIGHT AND LICENCE
-#
-#    This software is copyright (c) 2017 of Alceu Rodrigues de Freitas Junior, arfreitas@cpan.org
-#
-#    This file is part of CPAN OpenBSD Smoker.
-#
-#    CPAN OpenBSD Smoker is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    CPAN OpenBSD Smoker is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License
-#    along with CPAN OpenBSD Smoker.  If not, see <http://www.gnu.org/licenses/>.
-
 my $distro;
 GetOptions(
     'help'         => \$help,
@@ -82,3 +63,29 @@ The YAML file will be created on the respective home directory of the user, foll
 See L<CPAN::Reporter> Pod for details. You can check examples of those files on this project webpage at Github. Those preferences files were
 created during several tests executed.
 
+=back
+
+=head1 AUTHOR
+
+Alceu Rodrigues de Freitas Junior, E<lt>arfreitas@cpan.orgE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2017 of Alceu Rodrigues de Freitas Junior, arfreitas@cpan.org
+
+This file is part of CPAN OpenBSD Smoker.
+
+CPAN OpenBSD Smoker is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+CPAN OpenBSD Smoker is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with CPAN OpenBSD Smoker.  If not, see <http://www.gnu.org/licenses/>.
+
+=cut
