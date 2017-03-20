@@ -1,0 +1,85 @@
+#!perl
+use warnings;
+use strict;
+use YAML::XS 0.63 qw(DumpFile);
+use File::HomeDir 1.00;
+use File::Spec;
+use Getopt::Long;
+use Pod::Usage 1.69;
+# VERSION
+
+#    COPYRIGHT AND LICENCE
+#
+#    This software is copyright (c) 2017 of Alceu Rodrigues de Freitas Junior, arfreitas@cpan.org
+#
+#    This file is part of CPAN OpenBSD Smoker.
+#
+#    CPAN OpenBSD Smoker is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    CPAN OpenBSD Smoker is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with CPAN OpenBSD Smoker.  If not, see <http://www.gnu.org/licenses/>.
+
+my $distro;
+GetOptions(
+    'help'         => \$help,
+    'distro=s'     => \$distro,
+    'version'      => \$version
+) or pod2usage(1);
+pod2usage( -exitval => 0, -verbose => 2 ) if $help;
+
+if ($version) {
+    print "send_reports - version $VERSION\n";
+    exit(0);
+}
+
+my $name = shift;
+die "must receive a distro as parameter" unless(defined($name));
+chomp($name);
+my $distribution= '^' . $name;
+
+my $filename = "$name.yml";
+$filename =~ s/\//./;
+
+my %data = ( comment => 'Tests hang smoker',
+             match => { distribution => $distribution },
+             disabled => 1 );
+
+DumpFile( File::Spec->catfile( File::HomeDir->my_home, '.cpan', 'prefs', $filename), \%data );
+
+__END__
+
+=head1 block
+
+block - program to write a distribution preferences files to block it for testing
+
+=head1 SYNOPSIS
+
+
+
+=head1 OPTIONS
+
+=over
+
+=item B<--distro>
+
+
+
+=back
+
+=head1 DESCRIPTION
+
+This program creates a YAML file that describes a Perl distribution preferences specifically to disable L<CPAN::Reporter> to skip
+trying to test the distribution itself.
+
+Sometimes this is required to be included for CPAN Smokers (see L<CPAN::Reporter::Smoker>) because some distributions just cannot be tested
+automatically and makes a smoker to hand during the tests, having the related processes to be terminated manually.
+
+See L<CPAN::Reporter> Pod for details.

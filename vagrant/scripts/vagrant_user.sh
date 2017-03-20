@@ -3,6 +3,21 @@ CPAN_MIRROR=${1}
 PROCESSORS=${2}
 idempotent_control='/home/vagrant/.vagrant_provision'
 
+function cfg_metabase() {
+
+    (cat <<BLOCK
+address=127.0.0.1
+port=8080
+idfile=/home/vagrant/.metabase/metabase_id.json
+dbfile=/home/vagrant/.metabase/relay.db
+url=https://metabase.cpantesters.org/beta/
+debug=1
+multiple=1
+BLOCK
+    ) > /home/vagrant/.metabase/relayd
+
+}
+
 if ! [ -f "${idempotent_control}" ]
 then
     echo "Configuring vagrant user"
@@ -12,10 +27,10 @@ then
     perlbrew install ${PERL} --notest -j ${PROCESSORS}
     perlbrew install-cpanm
     perlbrew switch ${PERL}
-    cpanm YAML::XS CPAN::SQLite Module::Version Log::Log4perl CPAN::Mini
+    cpanm YAML::XS CPAN::SQLite Module::Version Log::Log4perl CPAN::Mini -n
     # it is expected to fail, but is required due the metabase-relayd requirements
-    cpanm --force POE::Component::SSLify
-    cpanm POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd
+    cpanm --force POE::Component::SSLify -n
+    cpanm POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd -n
     echo "Create the .bash_profile"
     (cat <<END
 if [ -e "/home/vagrant/.bashrc" ]
@@ -41,6 +56,7 @@ END
     touch "${idempotent_control}"
     cp -v /tmp/metabase_id.json /home/vagrant/.metabase/metabase_id.json
     chmod 400 /home/vagrant/.metabase/metabase_id.json
+    cfg_metabase
     echo "Finished"
 fi
 

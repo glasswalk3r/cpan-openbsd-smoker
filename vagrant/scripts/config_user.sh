@@ -3,7 +3,8 @@ CPAN_MIRROR=${1}
 USER=${2}
 PERL=${3}
 BUILD_DIR=${4}
-PROCESSORS=2
+PROCESSORS=${5}
+REPORTS_FROM=${6}
 
 function create_profile() {
     USER=${1}
@@ -56,7 +57,7 @@ function config_cpan() {
   'check_sigs' => q[0],
   'colorize_output' => q[0],
   'commandnumber_in_prompt' => q[1],
-  'connect_to_internet_ok' => q[1],
+  'connect_to_internet_ok' => q[0],
   'cpan_home' => q[/home/${USER}/.cpan],
   'ftp_passive' => q[1],
   'ftp_proxy' => q[],
@@ -118,6 +119,17 @@ BLOCK
 
 }
 
+function config_reporter() {
+    FROM=$1
+    cfg='.cpanreporter/config.ini'
+    mkdir .cpanreporter
+    mkdir reports
+    echo 'edit_report=no' > "${cfg}"
+    echo 'send_report=yes' >> "${cfg}"
+    echo "email_from=${FROM}" >> "${cfg}"
+    echo "transport=File /home/${USER}/reports" >> "${cfg}"
+}
+
 echo "Configuring ${USER}"
 echo "Installing Perlbrew"
 curl -L https://install.perlbrew.pl | bash
@@ -132,21 +144,21 @@ then
     mkdir "/home/${USER}/bin"
 fi
 
+cp /tmp/cpan-openbsd-smoker/bin/send_reports.pl "/home/${USER}/bin"
+cp /tmp/cpan-openbsd-smoker/bin/block.pl "/home/${USER}/bin"
+cp /tmp/cpan-openbsd-smoker/prefs/*.yml "/home/${USER}/.cpan/prefs"
+
 perlbrew install-cpanm
 perlbrew switch ${PERL}
-cpanm YAML::XS CPAN::SQLite Module::Version Log::Log4perl
+perlbrew clean
+
+cpanm YAML::XS CPAN::SQLite Module::Version Log::Log4perl -n
 # not sure if cpanm can handle bundles
-(echo 'install Bundle::CPAN') | cpan
-(echo 'install Bundle::CPAN::Reporter::Smoker::Tests') | cpan
-cpanm Task::CPAN::Reporter CPAN::Reporter::Smoker Test::Reporter::Transport::Socket
+perl -MCPAN -e "CPAN::Shell->notest('install', 'Bundle::CPAN')"
+perl -MCPAN -e "CPAN::Shell->notest('install', 'Bundle::CPAN::Reporter::Smoker::Tests')"
+cpanm Task::CPAN::Reporter CPAN::Reporter::Smoker Test::Reporter::Transport::Socket -n
 echo 'Enabling test reporting'
 (echo 'o conf test_report 1'; echo 'o conf commit') | cpan
-echo 'User is almost ready to smoke tests by executing "start_smoker" in a shell'
-echo <<BLOCK
-Remember to execute the following next steps:
-1 - Configure passwords for the new users with passwd
-2 - Spend some time validating tests smoked. Tests will not be submitted automatically, but saved to a local directory before submission. This will give you a chance to validate the smoker configuration first.
-3 - Once everything is fine, start the metabase-relayd application with the vagrant user
-4 - Submit reports with the script bin/send_reports.pl
-5 - If some distribution halts the smoker, block it with bin/block.pl
-BLOCK
+config_reporter ${REPORTS_FROM}
+echo 'Finished configuring user ${USER}.'
+

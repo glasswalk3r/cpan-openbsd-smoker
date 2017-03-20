@@ -8,6 +8,8 @@ PERL_1=${4}
 USER_2=${5}
 PERL_2=${6}
 BUILD_DIR=${7}
+PROCESSORS=${8}
+FROM=${9}
 
 declare -A USERS
 USERS[${USER_1}]=${PERL_1}
@@ -28,6 +30,11 @@ else
     pkg_add git
     cd /tmp
     git clone https://github.com/glasswalk3r/cpan-openbsd-smoker.git
+    chmod a+rx /tmp/cpan-openbsd-smoker
+    chmod a+rx /tmp/cpan-openbsd-smoker/bin
+    chmod a+rx /tmp/cpan-openbsd-smoker/prefs
+    chmod a+r /tmp/cpan-openbsd-smoker/bin/*
+    chmod a+r /tmp/cpan-openbsd-smoker/prefs/*.yml
 
     for user in ${USER_1} ${USER_2}
     do
@@ -42,18 +49,8 @@ else
             # required to avoid permission errors
             cd "/home/${user}"
             pwd
-            echo "executing su ${user} -c " "/tmp/config_user.sh ${CPAN_MIRROR} ${user} ${USERS[${user}]} ${BUILD_DIR}"
+            echo "executing su ${user} -c " "/tmp/config_user.sh ${CPAN_MIRROR} ${user} ${USERS[${user}]} ${BUILD_DIR} ${PROCESSORS} ${FROM}"
             su ${user} -c "/tmp/config_user.sh ${CPAN_MIRROR} ${user} ${USERS[${user}]} ${BUILD_DIR}"
-            user_bin="/home/${user}/bin"
-            
-            if [ -d "${user_bin}" ]
-            then
-                cp /tmp/cpan-openbsd-smoker/bin/send_reports.pl "${user_bin}"
-                cp /tmp/cpan-openbsd-smoker/bin/block.pl "${user_bin}"
-            else
-                echo "${user_bin} directory is not available, cannot copy smoker scripts!"
-            fi
-            
         else
             echo "/tmp/config_user.sh not available, cannot continue"
             ls -l /tmp
