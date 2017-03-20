@@ -40,18 +40,12 @@ if ($version) {
     exit(0);
 }
 
-my $name = shift;
-die "must receive a distro as parameter" unless(defined($name));
-chomp($name);
 my $distribution= '^' . $name;
-
 my $filename = "$name.yml";
 $filename =~ s/\//./;
-
 my %data = ( comment => 'Tests hang smoker',
              match => { distribution => $distribution },
              disabled => 1 );
-
 DumpFile( File::Spec->catfile( File::HomeDir->my_home, '.cpan', 'prefs', $filename), \%data );
 
 __END__
@@ -62,7 +56,7 @@ block - program to write a distribution preferences files to block it for testin
 
 =head1 SYNOPSIS
 
-
+    block --distro='ARFREITAS/Siebel-Srvrmgr'
 
 =head1 OPTIONS
 
@@ -70,7 +64,8 @@ block - program to write a distribution preferences files to block it for testin
 
 =item B<--distro>
 
-
+This options expects a string describing the Perl distribution to be disabled regarding testing on the smoker.
+The string must have the format <AUTHOR>/<DISTRIBUTION>.
 
 =back
 
@@ -82,4 +77,8 @@ trying to test the distribution itself.
 Sometimes this is required to be included for CPAN Smokers (see L<CPAN::Reporter::Smoker>) because some distributions just cannot be tested
 automatically and makes a smoker to hand during the tests, having the related processes to be terminated manually.
 
-See L<CPAN::Reporter> Pod for details.
+The YAML file will be created on the respective home directory of the user, followed by C<.cpan> and C<prefs>.
+
+See L<CPAN::Reporter> Pod for details. You can check examples of those files on this project webpage at Github. Those preferences files were
+created during several tests executed.
+

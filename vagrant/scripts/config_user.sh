@@ -1,24 +1,29 @@
 #!/usr/local/bin/bash
-CPAN_MIRROR=${1}
-USER=${2}
-PERL=${3}
-BUILD_DIR=${4}
-PROCESSORS=${5}
-REPORTS_FROM=${6}
+# example of how this script is invoked
+# su foo -c /tmp/config_user.sh http://mirror.nbtelecom.com.br/CPAN foo perl-5.20.3 /mnt/cpan_build_dir 2 'Alceu Rodrigues de Freitas Junior <arfreitas@cpan.org>'
+# ${1} is the script itself
+CPAN_MIRROR=${2}
+USER=${3}
+PERL=${4}
+BUILD_DIR=${5}
+PROCESSORS=${6}
+REPORTS_FROM=${7}
 
 function create_profile() {
-    USER=${1}
-    echo "Create the .bash_profile"
+    local user=${1}
+    local profile="/home/${user}/.bash_profile"
+    local rc="/home/${user}/.bashrc"
+    echo "Creating ${profile}"
     (cat <<END
-if [ -e "/home/${USER}/.bashrc" ]
+if [ -e "${rc}" ]
 then
-    source "/home/${USER}/.bashrc"
+    source "${rc}"
 fi
 source ~/perl5/perlbrew/etc/bashrc
 END
-) > "/home/${USER}/.bash_profile"
+) > "${profile}"
 
-    echo "Create the .bashrc"
+    echo "Creating ${rc}"
     (cat <<END
 export CPAN_SQLITE_NO_LOG_FILES=1
 export PATH=/home/${USER}/bin:$PATH
@@ -29,14 +34,14 @@ function start_smoker() {
     perl -MCPAN::Reporter::Smoker -e 'start(clean_cache_after => 50, install => 1)'
 }
 END
-) > "/home/${USER}/.bashrc"
+) > "${rc}"
 }
 
 function config_cpan() {
-    USER=${1}
-    BUILD_DIR=${2}
-    CPAN_BUILD_DIR="${BUILD_DIR}/${USER}"
-    PREFS_DIR="/home/${USER}/.cpan/prefs"
+    local USER=${1}
+    local BUILD_DIR=${2}
+    local CPAN_BUILD_DIR="${BUILD_DIR}/${USER}"
+    local PREFS_DIR="/home/${USER}/.cpan/prefs"
     
     if ! [ -d "${CPAN_BUILD_DIR}" ]
     then
@@ -120,8 +125,8 @@ BLOCK
 }
 
 function config_reporter() {
-    FROM=$1
-    cfg='.cpanreporter/config.ini'
+    local FROM=$1
+    local cfg='.cpanreporter/config.ini'
     mkdir .cpanreporter
     mkdir reports
     echo 'edit_report=no' > "${cfg}"
@@ -134,6 +139,13 @@ echo "Configuring ${USER}"
 echo "Installing Perlbrew"
 curl -L https://install.perlbrew.pl | bash
 create_profile ${USER}
+
+if [ $? -ne 0 ]
+then
+    echo "Previous step failed, cannot continue"
+    exit 1
+fi
+
 source "/home/${USER}/.bash_profile"
 # some tests fails on OpenBSD and that's expected since the oficial Perl tests are changed
 perlbrew install ${PERL} --notest -j ${PROCESSORS}
@@ -160,5 +172,5 @@ cpanm Task::CPAN::Reporter CPAN::Reporter::Smoker Test::Reporter::Transport::Soc
 echo 'Enabling test reporting'
 (echo 'o conf test_report 1'; echo 'o conf commit') | cpan
 config_reporter ${REPORTS_FROM}
-echo 'Finished configuring user ${USER}.'
+echo "Finished configuring user ${USER}."
 
