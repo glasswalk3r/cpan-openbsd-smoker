@@ -122,6 +122,8 @@ __END__
 BLOCK
 ) >> "/home/${USER}/.cpan/CPAN/MyConfig.pm"
 
+    mkdir -p "/home/${USER}/.cpan/prefs"
+    cp /tmp/cpan-openbsd-smoker/prefs/*.yml "/home/${USER}/.cpan/prefs"
 }
 
 function config_reporter() {
@@ -156,19 +158,16 @@ then
     mkdir "/home/${USER}/bin"
 fi
 
-cp /tmp/cpan-openbsd-smoker/bin/send_reports.pl "/home/${USER}/bin"
-cp /tmp/cpan-openbsd-smoker/bin/block.pl "/home/${USER}/bin"
-cp /tmp/cpan-openbsd-smoker/prefs/*.yml "/home/${USER}/.cpan/prefs"
-
 perlbrew install-cpanm
 perlbrew switch ${PERL}
 perlbrew clean
 
-cpanm YAML::XS CPAN::SQLite Module::Version Log::Log4perl -n
-# not sure if cpanm can handle bundles
+# using CPAN to be able to fetch from minicpan
+perl -MCPAN -e "CPAN::Shell->notest('install', 'YAML::XS', 'CPAN::SQLite', 'Module::Version', 'Log::Log4perl')"
 perl -MCPAN -e "CPAN::Shell->notest('install', 'Bundle::CPAN')"
 perl -MCPAN -e "CPAN::Shell->notest('install', 'Bundle::CPAN::Reporter::Smoker::Tests')"
-cpanm Task::CPAN::Reporter CPAN::Reporter::Smoker Test::Reporter::Transport::Socket -n
+perl -MCPAN -e "CPAN::Shell->notest('install', 'Task::CPAN::Reporter', 'CPAN::Reporter::Smoker', 'Test::Reporter::Transport::Socket')"
+perl -MCPAN -e "CPAN::Shell->notest('install', 'CPAN::Reporter::Smoker::OpenBSD')"
 echo 'Enabling test reporting'
 (echo 'o conf test_report 1'; echo 'o conf commit') | cpan
 config_reporter ${REPORTS_FROM}

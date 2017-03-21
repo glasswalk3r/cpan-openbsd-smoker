@@ -17,9 +17,6 @@ USERS[${USER_2}]=${PERL_2}
 
 now=$(date)
 echo "Starting provisioning at ${now}"
-export PKG_PATH=${OPENBSD_MIRROR}/pub/OpenBSD/$(uname -r)/packages/$(arch -s)/
-echo "Updating existing packages with ${PKG_PATH}"
-pkg_add -u -I -a -x
 idempotent_control=/var/vagrant_provision_users
 echo "Using ${idempotent_control} to control provisioning"
 
@@ -29,7 +26,6 @@ then
     exit 0
 else
     echo "Adding smoker users"
-    pkg_add git
     cd /tmp
     git clone https://github.com/glasswalk3r/cpan-openbsd-smoker.git
     chmod a+rx /tmp/cpan-openbsd-smoker
