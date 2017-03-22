@@ -1,0 +1,59 @@
+#!perl
+use warnings;
+use strict;
+use DBI 1.636;
+use Set::Tiny 0.04;
+use CPAN;
+
+print "Readloading CPAN client indexes...\n";
+CPAN::HandleConfig->load;
+CPAN::Shell::setup_output;
+CPAN::Index->force_reload;
+print "Starting cleanup...\n";
+my $dbfile = '/home/vagrant/.cpan/cpandb.sql';
+my $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile","","");
+my $query_distros = $dbh->prepare(q{select A.dist_file from dists A join auths B on A.auth_id = B.auth_id where B.cpanid = ?});
+my $query_authors = $dbh->prepare(q{select cpanid from auths});
+$query_authors->execute();
+my $removed = 0;
+
+while (my $row = $query_authors->fetchrow_arrayref()) {
+    my $distros = get_distro_files($dbh, $query_distros, $row->[0]);
+    my $path = '/minicpan/authors/id/' . substr($row->[0],0,1) . '/' . substr($row->[0],0,2) . '/' . $row->[0];
+    next unless ( -d $path );
+    opendir(DIR,$path) or die "Cannot read $path: $!";
+    my @files = readdir(DIR);
+    close(DIR);
+    shift(@files);
+    shift(@files);
+
+    foreach my $distro_file(@files) {
+        next if $distro_file eq 'CHECKSUMS';
+        my $to_remove = $path . '/' . $distro_file;
+        next unless (-f $to_remove);
+        
+        unless ($distros->has($distro_file)) {
+            my $to_remove = $path . '/' . $distro_file;
+            print "$to_remove can be removed\n";
+            unlink( $to_remove ) or warn "could not remove $to_remove: $!";
+            $removed++;
+        }
+    }
+    
+}
+
+$dbh->disconnect();
+print "Total removed: $removed\n";
+    
+sub get_distro_files {
+    my ($dbh, $sth, $author) = @_;
+    $sth->bind_param(1, $author);
+    $sth->execute();
+    my @distros;
+
+    while ( my $row = $sth->fetchrow_arrayref() ) {
+        push(@distros, $row->[0]);
+    }
+    
+    return Set::Tiny->new(@distros);
+}

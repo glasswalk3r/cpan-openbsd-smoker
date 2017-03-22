@@ -29,9 +29,7 @@ else
     cd /tmp
     git clone https://github.com/glasswalk3r/cpan-openbsd-smoker.git
     chmod a+rx /tmp/cpan-openbsd-smoker
-    chmod a+rx /tmp/cpan-openbsd-smoker/bin
     chmod a+rx /tmp/cpan-openbsd-smoker/prefs
-    chmod a+r /tmp/cpan-openbsd-smoker/bin/*
     chmod a+r /tmp/cpan-openbsd-smoker/prefs/*.yml
 
     for user in ${USER_1} ${USER_2}
