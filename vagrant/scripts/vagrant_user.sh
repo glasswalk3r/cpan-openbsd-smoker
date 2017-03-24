@@ -67,9 +67,7 @@ mcpani --inject --verbose
 # to update the minicpan script as well
 dzil install
 dzil clean
-#minicpan
-# reload cpan indexes
-# cleanup
-
+minicpan -c CPAN::Mini::LatestDistVersion
+mirror_cleanup
 now=$(date)
 echo "Finished at ${now}"

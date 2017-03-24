@@ -63,12 +63,4 @@ fi
 
 now=$(date)
 echo "Finished provisioning at ${now}"
-echo <<BLOCK
-Remember to execute the following manual steps after provisioning is finished:
-1 - Configure passwords for the new users with passwd. Change the default password of vagrant user and configure a new SSH key for it.
-2 - Spend some time validating tests results. Tests will not be submitted automatically, but saved to a local directory before submission. This will give you a chance to validate the smoker configuration first.
-3 - Once everything is fine, start the metabase-relayd application with the vagrant user.
-4 - Submit reports with the script bin/send_reports.pl.
-5 - If some distribution halts the smoker, block it with bin/block.pl.
-BLOCK
 
