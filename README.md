@@ -16,6 +16,7 @@ This project also includes a Vagrant VM (based on Virtualbox) with the Smoker pr
   * Tests submitter
   * number of processors in the VM (used for parallel tasks executing, for example)
   * Keyboard selection
+  * Adds up to two users with low privileges to execute the CPAN::Reporter::Smoker application.
   
 The VM will have pre-installed and pre-configured:
 
