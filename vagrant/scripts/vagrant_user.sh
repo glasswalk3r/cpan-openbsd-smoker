@@ -3,6 +3,14 @@ CPAN_MIRROR=${1}
 idempotent_control='/home/vagrant/.vagrant_provision'
 local_repo=/home/vagrant/tmp
 
+# requirements for vagrant user:
+# - perlbrew
+# - basic modules: YAML::XS CPAN::SQLite Module::Version Log::Log4perl 
+# - required: CPAN::Mini CPAN::Mini::LatestDistVersion Dist::Zilla CPAN::Mini::Inject
+# - cpanm --force POE::Component::SSLify -n (required, but broken)
+# - The last modules (depend on the above): POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd
+# - configure metabase-relayd
+
 function mcpani_cfg() {
     local mirror=${1}
     local repo=${2}
