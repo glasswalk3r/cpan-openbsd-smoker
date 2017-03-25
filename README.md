@@ -48,4 +48,4 @@ Once there, you will find the `Vagrantfile`, where the definitions of the CPAN::
 
 Besides editing the Vagrantfile, you need to copy your metabase_id.json to the `metabase` directory (there is even a tip over there ;-) ).
 
-Finally, go back to the upper directory (where the `Vagranfile` is located) and hit `vagrant up`.
+Finally, make sure you are in the same directory where the `Vagranfile` is located and hit `vagrant up`.
