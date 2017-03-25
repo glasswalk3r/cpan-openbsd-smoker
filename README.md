@@ -29,7 +29,22 @@ Most of the process is documented at [here](http://wiki.cpantesters.org/wiki/Smo
 
 ### Quick start
 
-First clone this repository. Then go to the `vagrant` directory.
+First clone this repository. Then go to the `vagrant` directory. You should see the following structure:
+
+```
+.
+├── metabase
+│   └── copy your metabase.json here
+├── scripts
+│   ├── basic_setup.sh
+│   ├── config_smoker.sh
+│   ├── config_user.sh
+│   └── vagrant_user.sh
+├── test
+└── Vagrantfile
+
+```
 
 Once there, you will find the `Vagrantfile`, where the definitions of the CPAN::Reporter::Smoker VM. You will want to look up for the section named "CONFIGURABLE STEPS". Some options are required, others not. Make sure to read the comments, they are currently the only documentation available.
-Finally, besides the Vagrantfile, you need only to copy your metabase_id.json to the `metabase` directory and hit `vagrant up`.
+
+Finally, besides the Vagrantfile, you need only to copy your metabase_id.json to the `metabase` directory (there is even a tip over there ;-)) and hit `vagrant up`.
