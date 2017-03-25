@@ -40,7 +40,6 @@ First clone this repository. Then go to the `vagrant` directory. You should see 
 │   ├── config_smoker.sh
 │   ├── config_user.sh
 │   └── vagrant_user.sh
-├── test
 └── Vagrantfile
 
 ```
