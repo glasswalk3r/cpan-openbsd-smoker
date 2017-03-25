@@ -26,7 +26,10 @@ The VM will have pre-installed and pre-configured:
   * the scripts provided by CPAN-Reporter-Smoker-OpenBSD distribution.
   
 Most of the process is documented at [here](http://wiki.cpantesters.org/wiki/SmokerOnOpenBSD).
-  
-### Configuration
 
-Besides editing the Vagrantfile, you need only to copy your metabase_id.json to the metabase directory and hit `vagrant up`.
+### Quick start
+
+First clone this repository. Then go to the `vagrant` directory.
+
+Once there, you will find the `Vagrantfile`, where the definitions of the CPAN::Reporter::Smoker VM. You will want to look up for the section named "CONFIGURABLE STEPS". Some options are required, others not. Make sure to read the comments, they are currently the only documentation available.
+Finally, besides the Vagrantfile, you need only to copy your metabase_id.json to the `metabase` directory and hit `vagrant up`.
