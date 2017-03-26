@@ -46,6 +46,6 @@ First clone this repository. Then go to the `vagrant` directory. You should see 
 
 Once there, you will find the `Vagrantfile`, where the definitions of the CPAN::Reporter::Smoker VM. You will want to look up for the section named "CONFIGURABLE STEPS". Some options are required, others not. Make sure to read the comments, they are currently the only documentation available.
 
-Besides editing the Vagrantfile, you need to copy your metabase_id.json to the `metabase` directory (there is even a tip over there ;-))
+Besides editing the Vagrantfile, you need to copy your metabase_id.json to the `metabase` directory (there is even a tip over there ;-) ).
 
-Finally, go back to the upper directory (where the `Vagranfile` is located) and hit `vagrant up`.
+Finally, make sure you are in the same directory where the `Vagranfile` is located and hit `vagrant up`.
