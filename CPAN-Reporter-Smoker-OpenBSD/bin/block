@@ -8,17 +8,17 @@ use Getopt::Long;
 use Pod::Usage 1.69;
 # VERSION
 
-my ($distro,$help,$version);
+my ($distro,$help,$version_check);
 
 GetOptions(
     'help'         => \$help,
     'distro=s'     => \$distro,
-    'version'      => \$version
+    'version'      => \$version_check
 ) or pod2usage(1);
 pod2usage( -exitval => 0, -verbose => 2 ) if $help;
 
 if ($version) {
-    print "send_reports - version $VERSION\n";
+    print "block - version $VERSION\n";
     exit(0);
 }
 
@@ -48,6 +48,14 @@ block - program to write a distribution preferences files to block it for testin
 
 This options expects a string describing the Perl distribution to be disabled regarding testing on the smoker.
 The string must have the format <AUTHOR>/<DISTRIBUTION>.
+
+=item B<--help>
+
+This help message.
+
+=item B<--version>
+
+Prints the version number and exits.
 
 =back
 
