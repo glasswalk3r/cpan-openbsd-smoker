@@ -2,4 +2,4 @@
 comment: Tests hang smoker
 disabled: 1
 match:
-  distribution: APOCAL/Task-POE-All
+  distribution: ^APOCAL/Task-POE-All

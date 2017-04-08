@@ -1,6 +1,6 @@
 ---
-comment: "Tests hang smoker"
+comment: "Test hangs smoker"
 match:
-  distribution: "^PLICEASE/Test-Script"
+  distribution: ^PLICEASE/Test-Script
 disabled: 1
 

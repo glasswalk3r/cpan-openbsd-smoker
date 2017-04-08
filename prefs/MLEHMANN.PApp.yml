@@ -1,5 +1,5 @@
 ---
 comment: "Hangs smoker"
 match:
-  distribution: '^MLEHMANN/PApp'
+  distribution: ^MLEHMANN/PApp
 disabled: 1

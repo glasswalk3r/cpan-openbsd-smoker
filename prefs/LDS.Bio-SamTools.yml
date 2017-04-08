@@ -2,4 +2,4 @@
 comment: Tests hang smoker
 disabled: 1
 match:
-  distribution: LDS/Bio-SamTools
+  distribution: ^LDS/Bio-SamTools

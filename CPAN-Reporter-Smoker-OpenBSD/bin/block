@@ -2,12 +2,12 @@
 use warnings;
 use strict;
 use YAML::XS 0.63 qw(DumpFile);
-use File::HomeDir 1.00;
 use File::Spec;
 use Getopt::Long;
 use Pod::Usage 1.69;
+use CPAN;
+use CPAN::Reporter::Smoker::OpenBSD qw(is_distro_ok);
 # VERSION
-
 my ($distro,$help,$version_check);
 
 GetOptions(
@@ -15,12 +15,15 @@ GetOptions(
     'distro=s'     => \$distro,
     'version'      => \$version_check
 ) or pod2usage(1);
+
 pod2usage( -exitval => 0, -verbose => 2 ) if $help;
 
-if ($version) {
-    print "block - version $VERSION\n";
+if ($version_check) {
+    print "block - version $VERSION\n\n";
     exit(0);
 }
+
+pod2usage( -exitval => 1, -verbose => 1) unless (is_distro_ok($distro));
 
 my $distribution= '^' . $distro;
 my $filename = "$distro.yml";
@@ -28,7 +31,11 @@ $filename =~ s/\//./;
 my %data = ( comment => 'Tests hang smoker',
              match => { distribution => $distribution },
              disabled => 1 );
-DumpFile( File::Spec->catfile( File::HomeDir->my_home, '.cpan', 'prefs', $filename), \%data );
+
+CPAN::HandleConfig->load;
+my $prefs_dir = $CPAN::Config->{prefs_dir};
+die "$prefs_dir does not exist or it is not readable\n" unless (-d $prefs_dir);
+DumpFile( File::Spec->catfile( $prefs_dir, $filename), \%data );
 
 __END__
 
@@ -46,8 +53,9 @@ block - program to write a distribution preferences files to block it for testin
 
 =item B<--distro>
 
-This options expects a string describing the Perl distribution to be disabled regarding testing on the smoker.
+This parameter expects a string describing the Perl distribution to be disabled regarding testing on the smoker.
 The string must have the format <AUTHOR>/<DISTRIBUTION>.
+This is a required parameter: not providing it will cause the program to abort with an error.
 
 =item B<--help>
 
