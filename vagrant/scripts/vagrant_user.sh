@@ -63,8 +63,12 @@ fi
 echo 'Updating local CPAN mirror...'
 cd
 echo 'Injecting updates from Github...'
-cd /home/vagrant/cpan-openbsd-smoker/CPAN-Reporter-Smoker-OpenBSD
-git pull origin master
+cd /home/vagrant/cpan-openbsd-smoker
+git pull
+echo 'Updating the minicpan shared preferences directory'
+rm /minicpan/prefs/*.yml
+cp prefs/*.yml /minicpan/prefs
+cd CPAN-Reporter-Smoker-OpenBSD
 dzil authordeps --missing | cpanm -n
 distro_version=$(grep version dist.ini | cut -d '=' -f2 | sed -e 's/ //g')
 dzil build
