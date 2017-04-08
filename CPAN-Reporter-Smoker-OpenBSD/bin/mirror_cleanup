@@ -6,18 +6,19 @@ use Set::Tiny 0.04;
 use CPAN;
 use Getopt::Long;
 use Pod::Usage 1.69;
+use CPAN::Mini 1.111016;
+use File::Spec;
 # VERSION
 
 my ($help, $version_check);
 
 GetOptions(
     'help'         => \$help,
-    'distro=s'     => \$distro,
     'version'      => \$version_check
 ) or pod2usage(1);
 pod2usage( -exitval => 0, -verbose => 2 ) if $help;
 
-if ($version) {
+if ($version_check) {
     print "mirror_cleanup - version $VERSION\n";
     exit(0);
 }
@@ -34,9 +35,11 @@ my $query_authors = $dbh->prepare(q{select cpanid from auths});
 $query_authors->execute();
 my $removed = 0;
 
+my $minicpan_root = get_root();
+
 while (my $row = $query_authors->fetchrow_arrayref()) {
     my $distros = get_distro_files($dbh, $query_distros, $row->[0]);
-    my $path = '/minicpan/authors/id/' . substr($row->[0],0,1) . '/' . substr($row->[0],0,2) . '/' . $row->[0];
+    my $path = File::Spec->catdir( $minicpan_root, 'authors', 'id', substr($row->[0],0,1), substr($row->[0],0,2), $row->[0] );
     next unless ( -d $path );
     opendir(DIR,$path) or die "Cannot read $path: $!";
     my @files = readdir(DIR);
@@ -46,11 +49,11 @@ while (my $row = $query_authors->fetchrow_arrayref()) {
 
     foreach my $distro_file(@files) {
         next if $distro_file eq 'CHECKSUMS';
-        my $to_remove = $path . '/' . $distro_file;
+        my $to_remove = File::Spec->catfile( $path, $distro_file );
         next unless (-f $to_remove);
         
         unless ($distros->has($distro_file)) {
-            my $to_remove = $path . '/' . $distro_file;
+            my $to_remove = File::Spec->catfile( $path, $distro_file );
             print "$to_remove can be removed\n";
             unlink( $to_remove ) or warn "could not remove $to_remove: $!";
             $removed++;
@@ -61,6 +64,11 @@ while (my $row = $query_authors->fetchrow_arrayref()) {
 
 $dbh->disconnect();
 print "Total removed: $removed\n";
+
+sub get_root {
+    my %config = CPAN::Mini->read_config();
+    return $config{local};
+}
     
 sub get_distro_files {
     my ($dbh, $sth, $author) = @_;
