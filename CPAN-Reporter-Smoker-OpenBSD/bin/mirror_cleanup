@@ -36,6 +36,12 @@ my $removed = 0;
 
 while (my $row = $query_authors->fetchrow_arrayref()) {
     my $distros = get_distro_files($dbh, $query_distros, $row->[0]);
+    
+    # TODO
+    # use:
+    # my %config = CPAN::Mini->read_config(\%options); 
+    # to read the root of the minicpan location instead of a hardcode
+    
     my $path = '/minicpan/authors/id/' . substr($row->[0],0,1) . '/' . substr($row->[0],0,2) . '/' . $row->[0];
     next unless ( -d $path );
     opendir(DIR,$path) or die "Cannot read $path: $!";
