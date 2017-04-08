@@ -2,4 +2,4 @@
 comment: Tests hang smoker
 disabled: 1
 match:
-  distribution: SSHIN/Crypt-RNCryptor
+  distribution: ^SSHIN/Crypt-RNCryptor

@@ -2,4 +2,4 @@
 comment: Tests hang smoker
 disabled: 1
 match:
-  distribution: ^EESTABROO/IMAP-Admin
+  distribution: ^PERLANCAR/Bencher-Backend

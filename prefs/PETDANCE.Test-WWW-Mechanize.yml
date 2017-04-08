@@ -1,0 +1,5 @@
+---
+comment: https://github.com/petdance/test-www-mechanize/issues/34
+disabled: 1
+match:
+  distribution: ^PETDANCE/Test-WWW-Mechanize

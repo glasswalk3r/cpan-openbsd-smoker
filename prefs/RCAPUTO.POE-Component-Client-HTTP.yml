@@ -1,5 +1,5 @@
 ---
 comment: "Tests hang smoker"
 match:
-  distribution: "^RCAPUTO/POE-Component-Client-HTTP"
+  distribution: ^RCAPUTO/POE-Component-Client-HTTP
 disabled: 1

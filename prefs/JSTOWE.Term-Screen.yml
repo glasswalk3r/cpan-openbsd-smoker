@@ -2,4 +2,4 @@
 comment: Tests hang smoker
 disabled: 1
 match:
-  distribution: ^JSTOWE/Term::Screen
+  distribution: ^JSTOWE/Term-Screen

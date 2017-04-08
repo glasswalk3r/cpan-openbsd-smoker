@@ -2,4 +2,4 @@
 comment: Tests hang smoker
 disabled: 1
 match:
-  distribution: IVAN/Net-SSH
+  distribution: ^IVAN/Net-SSH

@@ -1,6 +1,6 @@
 ---
 comment: "Tests hang smoker"
 match:
-  distribution: "^COSIMO/Net-Statsd-Server"
+  distribution: ^COSIMO/Net-Statsd-Server
 disabled: 1
 

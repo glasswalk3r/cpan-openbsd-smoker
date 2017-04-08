@@ -1,5 +1,25 @@
 package CPAN::Reporter::Smoker::OpenBSD;
+use warnings;
+use strict;
+use Exporter 'import';
+our @EXPORT_OK = qw(is_distro_ok);
 # VERSION
+
+sub is_distro_ok {
+    my $distro = shift;
+
+    unless (defined($distro)) {
+       warn "--distro is a required parameter!\n\n";
+       return 0;
+    }
+
+    unless ($distro =~ /^\w+\/[\w-]+$/) {
+        warn "invalid string '$distro' in --distro!\n\n";
+        return 0;
+    } else {
+        return 1;
+    }
+}
 
 =pod
 
@@ -9,7 +29,7 @@ CPAN::Reporter::Smoker::OpenBSD - set of scripts to manage a CPAN::Reporter::Smo
 
 =head1 DESCRIPTION
 
-This module is only Pod: you want to take a look at the programs C<block> and C<send_reports> documentation:
+This module is mainly Pod: you want to take a look at the programs C<block> and C<send_reports> documentation:
 
 =over
 
@@ -22,6 +42,18 @@ C<perldoc send_reports>
 C<perldoc block>
 
 =back
+
+=head1 EXPORTS
+
+Only the C<sub> C<is_distro_ok> is exported, if explicit requested.
+
+=head2 is_distro_ok
+
+Expects as parameter a string in the format <AUTHOR>/<DISTRIBUTION>.
+
+It executes some very basic testing against the string.
+
+Returns true or false depending if the string passes the tests. It will also C<warn> if things are not going OK.
 
 =head1 AUTHOR
 

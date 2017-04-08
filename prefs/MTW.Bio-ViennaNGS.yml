@@ -2,4 +2,4 @@
 comment: Tests hang smoker
 disabled: 1
 match:
-  distribution: MTW/Bio-ViennaNGS
+  distribution: ^MTW/Bio-ViennaNGS
