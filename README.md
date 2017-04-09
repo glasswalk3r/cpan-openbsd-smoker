@@ -49,3 +49,22 @@ Once there, you will find the `Vagrantfile`, where the definitions of the CPAN::
 Besides editing the Vagrantfile, you need to copy your metabase_id.json to the `metabase` directory (there is even a tip over there ;-) ).
 
 Finally, make sure you are in the same directory where the `Vagranfile` is located and hit `vagrant up`.
+
+### On going usage
+
+After initial provisioning, you will want to start your smoker with
+
+```
+vagrant up --provision
+```
+This project Vangrafile is prepare to implement idempotent operations, so only the operations below will be repeated:
+
+  * updates OpenBSD packages
+  * update your local CPAN mirror
+  * updates CPAN-Reporter-Smoker-OpenBSD distribution and injects it to your local CPAN mirror. That allows you to upgrade the scripts used by the smokers users automatically (well, almost, you will still need to update them with `cpanm CPAN::Reporter::Smoker::OpenBSD`)
+  
+### FAQ
+
+#### Does this works with any "basic" OpenBSD VM?
+
+No. The VM specified in the Vagrantfile contains customizations as documented in [here](http://wiki.cpantesters.org/wiki/SmokerOnOpenBSD). Besides, this box already has required software installed, which reduces the provisioning time substancially.
