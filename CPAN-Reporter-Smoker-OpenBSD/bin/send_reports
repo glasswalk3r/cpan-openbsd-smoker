@@ -23,13 +23,14 @@ GetOptions(
     'version'      => \$version
 ) or pod2usage(1);
 
-pod2usage( -exitval => 1, -verbose => 2 ) unless(defined($reports));
 pod2usage( -exitval => 0, -verbose => 2 ) if $help;
 
 if ($version) {
     print "send_reports - version $VERSION\n";
     exit(0);
 }
+
+pod2usage( -exitval => 1, -verbose => 2 ) unless(defined($reports));
 
 my $sender = Test::Reporter->new(
     transport => 'Socket',
