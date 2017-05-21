@@ -43,7 +43,6 @@ echo "Starting vagrant configuration at ${now}"
 if ! [ -f "${idempotent_control}" ]
 then
     echo "Configuring vagrant user"
-    echo 'Injecting CPAN-Reporter-Smoker-OpenBSD into local minicpan repository'
     git clone https://github.com/glasswalk3r/cpan-openbsd-smoker.git
     mcpani_cfg "${CPAN_MIRROR}" "${local_repo}"
     
@@ -53,6 +52,7 @@ then
         exit 1
     fi
     
+    echo "alias minicpan = 'minicpan -c CPAN::Mini::LatestDistVersion'" >> /home/vagrant/.bashrc
     (echo "o conf urllist file:///minicpan ${CPAN_MIRROR}"; echo 'o conf commit') | cpan
     cp /tmp/metabase_id.json /home/vagrant/.metabase/metabase_id.json
     chmod 400 /home/vagrant/.metabase/metabase_id.json
@@ -80,6 +80,5 @@ mcpani --inject --verbose
 dzil install
 dzil clean
 minicpan -c CPAN::Mini::LatestDistVersion
-mirror_cleanup
 now=$(date)
 echo "Finished at ${now}"

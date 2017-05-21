@@ -26,6 +26,8 @@ END
     echo "Creating ${rc}"
     (cat <<END
 export CPAN_SQLITE_NO_LOG_FILES=1
+# for DBD::mysql extended testing
+export EXTENDED_TESTING=1
 export PATH=/home/${USER}/bin:$PATH
 
 function start_smoker() {
@@ -41,7 +43,7 @@ function config_cpan() {
     local USER=${1}
     local BUILD_DIR=${2}
     local CPAN_BUILD_DIR="${BUILD_DIR}/${USER}"
-    local PREFS_DIR="/home/${USER}/.cpan/prefs"
+    local PREFS_DIR="/minicpan/prefs"
     
     if ! [ -d "${CPAN_BUILD_DIR}" ]
     then
@@ -72,7 +74,7 @@ function config_cpan() {
   'halt_on_failure' => q[0],
   'histfile' => q[/home/${USER}/.cpan/histfile],
   'histsize' => q[100],
-  'http_proxy' => q[],
+  'http_proxy' => q[http://127.0.0.1:3178],
   'inactivity_timeout' => q[60],
   'index_expire' => q[1],
   'inhibit_startup_message' => q[0],
@@ -168,6 +170,8 @@ perl -MCPAN -e "CPAN::Shell->notest('install', 'Bundle::CPAN')"
 perl -MCPAN -e "CPAN::Shell->notest('install', 'Bundle::CPAN::Reporter::Smoker::Tests')"
 perl -MCPAN -e "CPAN::Shell->notest('install', 'Task::CPAN::Reporter', 'CPAN::Reporter::Smoker', 'Test::Reporter::Transport::Socket')"
 perl -MCPAN -e "CPAN::Shell->notest('install', 'CPAN::Reporter::Smoker::OpenBSD')"
+# for DBD::mysql extended testing
+perl -MCPAN -e "CPAN::Shell->notest('install', 'Proc::ProcessTable')"
 echo 'Enabling test reporting'
 (echo 'o conf test_report 1'; echo 'o conf commit') | cpan
 config_reporter ${REPORTS_FROM}
