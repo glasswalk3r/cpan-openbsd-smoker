@@ -29,7 +29,7 @@ CPAN::Reporter::Smoker::OpenBSD - set of scripts to manage a CPAN::Reporter::Smo
 
 =head1 DESCRIPTION
 
-This module is mainly Pod: you want to take a look at the programs C<dblock> and C<send_reports> documentation:
+This module is mainly Pod: you want to take a look at the following programs documentation:
 
 =over
 
@@ -40,6 +40,10 @@ C<perldoc send_reports>
 =item *
 
 C<perldoc dblock>
+
+=item *
+
+C<perldoc mirror_cleanup>
 
 =back
 
