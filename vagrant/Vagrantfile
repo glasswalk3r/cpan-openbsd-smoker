@@ -14,18 +14,18 @@ Vagrant.configure("2") do |config|
   # boxes at https://atlas.hashicorp.com/search.
   config.vm.box = "arfreitas/openbsd-6.0-cpan-smoker"
   config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.vm.network "forwarded_port", host_ip: "127.0.0.1", host: 30306, guest: 3306
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
   #
   config.vm.provider "virtualbox" do |vb|
-  #   # Display the VirtualBox GUI when booting the machine
+  # Display the VirtualBox GUI when booting the machine
      vb.gui = true
-  #
-  #   # Customize the amount of memory on the VM:
-     vb.memory = "1548"
-     vb.name = "OpenBSD6.Smoker"
+  # Customize the amount of memory on the VM:
+     vb.memory = "1512"
+     vb.name = "OpenBSD 6.1 CPAN Smoker"
   end
 
   ################################################################

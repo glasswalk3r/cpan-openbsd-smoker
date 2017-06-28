@@ -52,6 +52,59 @@ PKGS
 
    pkg_add -z -l "${my_list}" 
    rm "${my_list}"
+
+   echo 'Using ports to install freetype'
+   local old_dir=${PWD}
+   cd /tmp
+   ftp https://ftp.openbsd.org/pub/OpenBSD/$(uname -r)/{ports.tar.gz,SHA256.sig}
+   signify -Cp /etc/signify/openbsd-$(uname -r | cut -c 1,3)-base.pub -x SHA256.sig ports.tar.gz
+   cd /usr
+   tar xzf /tmp/ports.tar.gz
+   cd /usr/ports/print/freetype
+   make install
+   make clean
+   make clean=depends
+   cd ${old_dir}
+}
+
+function setup_collectd() {
+    (cat <<CONFIG
+Hostname    "localhost"
+BaseDir     "/var/collectd"
+PIDFile     "/var/collectd/collectd.pid"
+TypesDB     "/usr/local/share/collectd/types.db"
+Interval     60
+LoadPlugin syslog
+LoadPlugin aggregation
+LoadPlugin cpu
+LoadPlugin load
+LoadPlugin memory
+LoadPlugin rrdtool
+<Plugin aggregation>
+  <Aggregation>
+     Host "foo"
+     Plugin "cpu"
+     Type "cpu"
+    CalculateAverage true
+    CalculateMinimum true
+    CalculateMaximum true
+    CalculateStddev true
+  </Aggregation>
+</Plugin>
+<Plugin rrdtool>
+        DataDir "/var/collectd/rrd"
+        CreateFilesAsync false
+        CacheTimeout 120
+        CacheFlush   900
+        WritesPerSecond 50
+</Plugin>
+CONFIG
+    ) > '/etc/collectd.conf'
+
+    echo 'Enabling collectd daemon...'
+    rcctl enable collectd
+    echo 'Enabling apache daemon (for Collectd reporting)...'
+    rcctl enable apache2
 }
 
 function setup_mariadb() {
@@ -93,6 +146,7 @@ then
 else
     install_pkgs
     setup_mariadb ${USER_1} ${USER_2}
+    setup_collectd
 
     for user in ${USER_1} ${USER_2}
     do
