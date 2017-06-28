@@ -109,21 +109,25 @@ Prints the version number and exits.
 
 =head1 DESCRIPTION
 
+The main objective of this program is to reduce the size of storage required to have a L<CPAN> local repository.
+
 This program assumes that the same user that has a mirror setup with L<CPAN::Mini> is running it.
 
 Also, it expects that the user has the L<CPAN> client configured to use a SQLite backend.
 
 It will run over all the distributions available on the database, and check the corresponding directories on the mirror
-(right now hardcoded to C</minicpan/authors/id/> but has to change in the future): if there are any tarball that is not 
+(right now hardcoded to C</minicpan/authors/id/> but may change in the future): if there is any tarball that is not 
 listed as the most current distribution for an author, it will be removed.
 
-At this moment, it is unclear why this happens, but when it does it is not for any particular distribution. It might be a
+At this moment, it is unclear why those older distribution are still available, but when it does it is not for any particular distribution. It might be a
 problem with the mirror itself.
 
 Nevertheless, since the mirror is intended to be used for L<CPAN::Reporter::Smoker> and that only the most recent distribution
 matters, it will release some storage space.
 
-=back
+=head1 CAVEATS
+
+This program should be considered experimental, may be there unknown side effects.
 
 =head1 AUTHOR
 

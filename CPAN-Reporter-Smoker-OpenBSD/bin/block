@@ -19,7 +19,7 @@ GetOptions(
 pod2usage( -exitval => 0, -verbose => 2 ) if $help;
 
 if ($version_check) {
-    print "block - version $VERSION\n\n";
+    print "dblock - version $VERSION\n\n";
     exit(0);
 }
 
@@ -39,13 +39,13 @@ DumpFile( File::Spec->catfile( $prefs_dir, $filename), \%data );
 
 __END__
 
-=head1 block
+=head1 dblock
 
-block - program to write a distribution preferences files to block it for testing
+dblock - program to write a distribution preferences files to disable the smoker from testing it
 
 =head1 SYNOPSIS
 
-    block --distro='ARFREITAS/Siebel-Srvrmgr'
+    dblock --distro='ARFREITAS/Siebel-Srvrmgr'
 
 =head1 OPTIONS
 
@@ -79,8 +79,6 @@ The YAML file will be created on the respective home directory of the user, foll
 
 See L<CPAN::Reporter> Pod for details. You can check examples of those files on this project webpage at Github. Those preferences files were
 created during several tests executed.
-
-=back
 
 =head1 AUTHOR
 

@@ -165,8 +165,6 @@ You can selective report your tests. For instance, you might be unsure about sen
 This program requires that somewhere near your machine you have a L<metabase-relayd> server running. This script will use L<Test::Reporter::Transport::Socket> to
 send the reports. Reports are sent pretty quickly (depending on how busy is the metabase-relayd).
 
-=back
-
 =head1 AUTHOR
 
 Alceu Rodrigues de Freitas Junior, E<lt>arfreitas@cpan.orgE<gt>

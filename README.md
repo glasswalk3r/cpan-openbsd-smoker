@@ -3,18 +3,19 @@ Configuration files and scripts to maintain a CPAN Smoker on OpenBSD
 
 This project includes the following:
 
-  * the CPAN-Reporter-Smoker-OpenBSD distribution.
-  * CPAN preference files to disable distributions that causes the smoker on OpenBSD to halt.
-  * Vagrantfile and corresponding shell scripts for provisioning
+  * The CPAN-Reporter-Smoker-OpenBSD distribution.
+  * A set of CPAN preference files to disable distributions that causes the smoker on OpenBSD to halt.
+  * A Vagrant configuration file (Vagrantfile) and corresponding shell scripts for provisioning.
+  * A VirtualBox image of OpenBSD, optimized to run a CPAN Smoker (available at Vagrant Cloud)
 
-## Vagrant provisioned VM
+## The Vagrant provisioned VM
 
-This project also includes a Vagrant VM (based on Virtualbox) with the Smoker pre-configured on OpenBSD 6. Many aspects of the VM can be customized during the provisioning phase, like:
+The associated VM with this project is based Vagrant and Virtualbox with the Smoker pre-configured on OpenBSD 6. Many aspects of the VM can be customized during the provisioning phase, like:
 
-  * Mirrors to be used
+  * Mirrors to be used (OpenBSD and CPAN)
   * Which perl to compile and use for the smoker
   * Tests submitter
-  * number of processors in the VM (used for parallel tasks executing, for example)
+  * Number of processors in the VM (used for parallel tasks executing, for example)
   * Keyboard selection
   * Adds up to two users with low privileges to execute the CPAN::Reporter::Smoker application.
   
