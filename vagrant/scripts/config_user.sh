@@ -41,7 +41,7 @@ function config_cpan() {
     local USER=${1}
     local BUILD_DIR=${2}
     local CPAN_BUILD_DIR="${BUILD_DIR}/${USER}"
-    local PREFS_DIR="/home/${USER}/.cpan/prefs"
+    local PREFS_DIR="/minicpan/prefs"
     
     if ! [ -d "${CPAN_BUILD_DIR}" ]
     then

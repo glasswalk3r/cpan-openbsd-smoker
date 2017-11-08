@@ -10,6 +10,7 @@ PERL_2=${6}
 BUILD_DIR=${7}
 PROCESSORS=${8}
 FROM=${9}
+GROUP=testers
 
 declare -A USERS
 USERS[${USER_1}]=${PERL_1}
@@ -26,18 +27,13 @@ then
     exit 0
 else
     echo "Adding smoker users"
-    cd /tmp
-    git clone https://github.com/glasswalk3r/cpan-openbsd-smoker.git
-    chmod a+rx /tmp/cpan-openbsd-smoker
-    chmod a+rx /tmp/cpan-openbsd-smoker/prefs
-    chmod a+r /tmp/cpan-openbsd-smoker/prefs/*.yml
+    groupadd ${GROUP}
 
     for user in ${USER_1} ${USER_2}
     do
         echo "Adding user ${user}"
-        groupadd "${user}"
         # login group fullname password
-        adduser -batch "${user}" "${user}" "${user^}" "${user}"
+        adduser -batch "${user}" ${GROUP} "${user}" "${user}"
         olddir=$PWD
         
         if [ -e "/tmp/config_user.sh" ]
