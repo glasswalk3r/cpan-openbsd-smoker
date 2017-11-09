@@ -26,8 +26,7 @@ then
     echo "All implemented, exiting..."
     exit 0
 else
-    echo "Adding smoker users"
-    groupadd ${GROUP}
+    echo "Adding users to ${GROUP} group"
 
     for user in ${USER_1} ${USER_2}
     do

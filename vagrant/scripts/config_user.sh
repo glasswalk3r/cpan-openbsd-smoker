@@ -122,8 +122,6 @@ __END__
 BLOCK
 ) >> "/home/${USER}/.cpan/CPAN/MyConfig.pm"
 
-    mkdir -p "/home/${USER}/.cpan/prefs"
-    cp /tmp/cpan-openbsd-smoker/prefs/*.yml "/home/${USER}/.cpan/prefs"
 }
 
 function config_reporter() {
@@ -141,13 +139,6 @@ echo "Configuring ${USER}"
 echo "Installing Perlbrew"
 curl -L https://install.perlbrew.pl | bash
 create_profile ${USER}
-
-if [ $? -ne 0 ]
-then
-    echo "Previous step failed, cannot continue"
-    exit 1
-fi
-
 source "/home/${USER}/.bash_profile"
 # some tests fails on OpenBSD and that's expected since the oficial Perl tests are changed
 perlbrew install ${PERL} --notest -j ${PROCESSORS}

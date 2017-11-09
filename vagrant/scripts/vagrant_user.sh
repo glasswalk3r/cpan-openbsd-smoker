@@ -24,10 +24,13 @@ then
         exit 1
     fi
     (echo "o conf urllist file:///minicpan ${CPAN_MIRROR}"; echo 'o conf commit') | cpan
-    mkdir /home/vagrant/.metabase
+    if ! [ -d /home/vagrant/.metabase ]
+    then
+        mkdir /home/vagrant/.metabase
+    fi
     cp /tmp/metabase_id.json /home/vagrant/.metabase/metabase_id.json
     chmod 400 /home/vagrant/.metabase/metabase_id.json
-    local minicpanrc=/home/vagrant/.minicpanrc
+    minicpanrc=/home/vagrant/.minicpanrc
     echo 'local: /minicpan/' > "${minicpanrc}"
     echo "remote: ${CPAN_MIRROR}" >> "${minicpanrc}"
     echo 'also_mirror: indices/find-ls.gz' >> "${minicpanrc}"
