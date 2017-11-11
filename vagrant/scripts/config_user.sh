@@ -161,6 +161,6 @@ perl -MCPAN -e "CPAN::Shell->notest('install', 'Task::CPAN::Reporter', 'CPAN::Re
 perl -MCPAN -e "CPAN::Shell->notest('install', 'CPAN::Reporter::Smoker::OpenBSD')"
 echo 'Enabling test reporting'
 (echo 'o conf test_report 1'; echo 'o conf commit') | cpan
-config_reporter ${REPORTS_FROM}
+config_reporter "${REPORTS_FROM}"
 echo "Finished configuring user ${USER}."
 
