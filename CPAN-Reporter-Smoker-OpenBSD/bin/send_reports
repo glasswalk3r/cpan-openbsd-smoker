@@ -56,7 +56,7 @@ foreach my $report(@{$files_ref}) {
 sub grades_handler {
     my ($opt_name, $opt_value) = @_;
     # See CPAN::Reporter for grades definitions
-    my $grades = Set::Tiny(qw(pass fail unknown na));
+    my $grades = Set::Tiny->new(qw(pass fail unknown na));
     die "Invalid grade value passed as parameter: '$opt_value'" unless($grades->has($opt_value));
     $GRADE = $opt_value;
 }
