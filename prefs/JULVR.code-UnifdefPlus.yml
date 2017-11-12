@@ -2,4 +2,4 @@
 comment: Tests hang smoker
 disabled: 1
 match:
-  distribution: ^MAROS/MooseX-App
+  distribution: ^JULVR/code-UnifdefPlus
