@@ -1,7 +1,6 @@
 #!/usr/local/bin/bash
 CPAN_MIRROR=${1}
 idempotent_control='/home/vagrant/.vagrant_provision'
-local_repo=/home/vagrant/tmp
 
 # requirements for vagrant user:
 # - perlbrew
@@ -47,10 +46,14 @@ then
     rm /minicpan/prefs/*.yml
 else
     mkdir /minicpan/prefs
+    # to enable smoker users to update the distro preferences
+    sudo chgrp testers /minicpan/prefs
+    sudo chmod g+w /minicpan/prefs
 fi
 cp prefs/*.yml /minicpan/prefs
 echo 'Updating local CPAN mirror...'
 minicpan -c CPAN::Mini::LatestDistVersion
+cpanm CPAN::Reporter::Smoker::OpenBSD
 mirror_cleanup
 now=$(date)
 echo "Finished at ${now}"

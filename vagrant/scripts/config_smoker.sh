@@ -39,7 +39,7 @@ else
         then
             # required to avoid permission errors
             cd "/home/${user}"
-            cmd="/tmp/config_user.sh ${CPAN_MIRROR} ${user} ${USERS[${user}]} ${BUILD_DIR} ${PROCESSORS} ${FROM}"
+            cmd="/tmp/config_user.sh ${CPAN_MIRROR} ${user} ${USERS[${user}]} ${BUILD_DIR} ${PROCESSORS} '${FROM}'"
             echo "executing su ${user} -c" "${cmd}"
             su ${user} -c "/tmp/config_user.sh ${cmd}"
         else

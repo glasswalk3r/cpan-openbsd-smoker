@@ -33,8 +33,9 @@ Vagrant.configure("2") do |config|
   # CONFIGURABLE STEPS
   ################################################################
   # You can and must verify values used to configure the environment.
-  # Be sure to read the comments as well, as they server as documentation.
-  # Before running, remember to copy a "metabase_id.json" file to the subdirectory "metabase" where this Vagrantfile is located
+  # Be sure to read the comments as well, as they work as documentation.
+  # Before running, remember to copy a "metabase_id.json" file to the 
+  # subdirectory "metabase" where this Vagrantfile is located
   ################################################################
   
   # setup the OpenBSD closest mirror you want to use. Use just the base URL, 
@@ -47,22 +48,29 @@ Vagrant.configure("2") do |config|
   # the perlbrew homepage. Shouldn't be necessary to change it
   perlbrew_url="https://install.perlbrew.pl"
   
-  #user_1, user_2: the names of users you want to execute the smoker. If you want more, you will have to customize the config_smoker.sh and the VM itself
+  # user_1, user_2: the names of users you want to execute the smoker. If you 
+  # want more users, you will have to customize the config_smoker.sh 
+  # and the VM itself
   user_1="foo"
   user_2="bar"
   
-  # perl_1, perl_2: the name of perl to install, as provided by "perlbrew available" command to the respective user
+  # perl_1, perl_2: the name of perl to install, as provided by 
+  # "perlbrew available" command to the respective user
   perl_1="perl-5.26.1"
   perl_2="perl-5.24.3"
   
-  # reports_from is from which person CPAN reports are being sent, see CPAN::Reporter for details on that
-  # be extra careful about maintaining the single quotes below, otherwise you might get trouble with Bash argument parsing
+  # reports_from is from which person CPAN reports are being sent, see 
+  # CPAN::Reporter for details on that be extra careful about 
+  # maintaining the single quotes below, otherwise you might get 
+  # trouble with Bash argument parsing
   reports_from="'Alceu Rodrigues de Freitas Junior <arfreitas@cpan.org>'"
   
   # Number of CPUs
-  # Please consider that each user that will run the Smoker will use a CPU. That's not entirely true, but a single CPU should be enough for a smoker process
-  # If you want more users, add more CPUs
-  # The vagrant user will run metabase-relayd, but this daemon user very little CPU too (when not executing).
+  # Please consider that each user that will run the Smoker will use a CPU.
+  # That's not entirely true, but a single CPU should be enough for a smoker process
+  # If you want more users, add more CPUs.
+  # The vagrant user will run metabase-relayd, but this daemon uses very 
+  # little CPU too (when not executing).
   processors=2
   
   # cpan_build_dir is something you shouldn't change unless you know what you're doing

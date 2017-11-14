@@ -54,7 +54,7 @@ function config_cpan() {
   'applypatch' => q[],
   'auto_commit' => q[0],
   'build_cache' => q[100],
-  'build_dir' => q[/${CPAN_BUILD_DIR}],
+  'build_dir' => q[${CPAN_BUILD_DIR}],
   'build_dir_reuse' => q[0],
   'build_requires_install_policy' => q[yes],
   'bzip2' => q[/usr/local/bin/bzip2],
