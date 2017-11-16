@@ -30,7 +30,7 @@ export PATH=/home/${USER}/bin:$PATH
 
 function start_smoker() {
     echo 'Cleaning up previous execution...'
-    rm -rf $HOME/.cpan/build/* $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
+    rm -rf "${BUILD_DIR}/*" $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
     perl -MCPAN::Reporter::Smoker -e 'start(clean_cache_after => 50, install => 1)'
 }
 END
