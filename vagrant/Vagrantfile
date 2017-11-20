@@ -43,7 +43,10 @@ Vagrant.configure("2") do |config|
   openbsd_mirror="http://openbsd.c3sl.ufpr.br"
   
   # cpan_mirror: setup the CPAN closest mirror you want to use
-  cpan_mirror="http://mirror.nbtelecom.com.br/CPAN"
+  # cpan_mirror="http://mirror.nbtelecom.com.br/CPAN"
+  cpan_mirror="http://192.168.1.113:2963/minicpan/"
+  # set to "true" (as a Ruby string) below if you want to have a minicpan mirror inside the VM
+  use_local_mirror="false"
   
   # the perlbrew homepage. Shouldn't be necessary to change it
   perlbrew_url="https://install.perlbrew.pl"
@@ -56,8 +59,8 @@ Vagrant.configure("2") do |config|
   
   # perl_1, perl_2: the name of perl to install, as provided by 
   # "perlbrew available" command to the respective user
-  perl_1="perl-5.26.1"
-  perl_2="perl-5.24.3"
+  perl_1="perl-stable"
+  perl_2="perl-blead"
   
   # reports_from is from which person CPAN reports are being sent, see 
   # CPAN::Reporter for details on that be extra careful about 
@@ -87,7 +90,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: "chmod a+r /tmp/metabase_id.json"
   config.vm.provision "shell", path: File.expand_path("scripts/basic_setup.sh", package_dir), args: [openbsd_mirror, keyboard]
   config.vm.provision "shell", path: File.expand_path("scripts/vagrant_user.sh", package_dir), args: [cpan_mirror], privileged: false
-  config.vm.provision "shell", path: File.expand_path("scripts/config_smoker.sh", package_dir), args: [openbsd_mirror, cpan_mirror, user_1, perl_1, user_2, perl_2, cpan_build_dir, processors, reports_from]
+  config.vm.provision "shell", path: File.expand_path("scripts/config_smoker.sh", package_dir), args: [openbsd_mirror, cpan_mirror, user_1, perl_1, user_2, perl_2, cpan_build_dir, processors, reports_from, use_local_mirror]
   config.vm.provision "shell", inline: "rm -f /tmp/metabase_id.json"
   config.vm.post_up_message = <<MESSAGE
   Remember to execute the following manual steps after provisioning is finished:

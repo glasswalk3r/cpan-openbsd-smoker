@@ -7,7 +7,7 @@ USER=${3}
 PERL=${4}
 BUILD_DIR=${5}
 PROCESSORS=${6}
-REPORTS_FROM=${7}
+REPORTS_FROM_CFG=${7}
 
 function create_profile() {
     local user=${1}
@@ -40,6 +40,7 @@ END
 function config_cpan() {
     local USER=${1}
     local BUILD_DIR=${2}
+    local CPAN_MIRROR=${3}
     local CPAN_BUILD_DIR="${BUILD_DIR}/${USER}"
     local PREFS_DIR="/minicpan/prefs"
     
@@ -109,7 +110,7 @@ function config_cpan() {
   'test_report' => q[0],
   'trust_test_report_history' => q[0],
   'unzip' => q[/usr/local/bin/unzip],
-  'urllist' => [q[file:///minicpan]],
+  'urllist' => [q[${CPAN_MIRROR}]],
   'use_prompt_default' => q[0],
   'use_sqlite' => q[1],
   'version_timeout' => q[15],
@@ -125,13 +126,14 @@ BLOCK
 }
 
 function config_reporter() {
-    local FROM=$1
+    local CFG_FILE=$1
+    reports_from=$(cat "${CFG_FILE}")
     local cfg='.cpanreporter/config.ini'
     mkdir .cpanreporter
     mkdir reports
     echo 'edit_report=no' > "${cfg}"
     echo 'send_report=yes' >> "${cfg}"
-    echo "email_from=${FROM}" >> "${cfg}"
+    echo "email_from=${reports_from}" >> "${cfg}"
     echo "transport=File /home/${USER}/reports" >> "${cfg}"
 }
 
@@ -142,7 +144,7 @@ create_profile ${USER}
 source "/home/${USER}/.bash_profile"
 # some tests fails on OpenBSD and that's expected since the oficial Perl tests are changed
 perlbrew install ${PERL} --notest -j ${PROCESSORS}
-config_cpan ${USER} "${BUILD_DIR}"
+config_cpan ${USER} "${BUILD_DIR}" "${CPAN_MIRROR}"
 
 if ! [ -d "/home/${USER}/bin" ]
 then
@@ -161,6 +163,6 @@ perl -MCPAN -e "CPAN::Shell->notest('install', 'Task::CPAN::Reporter', 'CPAN::Re
 perl -MCPAN -e "CPAN::Shell->notest('install', 'CPAN::Reporter::Smoker::OpenBSD')"
 echo 'Enabling test reporting'
 (echo 'o conf test_report 1'; echo 'o conf commit') | cpan
-config_reporter "${REPORTS_FROM}"
+config_reporter "${REPORTS_FROM_CFG}"
 echo "Finished configuring user ${USER}."
 
