@@ -1,3 +1,3 @@
 vagrant/.vagrant/
 vagrant/metabase/metabase_id.json
-vagrant/virtualbox.box
+vagrant/*.box

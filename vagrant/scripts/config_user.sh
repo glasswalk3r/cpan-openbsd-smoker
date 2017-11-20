@@ -7,7 +7,7 @@ USER=${3}
 PERL=${4}
 BUILD_DIR=${5}
 PROCESSORS=${6}
-REPORTS_FROM=${7}
+REPORTS_FROM_CFG=${7}
 
 function create_profile() {
     local user=${1}
@@ -30,7 +30,7 @@ export PATH=/home/${USER}/bin:$PATH
 
 function start_smoker() {
     echo 'Cleaning up previous execution...'
-    rm -rf $HOME/.cpan/build/* $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
+    rm -rf "${BUILD_DIR}/*" $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
     perl -MCPAN::Reporter::Smoker -e 'start(clean_cache_after => 50, install => 1)'
 }
 END
@@ -40,8 +40,9 @@ END
 function config_cpan() {
     local USER=${1}
     local BUILD_DIR=${2}
+    local CPAN_MIRROR=${3}
     local CPAN_BUILD_DIR="${BUILD_DIR}/${USER}"
-    local PREFS_DIR="/home/${USER}/.cpan/prefs"
+    local PREFS_DIR="/minicpan/prefs"
     
     if ! [ -d "${CPAN_BUILD_DIR}" ]
     then
@@ -54,7 +55,7 @@ function config_cpan() {
   'applypatch' => q[],
   'auto_commit' => q[0],
   'build_cache' => q[100],
-  'build_dir' => q[/${CPAN_BUILD_DIR}],
+  'build_dir' => q[${CPAN_BUILD_DIR}],
   'build_dir_reuse' => q[0],
   'build_requires_install_policy' => q[yes],
   'bzip2' => q[/usr/local/bin/bzip2],
@@ -109,7 +110,7 @@ function config_cpan() {
   'test_report' => q[0],
   'trust_test_report_history' => q[0],
   'unzip' => q[/usr/local/bin/unzip],
-  'urllist' => [q[file:///minicpan]],
+  'urllist' => [q[${CPAN_MIRROR}]],
   'use_prompt_default' => q[0],
   'use_sqlite' => q[1],
   'version_timeout' => q[15],
@@ -122,18 +123,17 @@ __END__
 BLOCK
 ) >> "/home/${USER}/.cpan/CPAN/MyConfig.pm"
 
-    mkdir -p "/home/${USER}/.cpan/prefs"
-    cp /tmp/cpan-openbsd-smoker/prefs/*.yml "/home/${USER}/.cpan/prefs"
 }
 
 function config_reporter() {
-    local FROM=$1
+    local CFG_FILE=$1
+    reports_from=$(cat "${CFG_FILE}")
     local cfg='.cpanreporter/config.ini'
     mkdir .cpanreporter
     mkdir reports
     echo 'edit_report=no' > "${cfg}"
     echo 'send_report=yes' >> "${cfg}"
-    echo "email_from=${FROM}" >> "${cfg}"
+    echo "email_from=${reports_from}" >> "${cfg}"
     echo "transport=File /home/${USER}/reports" >> "${cfg}"
 }
 
@@ -141,17 +141,10 @@ echo "Configuring ${USER}"
 echo "Installing Perlbrew"
 curl -L https://install.perlbrew.pl | bash
 create_profile ${USER}
-
-if [ $? -ne 0 ]
-then
-    echo "Previous step failed, cannot continue"
-    exit 1
-fi
-
 source "/home/${USER}/.bash_profile"
 # some tests fails on OpenBSD and that's expected since the oficial Perl tests are changed
 perlbrew install ${PERL} --notest -j ${PROCESSORS}
-config_cpan ${USER} "${BUILD_DIR}"
+config_cpan ${USER} "${BUILD_DIR}" "${CPAN_MIRROR}"
 
 if ! [ -d "/home/${USER}/bin" ]
 then
@@ -170,6 +163,6 @@ perl -MCPAN -e "CPAN::Shell->notest('install', 'Task::CPAN::Reporter', 'CPAN::Re
 perl -MCPAN -e "CPAN::Shell->notest('install', 'CPAN::Reporter::Smoker::OpenBSD')"
 echo 'Enabling test reporting'
 (echo 'o conf test_report 1'; echo 'o conf commit') | cpan
-config_reporter ${REPORTS_FROM}
+config_reporter "${REPORTS_FROM_CFG}"
 echo "Finished configuring user ${USER}."
 

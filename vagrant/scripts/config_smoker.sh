@@ -9,7 +9,9 @@ USER_2=${5}
 PERL_2=${6}
 BUILD_DIR=${7}
 PROCESSORS=${8}
-FROM=${9}
+REPORTS_FROM=${9}
+USE_LOCAL_MIRROR=${10}
+GROUP=testers
 
 declare -A USERS
 USERS[${USER_1}]=${PERL_1}
@@ -25,26 +27,31 @@ then
     echo "All implemented, exiting..."
     exit 0
 else
-    echo "Adding smoker users"
-    cd /tmp
-    git clone https://github.com/glasswalk3r/cpan-openbsd-smoker.git
-    chmod a+rx /tmp/cpan-openbsd-smoker
-    chmod a+rx /tmp/cpan-openbsd-smoker/prefs
-    chmod a+r /tmp/cpan-openbsd-smoker/prefs/*.yml
+    echo "Adding users to ${GROUP} group"
 
     for user in ${USER_1} ${USER_2}
     do
         echo "Adding user ${user}"
-        groupadd "${user}"
         # login group fullname password
-        adduser -batch "${user}" "${user}" "${user^}" "${user}"
+        adduser -batch "${user}" ${GROUP} "${user}" "${user}"
         olddir=$PWD
         
         if [ -e "/tmp/config_user.sh" ]
         then
             # required to avoid permission errors
             cd "/home/${user}"
-            cmd="/tmp/config_user.sh ${CPAN_MIRROR} ${user} ${USERS[${user}]} ${BUILD_DIR} ${PROCESSORS} ${FROM}"
+            # WORKAROUND: this is to avoid issues with strings containing spaces that might be interpreted
+            # incorrectly by Bash, config_user.sh should read it from a file
+            reports_from_config='/tmp/reports_from.cfg'
+            echo "${REPORTS_FROM}" > "${reports_from_config}"
+
+            if [ ${USE_LOCAL_MIRROR} == 'yes' ]
+            then
+                cmd="/tmp/config_user.sh file:///minicpan ${user} ${USERS[${user}]} ${BUILD_DIR} ${PROCESSORS} ${reports_from_config}"
+            else
+                cmd="/tmp/config_user.sh ${CPAN_MIRROR} ${user} ${USERS[${user}]} ${BUILD_DIR} ${PROCESSORS} ${reports_from_config}"
+            fi
+
             echo "executing su ${user} -c" "${cmd}"
             su ${user} -c "/tmp/config_user.sh ${cmd}"
         else

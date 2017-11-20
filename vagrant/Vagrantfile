@@ -9,11 +9,12 @@ Vagrant.configure("2") do |config|
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.
-
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "arfreitas/openbsd-6.0-cpan-smoker"
-  config.vm.synced_folder ".", "/vagrant", disabled: true
+  #config.vm.box = "arfreitas/openbsd-6.0-cpan-smoker"
+  config.vm.box = "arfreitas/openbsd-6.1-cpan-smoker"
+  #config.vm.box = "arfreitas/openbsd-6.2-cpan-smoker"
+  config.vm.synced_folder "/tmp", "/vagrant", disabled: true
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
@@ -32,8 +33,9 @@ Vagrant.configure("2") do |config|
   # CONFIGURABLE STEPS
   ################################################################
   # You can and must verify values used to configure the environment.
-  # Be sure to read the comments as well, as they server as documentation.
-  # Before running, remember to copy a "metabase_id.json" file to the subdirectory "metabase" where this Vagrantfile is located
+  # Be sure to read the comments as well, as they work as documentation.
+  # Before running, remember to copy a "metabase_id.json" file to the 
+  # subdirectory "metabase" where this Vagrantfile is located
   ################################################################
   
   # setup the OpenBSD closest mirror you want to use. Use just the base URL, 
@@ -41,27 +43,37 @@ Vagrant.configure("2") do |config|
   openbsd_mirror="http://openbsd.c3sl.ufpr.br"
   
   # cpan_mirror: setup the CPAN closest mirror you want to use
-  cpan_mirror="http://mirror.nbtelecom.com.br/CPAN"
+  # cpan_mirror="http://mirror.nbtelecom.com.br/CPAN"
+  cpan_mirror="http://192.168.1.113:2963/minicpan/"
+  # set to "true" (as a Ruby string) below if you want to have a minicpan mirror inside the VM
+  use_local_mirror="false"
   
   # the perlbrew homepage. Shouldn't be necessary to change it
   perlbrew_url="https://install.perlbrew.pl"
   
-  #user_1, user_2: the names of users you want to execute the smoker. If you want more, you will have to customize the config_smoker.sh and the VM itself
+  # user_1, user_2: the names of users you want to execute the smoker. If you 
+  # want more users, you will have to customize the config_smoker.sh 
+  # and the VM itself
   user_1="foo"
   user_2="bar"
   
-  # perl_1, perl_2: the name of perl to install, as provided by "perlbrew available" command to the respective user
-  perl_1="perl-5.20.3"
-  perl_2="perl-5.24.1"
+  # perl_1, perl_2: the name of perl to install, as provided by 
+  # "perlbrew available" command to the respective user
+  perl_1="perl-stable"
+  perl_2="perl-blead"
   
-  # reports_from is from which person CPAN reports are being sent, see CPAN::Reporter for details on that
-  # be extra careful about maintaining the single quotes below, otherwise you might get trouble with Bash argument parsing
+  # reports_from is from which person CPAN reports are being sent, see 
+  # CPAN::Reporter for details on that be extra careful about 
+  # maintaining the single quotes below, otherwise you might get 
+  # trouble with Bash argument parsing
   reports_from="'Alceu Rodrigues de Freitas Junior <arfreitas@cpan.org>'"
   
   # Number of CPUs
-  # Please consider that each user that will run the Smoker will use a CPU. That's not entirely true, but a single CPU should be enough for a smoker process
-  # If you want more users, add more CPUs
-  # The vagrant user will run metabase-relayd, but this daemon user very little CPU too (when not executing).
+  # Please consider that each user that will run the Smoker will use a CPU.
+  # That's not entirely true, but a single CPU should be enough for a smoker process
+  # If you want more users, add more CPUs.
+  # The vagrant user will run metabase-relayd, but this daemon uses very 
+  # little CPU too (when not executing).
   processors=2
   
   # cpan_build_dir is something you shouldn't change unless you know what you're doing
@@ -71,13 +83,14 @@ Vagrant.configure("2") do |config|
   keyboard="br"
   
   # this should be left alone (config.vm.provision)
-  config.vm.provision "file", source: "scripts/config_user.sh", destination: "/tmp/config_user.sh"
+  package_dir=File.dirname(__FILE__)
+  config.vm.provision "file", source: File.expand_path("scripts/config_user.sh", package_dir), destination: "/tmp/config_user.sh"
   config.vm.provision "shell", inline: "chmod a+rx /tmp/config_user.sh"
-  config.vm.provision "file", source: "metabase/metabase_id.json", destination: "/tmp/metabase_id.json"
+  config.vm.provision "file", source: File.expand_path("metabase/metabase_id.json", package_dir), destination: "/tmp/metabase_id.json"
   config.vm.provision "shell", inline: "chmod a+r /tmp/metabase_id.json"
-  config.vm.provision "shell", path: "scripts/basic_setup.sh", args: [openbsd_mirror, keyboard]
-  config.vm.provision "shell", path: "scripts/vagrant_user.sh", args: [cpan_mirror], privileged: false
-  config.vm.provision "shell", path: "scripts/config_smoker.sh", args: [openbsd_mirror, cpan_mirror, user_1, perl_1, user_2, perl_2, cpan_build_dir, processors, reports_from]
+  config.vm.provision "shell", path: File.expand_path("scripts/basic_setup.sh", package_dir), args: [openbsd_mirror, keyboard]
+  config.vm.provision "shell", path: File.expand_path("scripts/vagrant_user.sh", package_dir), args: [cpan_mirror], privileged: false
+  config.vm.provision "shell", path: File.expand_path("scripts/config_smoker.sh", package_dir), args: [openbsd_mirror, cpan_mirror, user_1, perl_1, user_2, perl_2, cpan_build_dir, processors, reports_from, use_local_mirror]
   config.vm.provision "shell", inline: "rm -f /tmp/metabase_id.json"
   config.vm.post_up_message = <<MESSAGE
   Remember to execute the following manual steps after provisioning is finished:
@@ -85,7 +98,7 @@ Vagrant.configure("2") do |config|
     2 - Spend some time validating tests results. Tests will not be submitted automatically, but saved to a local directory before submission. This will give you a chance to validate the smoker configuration first.
     3 - Once everything is fine, start the metabase-relayd application with the vagrant user.
     4 - With the new users, start the smoker with the alias 'start_smoker'.
-    5 - Submit reports with the script 'send_reports'. Check out it's documentation with 'send_reports --help'.
-    6 - If some distribution halts the smoker, block it with 'block'. Check out it's documentation with 'block --help'.
+    5 - Submit reports with the script 'send_reports'. Check out it's documentation with 'perldoc send_reports'.
+    6 - If some distribution halts the smoker, block it with 'block'. Check out it's documentation with 'perldoc dblock'.
 MESSAGE
 end
