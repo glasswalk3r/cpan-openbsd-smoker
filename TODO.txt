@@ -1,0 +1,4 @@
+Add a parameter to the Vagrant file to define the host/port of the metabase-relayd server to optionally use an VM external one.
+Add a parameter to the Vagrant file to define the host/port of the Minicpan server to optionally use an VM external one.
+Add parameters to perlbrew install perl per user and perl versions (reuse the variables perl_1 and perl_2 to be arrays instead). See "perlbrew install --help" for more info.
+Convert the shell scripts to Perl whenever it is possible.
