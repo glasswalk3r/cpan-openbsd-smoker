@@ -40,6 +40,9 @@ then
         echo 'also_mirror: indices/find-ls.gz' >> "${minicpanrc}"
         (echo "o conf urllist file:///minicpan ${CPAN_MIRROR}"; echo 'o conf commit') | cpan
         cpanm CPAN::Mini CPAN::Mini::LatestDistVersion 
+        echo 'source ~/.bashrc' >> ~/.bash_profile
+        echo "alias minicpan='minicpan -c CPAN::Mini::LatestDistVersion'" >> ~/.bashrc
+        alias minicpan='minicpan -c CPAN::Mini::LatestDistVersion'
     else
         (echo "o conf urllist ${CPAN_MIRROR}"; echo 'o conf commit') | cpan
     fi
@@ -64,9 +67,9 @@ cp prefs/*.yml /minicpan/prefs
 if [ ${USE_LOCAL_MIRROR} == 'true' ]
 then
     echo 'Updating local CPAN mirror...'
-    minicpan -c CPAN::Mini::LatestDistVersion
-    cpanm CPAN::Reporter::Smoker::OpenBSD
+    minicpan
     mirror_cleanup
 fi
+cpanm CPAN::Reporter::Smoker::OpenBSD
 now=$(date)
 echo "Finished at ${now}"

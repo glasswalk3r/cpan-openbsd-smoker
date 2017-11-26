@@ -1,0 +1,5 @@
+---
+comment: Requires root access to test/install
+disabled: 1
+match:
+  distribution: ^GRAVATTJ/Backup-EZ
