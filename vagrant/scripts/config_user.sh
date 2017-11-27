@@ -2,12 +2,14 @@
 # example of how this script is invoked
 # su foo -c /tmp/config_user.sh http://mirror.nbtelecom.com.br/CPAN foo perl-5.20.3 /mnt/cpan_build_dir 2 'Alceu Rodrigues de Freitas Junior <arfreitas@cpan.org>'
 # ${1} is the script itself
+echo "All parameters received: $@"
 CPAN_MIRROR=${2}
 USER=${3}
 PERL=${4}
 BUILD_DIR=${5}
 PROCESSORS=${6}
 REPORTS_FROM_CFG=${7}
+PREFS_DIR=${8}
 
 function create_profile() {
     local user=${1}
@@ -42,7 +44,7 @@ function config_cpan() {
     local BUILD_DIR=${2}
     local CPAN_MIRROR=${3}
     local CPAN_BUILD_DIR="${BUILD_DIR}/${USER}"
-    local PREFS_DIR="/minicpan/prefs"
+    local PREFS_DIR=${4}
     
     if ! [ -d "${CPAN_BUILD_DIR}" ]
     then
@@ -142,9 +144,16 @@ echo "Installing Perlbrew"
 curl -L https://install.perlbrew.pl | bash
 create_profile ${USER}
 source "/home/${USER}/.bash_profile"
+
 # some tests fails on OpenBSD and that's expected since the oficial Perl tests are changed
 perlbrew install ${PERL} --notest -j ${PROCESSORS}
-config_cpan ${USER} "${BUILD_DIR}" "${CPAN_MIRROR}"
+if ! [ $? -eq 0 ]
+then
+    echo "perlbrew install failed with ${?} error code, cannot continue"
+    exit 1
+fi
+
+config_cpan ${USER} "${BUILD_DIR}" "${CPAN_MIRROR}" "${PREFS_DIR}"
 
 if ! [ -d "/home/${USER}/bin" ]
 then
@@ -152,7 +161,23 @@ then
 fi
 
 perlbrew install-cpanm
+# if we don't receive an explicit perl version, we won't be able to switch to it without checking first
 perlbrew switch ${PERL}
+ret_code=$?
+if [ ${ret_code} -ne 0 ]
+then
+    echo "perlbrew switch failed with ${ret_code} return code, trying 'perlbrew list' to fetch it"
+    installed=$(perlbrew list | tail -1| awk '{print $1}')
+    perlbrew switch ${installed}
+    ret_code=$?
+    if [ ${ret_code} -ne 0 ]
+    then
+        echo "Failed to switch with '${installed}', aborting..."
+        exit 1
+    fi
+fi
+current_version=$(perl -e 'print "$]\n"')
+echo "perl version in use is: ${current_version}"
 perlbrew clean
 
 # using CPAN to be able to fetch from minicpan
