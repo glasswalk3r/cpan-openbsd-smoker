@@ -1,6 +1,7 @@
 #!/usr/local/bin/bash
 CPAN_MIRROR=${1}
-USE_LOCAL_MIRROR=${1}
+USE_LOCAL_MIRROR=${2}
+PREFS_DIR=${3}
 idempotent_control='/home/vagrant/.vagrant_provision'
 
 # requirements for vagrant user:
@@ -54,16 +55,17 @@ echo 'Injecting preferences updates from Github...'
 cd /home/vagrant/cpan-openbsd-smoker
 git pull
 echo 'Updating the minicpan shared preferences directory'
-if [ -d /minicpan/prefs ]
+(echo "o conf prefs_dir ${PREFS_DIR}"; echo 'o conf commit') | cpan
+if [ -d "${PREFS_DIR}" ]
 then
-    rm /minicpan/prefs/*.yml
+    rm "${PREFS_DIR}/*.yml"
 else
-    mkdir /minicpan/prefs
+    sudo mkdir -p "${PREFS_DIR}"
     # to enable smoker users to update the distro preferences
     sudo chgrp testers /minicpan/prefs
     sudo chmod g+w /minicpan/prefs
 fi
-cp prefs/*.yml /minicpan/prefs
+cp prefs/*.yml "${PREFS_DIR}"
 if [ ${USE_LOCAL_MIRROR} == 'true' ]
 then
     echo 'Updating local CPAN mirror...'

@@ -1,16 +1,17 @@
 #!/usr/local/bin/bash
 # This script requires Bash 4
 # to increase the number of users, consider using the same number of processors in the VM
-OPENBSD_MIRROR=${1}
-CPAN_MIRROR=${2}
-USER_1=${3}
-PERL_1=${4}
-USER_2=${5}
-PERL_2=${6}
-BUILD_DIR=${7}
-PROCESSORS=${8}
-REPORTS_FROM=${9}
-USE_LOCAL_MIRROR=${10}
+echo $@
+CPAN_MIRROR=${1}
+USER_1=${2}
+PERL_1=${3}
+USER_2=${4}
+PERL_2=${5}
+BUILD_DIR=${6}
+PROCESSORS=${7}
+REPORTS_FROM=${8}
+USE_LOCAL_MIRROR=${9}
+PREFS_DIR=${10}
 GROUP=testers
 
 declare -A USERS
@@ -47,9 +48,9 @@ else
 
             if [ ${USE_LOCAL_MIRROR} == 'yes' ]
             then
-                cmd="/tmp/config_user.sh file:///minicpan ${user} ${USERS[${user}]} ${BUILD_DIR} ${PROCESSORS} ${reports_from_config}"
+                cmd="/tmp/config_user.sh file:///minicpan ${user} ${USERS[${user}]} ${BUILD_DIR} ${PROCESSORS} ${reports_from_config} ${PREFS_DIR}"
             else
-                cmd="/tmp/config_user.sh ${CPAN_MIRROR} ${user} ${USERS[${user}]} ${BUILD_DIR} ${PROCESSORS} ${reports_from_config}"
+                cmd="/tmp/config_user.sh ${CPAN_MIRROR} ${user} ${USERS[${user}]} ${BUILD_DIR} ${PROCESSORS} ${reports_from_config} ${PREFS_DIR}"
             fi
 
             echo "executing su ${user} -c" "${cmd}"
