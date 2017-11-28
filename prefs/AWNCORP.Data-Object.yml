@@ -2,4 +2,4 @@
 comment: Tests hang smoker
 disabled: 1
 match:
-  distribution: ^BOOK/HTTP-Proxy
+  distribution: ^AWNCORP/Data-Object
