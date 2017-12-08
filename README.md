@@ -10,7 +10,7 @@ This project includes the following:
 
 ## The Vagrant provisioned VM
 
-The associated VM with this project is based Vagrant and Virtualbox with the Smoker pre-configured on OpenBSD 6. Many aspects of the VM can be customized during the provisioning phase, like:
+The associated VMs (see Vagranfile) with this project are based on Vagrant (and Virtualbox as the provider)  with the Smoker pre-configured on OpenBSD. Many aspects of the VM can be customized during the provisioning phase, like:
 
   * Mirrors to be used (OpenBSD and CPAN)
   * Which perl to compile and use for the smoker
@@ -22,9 +22,13 @@ The associated VM with this project is based Vagrant and Virtualbox with the Smo
 The VM will have pre-installed and pre-configured:
 
   * the metabase-relayd to be executed under vagrant user.
-  * a CPAN mirror (minicpan).
-  * related packages installed (like Git, compilers, etc)
-  * the scripts provided by CPAN-Reporter-Smoker-OpenBSD distribution.
+  * a optional local CPAN mirror (implemented with [minicpan](http://search.cpan.org/search?query=minicpan&mode=all)).
+  * related packages installed (like Git, compilers, etc).
+  * a running Mysql server, configured to run tests of [DBD::mysql](http://search.cpan.org/search?query=DBD%3A%3Amysql&mode=dist) automatically.
+  * shared preferences files for configuring (e.g. blocking) how distributions should be tested under the smoker.
+  * several tools and libraries most used for modules that uses XS.
+  * automatic updates for updating OpenBSD packages, minicpan (optional) and the CPAN-Reporter-Smoker-OpenBSD distribution by running the provisioning again (idempotent controls are in place to execute only the necessary).
+  * the command line utilities provided by CPAN-Reporter-Smoker-OpenBSD distribution.
   
 Most of the process is documented at [here](http://wiki.cpantesters.org/wiki/SmokerOnOpenBSD).
 
