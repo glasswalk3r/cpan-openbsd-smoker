@@ -14,6 +14,18 @@ USE_LOCAL_MIRROR=${9}
 PREFS_DIR=${10}
 GROUP=testers
 
+function mariadb_add_user() {
+    local user=${1}
+    local temp_file=$(mktemp)
+    (cat <<BLOCK
+grant all privileges on test.* to 'foo'@'localhost';
+grant select on performance_schema.* to 'foo'@'localhost';
+BLOCK
+) > "${temp_file}"
+    mysql -u root -p < "${temp_file}"
+    rm "${temp_file}"
+}
+
 declare -A USERS
 USERS[${USER_1}]=${PERL_1}
 USERS[${USER_2}]=${PERL_2}
@@ -33,8 +45,10 @@ else
     for user in ${USER_1} ${USER_2}
     do
         echo "Adding user ${user}"
-        # login group fullname password
-        adduser -batch "${user}" ${GROUP} "${user}" "${user}"
+        # password created with:
+        # encrypt -c default vagrant
+        adduser -batch "${user}" ${GROUP} "${user}" '$2b$10$jwgI5jv2x5d9VFFnU.I9s..f8ndKQqsBRb8wB/LapqqX.jKpt2/9q'
+        mariadb_add_user ${user}
         olddir=$PWD
         
         if [ -e "/tmp/config_user.sh" ]

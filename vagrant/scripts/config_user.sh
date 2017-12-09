@@ -28,10 +28,17 @@ END
     echo "Creating ${rc}"
     (cat <<END
 export CPAN_SQLITE_NO_LOG_FILES=1
-export PATH=/home/${USER}/bin:$PATH
+export PATH=/home/${user}/bin:$PATH
+# DBD::mysql extended testing
+export DBD_MYSQL_TESTDB=test
+export DBD_MYSQL_TESTHOST=localhost
+export DBD_MYSQL_TESTPASSWORD=
+export DBD_MYSQL_TESTPORT=3306
+export DBD_MYSQL_TESTUSER=${user}
+export EXTENDED_TESTING=1
 
 function start_smoker() {
-    echo 'Cleaning up previous execution...'
+    echo 'Cleaning up previous executions...'
     rm -rf "${BUILD_DIR}/*" $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
     perl -MCPAN::Reporter::Smoker -e 'start(clean_cache_after => 50, install => 1)'
 }
