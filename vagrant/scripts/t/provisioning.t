@@ -60,7 +60,7 @@ sub find_pkg {
 sub check_cpu {
     my ( $stdout, $stderr, $exit );
     ( $stdout, $stderr, $exit ) =
-      capture { system( 'sysctl', 'hw.ncpufound' ); };
+      capture { system( '/usr/sbin/sysctl', 'hw.ncpufound' ); };
     chomp($stdout);
     my $cpu_num = ( split( '=', $stdout ) )[1];
     note("Exit code is $exit, output '$stdout' and errors '$stderr'");
@@ -71,7 +71,7 @@ sub check_mem {
     my ( $stdout, $stderr, $exit );
 
     # hw.physmem=1568604160
-    ( $stdout, $stderr, $exit ) = capture { system( 'sysctl', 'hw.physmem' ); };
+    ( $stdout, $stderr, $exit ) = capture { system( '/usr/sbin/sysctl', 'hw.physmem' ); };
     chomp($stdout);
     my $mem = ( split( '=', $stdout ) )[1];
     note("Exit code is $exit, output '$stdout' and errors '$stderr'");
@@ -95,7 +95,7 @@ sub mfs_perm {
 
 sub list_pkgs {
     my ( $stdout, $stderr, $exit );
-    ( $stdout, $stderr, $exit ) = capture { system( 'pkg_info', '-q' ); };
+    ( $stdout, $stderr, $exit ) = capture { system( '/usr/sbin/pkg_info', '-q' ); };
     note("Exit code of pkg_info is $exit, errors '$stderr'");
     my @pkgs;
     for ( split /^/, $stdout ) {
