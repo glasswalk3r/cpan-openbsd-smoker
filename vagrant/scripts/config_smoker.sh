@@ -48,19 +48,20 @@ else
     dd if=/dev/zero of=bigemptyfile bs=1000 count=5000000
     rm bigemptyfile
     cd ${previous}
-    echo "Adding users to ${GROUP} group"
 
     for user in ${USER_1} ${USER_2}
     do
-        echo "Adding user ${user}"
+        echo "Adding user ${user} to ${GROUP} group"
         # password created with:
         # encrypt -c default vagrant
-        adduser -batch "${user}" ${GROUP} "${user}" '$2b$10$jwgI5jv2x5d9VFFnU.I9s..f8ndKQqsBRb8wB/LapqqX.jKpt2/9q'
+        adduser -shell bash -batch "${user}" "${GROUP}" "${user}" '$2b$10$jwgI5jv2x5d9VFFnU.I9s..f8ndKQqsBRb8wB/LapqqX.jKpt2/9q'
         mariadb_add_user ${user}
         olddir=$PWD
+		config_script='/tmp/config_user.sh'
         
-        if [ -e "/tmp/config_user.sh" ]
+        if [ -f "${config_script}" ]
         then
+		    echo "Configuring user with ${config_script}"
             # required to avoid permission errors
             cd "/home/${user}"
             # WORKAROUND: this is to avoid issues with strings containing spaces that might be interpreted
@@ -70,13 +71,12 @@ else
 
             if [ ${USE_LOCAL_MIRROR} == 'yes' ]
             then
-                cmd="/tmp/config_user.sh file:///minicpan ${user} ${USERS[${user}]} ${BUILD_DIR} ${PROCESSORS} ${reports_from_config} ${PREFS_DIR}"
+                params="file:///minicpan ${user} ${USERS[${user}]} ${BUILD_DIR} ${PROCESSORS} ${reports_from_config} ${PREFS_DIR}"
             else
-                cmd="/tmp/config_user.sh ${CPAN_MIRROR} ${user} ${USERS[${user}]} ${BUILD_DIR} ${PROCESSORS} ${reports_from_config} ${PREFS_DIR}"
+                params="${CPAN_MIRROR} ${user} ${USERS[${user}]} ${BUILD_DIR} ${PROCESSORS} ${reports_from_config} ${PREFS_DIR}"
             fi
-
-            echo "executing su ${user} -c" "${cmd}"
-            su ${user} -c "/tmp/config_user.sh ${cmd}"
+            echo "Executing 'su -l ${user} -c \"${config_script} ${params}\"'"
+            su -l ${user} -c "${config_script} ${params}"
         else
             echo "/tmp/config_user.sh not available, cannot continue"
             ls -l /tmp

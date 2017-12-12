@@ -3,13 +3,15 @@
 # su foo -c /tmp/config_user.sh http://mirror.nbtelecom.com.br/CPAN foo perl-5.20.3 /mnt/cpan_build_dir 2 'Alceu Rodrigues de Freitas Junior <arfreitas@cpan.org>'
 # ${1} is the script itself
 echo "All parameters received: $@"
-CPAN_MIRROR=${2}
-USER=${3}
-PERL=${4}
-BUILD_DIR=${5}
-PROCESSORS=${6}
-REPORTS_FROM_CFG=${7}
-PREFS_DIR=${8}
+CPAN_MIRROR=${1}
+echo $CPAN_MIRROR
+USER=${2}
+echo $USER
+PERL=${3}
+BUILD_DIR=${4}
+PROCESSORS=${5}
+REPORTS_FROM_CFG=${6}
+PREFS_DIR=${7}
 
 function create_profile() {
     local user=${1}
@@ -52,12 +54,12 @@ function config_cpan() {
     local CPAN_MIRROR=${3}
     local CPAN_BUILD_DIR="${BUILD_DIR}/${USER}"
     local PREFS_DIR=${4}
-    
+
     if ! [ -d "${CPAN_BUILD_DIR}" ]
     then
         mkdir "${CPAN_BUILD_DIR}"
     fi
-    
+
     mkdir -p "/home/${USER}/.cpan/CPAN"
     echo '$CPAN::Config = {' > "/home/${USER}/.cpan/CPAN/MyConfig.pm"
     (cat <<BLOCK
@@ -148,7 +150,7 @@ function config_reporter() {
 
 echo "Configuring ${USER}"
 echo "Installing Perlbrew"
-curl -L https://install.perlbrew.pl | bash
+curl -s -L https://install.perlbrew.pl | bash
 create_profile ${USER}
 source "/home/${USER}/.bash_profile"
 
@@ -199,4 +201,3 @@ echo 'Enabling test reporting'
 (echo 'o conf test_report 1'; echo 'o conf commit') | cpan
 config_reporter "${REPORTS_FROM_CFG}"
 echo "Finished configuring user ${USER}."
-

@@ -62,8 +62,8 @@ then
 else
     sudo mkdir -p "${PREFS_DIR}"
     # to enable smoker users to update the distro preferences
-    sudo chgrp testers /minicpan/prefs
-    sudo chmod g+w /minicpan/prefs
+    sudo chgrp testers "${PREFS_DIR}"
+    sudo chmod g+w "${PREFS_DIR}"
 fi
 cp prefs/*.yml "${PREFS_DIR}"
 if [ ${USE_LOCAL_MIRROR} == 'true' ]
