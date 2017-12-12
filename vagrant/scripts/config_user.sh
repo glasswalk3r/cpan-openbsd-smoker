@@ -193,6 +193,8 @@ perl -MCPAN -e "CPAN::Shell->notest('install', 'Bundle::CPAN')"
 perl -MCPAN -e "CPAN::Shell->notest('install', 'Bundle::CPAN::Reporter::Smoker::Tests')"
 perl -MCPAN -e "CPAN::Shell->notest('install', 'Task::CPAN::Reporter', 'CPAN::Reporter::Smoker', 'Test::Reporter::Transport::Socket')"
 perl -MCPAN -e "CPAN::Shell->notest('install', 'CPAN::Reporter::Smoker::OpenBSD')"
+# to test DBD::mysql completely
+perl -MCPAN -e "CPAN::Shell->notest('install', 'Proc::ProcessTable')"
 echo 'Enabling test reporting'
 (echo 'o conf test_report 1'; echo 'o conf commit') | cpan
 config_reporter "${REPORTS_FROM_CFG}"

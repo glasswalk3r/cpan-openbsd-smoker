@@ -16,13 +16,15 @@ GROUP=testers
 
 function mariadb_add_user() {
     local user=${1}
+    echo "Adding ${user} to the local Mysql DB for DBD::mysql extended tests"
     local temp_file=$(mktemp)
     (cat <<BLOCK
 grant all privileges on test.* to 'foo'@'localhost';
 grant select on performance_schema.* to 'foo'@'localhost';
 BLOCK
 ) > "${temp_file}"
-    mysql -u root -p < "${temp_file}"
+    # ugly, but Mysql should be running for localhost only
+    mysql -u root -pvagrant < "${temp_file}"
     rm "${temp_file}"
 }
 
@@ -40,6 +42,12 @@ then
     echo "All implemented, exiting..."
     exit 0
 else
+    echo "Expanding the file system again for /home..."
+    previous=${PWD}
+    cd /home
+    dd if=/dev/zero of=bigemptyfile bs=1000 count=5000000
+    rm bigemptyfile
+    cd ${previous}
     echo "Adding users to ${GROUP} group"
 
     for user in ${USER_1} ${USER_2}
