@@ -12,7 +12,7 @@ cmp_ok( check_mem(), '>=', 1568604160, 'available RAM is at least 1.5GB' );
 my %partitions = (
     '/'                   => 251790,
     '/home'               => 10000000,
-    '/minicpan'           => 6000000,
+    '/minicpan'           => 5000000,
     '/tmp'                => 1000000,
     '/usr'                => 1467790,
     '/var'                => 497966,
@@ -33,7 +33,13 @@ isnt( check_membership( 'vagrant', 'testers' ),
 ok( mfs_perm(), 'the MFS partition has the correct directory permissions' );
 
 my @wanted =
-  qw(bzip2 unzip wget curl bash ntp tidyp sqlite3 libxml gmp libxslt mpfr gd pkg_mgr mariadb-server mariadb-client);
+  qw(bzip2 unzip wget curl bash ntp tidyp libxml gmp libxslt mpfr gd pkg_mgr mariadb-server mariadb-client);
+
+if (check_os_version() eq '6.0') {
+    push(@wanted, 'sqlite');
+} else {
+    push(@wanted, 'sqlite3');
+}
 my $all_pkgs_ref = list_pkgs();
 for my $package (@wanted) {
     ok( find_pkg( $package, $all_pkgs_ref ), "package $package is installed" );
@@ -41,7 +47,7 @@ for my $package (@wanted) {
 
 is( check_mysqld(), 'mysqld(ok)', 'mariadb server is running' );
 
-# tries to find exactly name with binsearch, otherwise with index
+# tries to find exact name with binsearch(), otherwise tries with index()
 sub find_pkg {
     my ( $pkg_name, $pkgs_ref ) = @_;
     my $result = binsearch { $a cmp $b } $pkg_name, @{$pkgs_ref};
@@ -57,13 +63,22 @@ sub find_pkg {
     return $result;
 }
 
+sub check_os_version {
+    my ( $stdout, $stderr, $exit );
+    ( $stdout, $stderr, $exit ) =
+      capture { system( '/usr/bin/uname', '-r' ); };
+    chomp($stdout);
+    note("Exit code is $exit, output '$stdout' and errors '$stderr'");
+return $stdout;
+}
+
 sub check_cpu {
     my ( $stdout, $stderr, $exit );
     ( $stdout, $stderr, $exit ) =
       capture { system( '/usr/sbin/sysctl', 'hw.ncpufound' ); };
     chomp($stdout);
-    my $cpu_num = ( split( '=', $stdout ) )[1];
     note("Exit code is $exit, output '$stdout' and errors '$stderr'");
+    my $cpu_num = ( split( '=', $stdout ) )[1];
     return $cpu_num;
 }
 

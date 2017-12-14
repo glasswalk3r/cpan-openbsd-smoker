@@ -19,8 +19,8 @@ function mariadb_add_user() {
     echo "Adding ${user} to the local Mysql DB for DBD::mysql extended tests"
     local temp_file=$(mktemp)
     (cat <<BLOCK
-grant all privileges on test.* to 'foo'@'localhost';
-grant select on performance_schema.* to 'foo'@'localhost';
+grant all privileges on test.* to '${user}'@'localhost';
+grant select on performance_schema.* to '${user}'@'localhost';
 BLOCK
 ) > "${temp_file}"
     # ugly, but Mysql should be running for localhost only
