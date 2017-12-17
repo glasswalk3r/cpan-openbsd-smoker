@@ -58,8 +58,8 @@ Vagrant.configure("2") do |config|
   # want more users, you will have to customize the config_smoker.sh 
   # and the VM itself. You will need to change those users passwords before
   # logging in with SSH (root and vagrant uses "vagrant" password by default).
-  user_1="foo"
-  user_2="bar"
+  user_1="goku"
+  user_2="vegeta"
   
   # perl_1, perl_2: the name of perl to install, as provided by 
   # "perlbrew available" command to the respective user
