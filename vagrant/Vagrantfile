@@ -6,14 +6,14 @@
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure("2") do |config|
-  # The most common configuration options are documented and commented below.
-  # For a complete reference, please see the online documentation at
-  # https://docs.vagrantup.com.
-  # Every Vagrant development environment requires a box. You can search for
-  # boxes at https://app.vagrantup.com/boxes/search
+  # All boxes available for this project
   #config.vm.box = "arfreitas/openbsd-6.0-cpan-smoker"
   config.vm.box = "arfreitas/openbsd-6.1-cpan-smoker"
   #config.vm.box = "arfreitas/openbsd-6.2-cpan-smoker"
+  # You may want to hide your network name given by the internal DHCP server.
+  # In order to do that with Virtualbox, execute the following command:
+  # vboxmanage modifyvm "OpenBSD CPAN Smoker" --natdnspassdomain1 off
+  config.vm.hostname = "smoker-60"
   config.vm.synced_folder "/tmp", "/vagrant", disabled: true
 
   # Provider-specific configuration so you can fine-tune various
@@ -21,10 +21,10 @@ Vagrant.configure("2") do |config|
   # Example for VirtualBox:
   #
   config.vm.provider "virtualbox" do |vb|
-  #   # Display the VirtualBox GUI when booting the machine
+  # Display the VirtualBox GUI when booting the machine
+  # Useful for troubleshooting
      vb.gui = true
-  #
-  #   # Customize the amount of memory on the VM:
+  # Customize the amount of memory on the VM:
      vb.memory = "1548"
      vb.name = "OpenBSD CPAN Smoker"
   end
