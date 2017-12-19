@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 30;
+use Test::More tests => 40;
 use Capture::Tiny 0.46 qw(capture);
 use Filesys::Df;
 use Fcntl ':mode';
@@ -46,6 +46,19 @@ for my $package (@wanted) {
 }
 
 is( check_mysqld(), 'mysqld(ok)', 'mariadb server is running' );
+
+my @expected = ('performance_schema', 'performance-schema-instrument', 'performance-schema-consumer-events-stages-current', 'performance-schema-consumer-events-stages-history', 'performance-schema-consumer-events-stages-history-long');
+my $enabled_regex = qr/ON/;
+my $found_ref = read_mysql_perf();
+
+for my $directive(@expected) {
+     my $result = exists($found_ref->{$directive});
+     ok($result, "$directive directive is available in /etc/my.cnf") or diag(explain($found_ref));
+     SKIP: {
+         skip "directive is not even available in /etc/my.cnf", 1 unless $result;
+         like($found_ref->{$directive}, $enabled_regex, "directive $directive is enabled on /etc/my.cnf");
+     }
+}
 
 # tries to find exact name with binsearch(), otherwise tries with index()
 sub find_pkg {
@@ -130,4 +143,22 @@ sub check_mysqld {
     note("Exit code of pkg_info is $exit, errors '$stderr'");
     chomp($stdout);
     return $stdout;
+}
+
+sub read_mysql_perf {
+    my $cfg = '/etc/my.cnf';
+    open(my $in, '<', $cfg) or die "Cannot read $cfg: $!";
+    my %perf_settings;
+    my $regex = qr/^performance/;
+    while (<$in>) {
+        if ($_ =~ $regex) {
+            my $line = $_;
+            chomp($line);
+            # required to limit to 2 since there are value with "="
+            my ($directive, $value) = split(/=/, $line, 2);
+            $perf_settings{$directive} = $value;
+        }
+    }
+    close($in);
+    return \%perf_settings;
 }
