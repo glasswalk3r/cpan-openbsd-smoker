@@ -12,6 +12,27 @@ idempotent_control='/home/vagrant/.vagrant_provision'
 # - The last modules (depend on the above): POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD
 # - configure metabase-relayd
 
+function config_metabase() {
+    local metabase_id=/home/vagrant/.metabase/metabase_id.json
+    if ! [ -d /home/vagrant/.metabase ]
+    then
+        mkdir /home/vagrant/.metabase
+    fi
+    cp /tmp/metabase_id.json "${metabase_id}"
+    chmod 400 "${metabase_id}"
+
+    (cat <<END
+debug=1
+idfile=${metabase_id}
+dbfile=/home/vagrant/.metabase/relaydb
+url=http://metabase.cpantesters.org/api/v1/
+port=8080
+multiple=1
+END
+) > /home/vagrant/.metabase/relayd
+
+}
+
 now=$(date)
 echo "Starting vagrant configuration at ${now}"
 
@@ -24,13 +45,10 @@ then
         echo "Failed to execute git, aborting..."
         exit 1
     fi
-    if ! [ -d /home/vagrant/.metabase ]
-    then
-        mkdir /home/vagrant/.metabase
-    fi
-    cp /tmp/metabase_id.json /home/vagrant/.metabase/metabase_id.json
-    chmod 400 /home/vagrant/.metabase/metabase_id.json
+
+    config_metabase
     echo 'Installing required Perl modules...'
+    cnapm Module::Version Bundle::CPAN Log::Log4perl
     cpanm POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD
 
     if [ ${USE_LOCAL_MIRROR} == 'true' ]
@@ -47,6 +65,7 @@ then
     else
         (echo "o conf urllist ${CPAN_MIRROR}"; echo 'o conf commit') | cpan
     fi
+    rm -rf /home/vagrant/.cpan/build/*
     touch "${idempotent_control}"    
     echo "Finished"
 fi
