@@ -31,6 +31,7 @@ then
     cp /tmp/metabase_id.json /home/vagrant/.metabase/metabase_id.json
     chmod 400 /home/vagrant/.metabase/metabase_id.json
     echo 'Installing required Perl modules...'
+    cpanm Module::Version Bundle::CPAN Log::Log4perl
     cpanm POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD
 
     if [ ${USE_LOCAL_MIRROR} == 'true' ]

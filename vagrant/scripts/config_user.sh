@@ -39,7 +39,7 @@ export EXTENDED_TESTING=1
 
 function start_smoker() {
     echo 'Cleaning up previous executions...'
-    rm -rf "${BUILD_DIR}/*" $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
+    rm -rf ${BUILD_DIR}/${user}/* $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
     perl -MCPAN::Reporter::Smoker -e 'start(clean_cache_after => 50, install => 1)'
 }
 END
