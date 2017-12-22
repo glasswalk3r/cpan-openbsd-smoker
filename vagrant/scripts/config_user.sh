@@ -1,15 +1,13 @@
 #!/usr/local/bin/bash
 # example of how this script is invoked
-# su foo -c /tmp/config_user.sh http://mirror.nbtelecom.com.br/CPAN foo perl-5.20.3 /mnt/cpan_build_dir 2 'Alceu Rodrigues de Freitas Junior <arfreitas@cpan.org>'
+# su foo -c /tmp/config_user.sh http://mirror.nbtelecom.com.br/CPAN foo /mnt/cpan_build_dir 'Alceu Rodrigues de Freitas Junior <arfreitas@cpan.org>' /var/cpan/smoker/prefs
 # ${1} is the script itself
 echo "All parameters received: $@"
 CPAN_MIRROR=${1}
 USER=${2}
-PERL=${3}
-BUILD_DIR=${4}
-PROCESSORS=${5}
-REPORTS_FROM_CFG=${6}
-PREFS_DIR=${7}
+BUILD_DIR=${3}
+REPORTS_FROM_CFG=${4}
+PREFS_DIR=${5}
 
 function create_profile() {
     local user=${1}
@@ -137,30 +135,23 @@ BLOCK
 function config_reporter() {
     local CFG_FILE=$1
     reports_from=$(cat "${CFG_FILE}")
-    local cfg='.cpanreporter/config.ini'
-    mkdir .cpanreporter
-    mkdir reports
+    local cfg="${HOME}/.cpanreporter/config.ini"
+    mkdir "${HOME}/.cpanreporter"
+    mkdir "${HOME}/reports"
     echo 'edit_report=no' > "${cfg}"
     echo 'send_report=yes' >> "${cfg}"
     echo "email_from=${reports_from}" >> "${cfg}"
-    echo "transport=File /home/${USER}/reports" >> "${cfg}"
+    echo "transport=File ${HOME}/reports" >> "${cfg}"
 }
 
 echo "Configuring ${USER}"
 echo "Installing Perlbrew"
 curl -s -L https://install.perlbrew.pl | bash
 create_profile ${USER}
-source "/home/${USER}/.bash_profile"
-
-# some tests fails on OpenBSD and that's expected since the official Perl tests are changed
-perlbrew install ${PERL} --notest -j ${PROCESSORS}
-if ! [ $? -eq 0 ]
-then
-    echo "perlbrew install failed with ${?} error code, cannot continue"
-    exit 1
-fi
-
+source "${HOME}/.bash_profile"
 config_cpan ${USER} "${BUILD_DIR}" "${CPAN_MIRROR}" "${PREFS_DIR}"
+echo 'Done'
+perlbrew version
 
 if ! [ -d "/home/${USER}/bin" ]
 then
@@ -168,33 +159,6 @@ then
 fi
 
 perlbrew install-cpanm
-# if we don't receive an explicit perl version, we won't be able to switch to it without checking first
-perlbrew switch ${PERL}
-ret_code=$?
-if [ ${ret_code} -ne 0 ]
-then
-    echo "perlbrew switch failed with ${ret_code} return code, trying 'perlbrew list' to fetch it"
-    installed=$(perlbrew list | tail -1 | awk '{print $1}')
-    perlbrew switch ${installed}
-    ret_code=$?
-    if [ ${ret_code} -ne 0 ]
-    then
-        echo "Failed to switch with '${installed}', aborting..."
-        exit 1
-    fi
-fi
-current_version=$(perl -e 'print "$]\n"')
-echo "perl version in use is: ${current_version}"
-perlbrew clean
-
-# using CPAN to be able to fetch from minicpan
-perl -MCPAN -e "CPAN::Shell->notest('install', 'YAML::XS', 'CPAN::SQLite', 'Module::Version', 'Log::Log4perl')"
-perl -MCPAN -e "CPAN::Shell->notest('install', 'Bundle::CPAN')"
-perl -MCPAN -e "CPAN::Shell->notest('install', 'Bundle::CPAN::Reporter::Smoker::Tests')"
-perl -MCPAN -e "CPAN::Shell->notest('install', 'Task::CPAN::Reporter', 'CPAN::Reporter::Smoker', 'Test::Reporter::Transport::Socket')"
-perl -MCPAN -e "CPAN::Shell->notest('install', 'CPAN::Reporter::Smoker::OpenBSD')"
-# to test DBD::mysql completely
-perl -MCPAN -e "CPAN::Shell->notest('install', 'Proc::ProcessTable')"
 echo 'Enabling test reporting'
 (echo 'o conf test_report 1'; echo 'o conf commit') | cpan
 config_reporter "${REPORTS_FROM_CFG}"
