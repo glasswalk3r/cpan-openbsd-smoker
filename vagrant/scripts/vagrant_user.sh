@@ -48,8 +48,10 @@ then
 
     config_metabase
     echo 'Installing required Perl modules...'
-    cpanm Module::Version Bundle::CPAN Log::Log4perl
-    cpanm POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD
+    cpan Module::Version Bundle::CPAN Log::Log4perl Module::Pluggable
+    # this guy below here will fail... but it's required although it's use is optional
+    perl -MCPAN -e "CPAN::Shell->notest('install', 'POE::Component::SSLify')"
+    cpan POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD
 
     if [ ${USE_LOCAL_MIRROR} == 'true' ]
     then
@@ -65,7 +67,7 @@ then
     else
         (echo "o conf urllist ${CPAN_MIRROR}"; echo 'o conf commit') | cpan
     fi
-    rm -rf /home/vagrant/.cpan/build/*
+    rm -rf $HOME/.cpan/build/* $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
     touch "${idempotent_control}"    
     echo "Finished"
 fi
