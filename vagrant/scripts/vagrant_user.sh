@@ -48,7 +48,7 @@ then
 
     config_metabase
     echo 'Installing required Perl modules...'
-    cnapm Module::Version Bundle::CPAN Log::Log4perl
+    cpanm Module::Version Bundle::CPAN Log::Log4perl
     cpanm POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD
 
     if [ ${USE_LOCAL_MIRROR} == 'true' ]
