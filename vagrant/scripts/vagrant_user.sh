@@ -31,8 +31,11 @@ then
     cp /tmp/metabase_id.json /home/vagrant/.metabase/metabase_id.json
     chmod 400 /home/vagrant/.metabase/metabase_id.json
     echo 'Installing required Perl modules...'
-    cpanm Module::Version Bundle::CPAN Log::Log4perl
-    cpanm POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD
+    # using cpan client instead of cpanm to take advantage of mirror (if there is one in place)
+    cpan Module::Version Bundle::CPAN Log::Log4perl Module::Pluggable
+    # this guy below here will fail... but it's required although it's use is optional
+    perl -MCPAN -e "CPAN::Shell->notest('install', 'POE::Component::SSLify')"
+    cpan POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD
 
     if [ ${USE_LOCAL_MIRROR} == 'true' ]
     then
