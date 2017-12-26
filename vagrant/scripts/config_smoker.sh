@@ -86,7 +86,7 @@ else
         
         cd "${olddir}"
     done
-    total=$(($SECONDS - $START))
+    total=$(($SECONDS - $start))
     echo "Provisioning of users took ${total} seconds"
 
     rm -f "${config_script}"
