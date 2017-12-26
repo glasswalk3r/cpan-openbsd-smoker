@@ -54,6 +54,7 @@ else
     reports_from_config='/tmp/reports_from.cfg'
     echo "${REPORTS_FROM}" > "${reports_from_config}"
     
+    start=${SECONDS}
     for user in ${USER_1} ${USER_2}
     do
         echo "Adding user ${user} to ${GROUP} group"
@@ -65,7 +66,7 @@ else
         
         if [ -f "${config_script}" ]
         then
-		    echo "Configuring user with ${config_script}"
+	    echo "Configuring user with ${config_script}"
             # required to avoid permission errors
             cd "/home/${user}"
 
@@ -85,6 +86,8 @@ else
         
         cd "${olddir}"
     done
+    total=$(($SECONDS - $START))
+    echo "Provisioning of users took ${total} seconds"
 
     rm -f "${config_script}"
     rm -f "${reports_from_config}"
