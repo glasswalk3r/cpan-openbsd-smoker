@@ -18,14 +18,16 @@ Vagrant.configure("2") do |config|
   # Example for VirtualBox:
   config.vm.provider "virtualbox" do |vb|
     # Display the VirtualBox GUI when booting the machine
-    # Useful for troubleshooting
-    vb.gui = true
+    # Useful for troubleshooting when true
+    vb.gui = false
     # Customize the amount of memory on the VM:
     vb.memory = "1548"
     vb.name = "OpenBSD CPAN Smoker"
     # You may want to hide your network name given by the internal DHCP server.
     # Assuming that the VM has only one NIC
     vb.customize ["modifyvm", :id, "--natdnspassdomain1", "off"]
+    # Using the host resolver
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
   end
 
   ################################################################
@@ -44,7 +46,7 @@ Vagrant.configure("2") do |config|
   # cpan_mirror: setup the CPAN closest mirror you want to use. It can be even a 
   # one on your local network built with CPAN::Mini and Nginx.
   # cpan_mirror="http://mirror.nbtelecom.com.br/CPAN"
-  cpan_mirror="http://192.168.99.1:9090"
+  cpan_mirror="http://minicpan:8090"
   # set to "true" (as a Ruby string) below if you want to have a minicpan mirror inside the VM
   # since it takes a considerable time to build one, it is set to false by default.
   # If you already have a mirror in your local network, you probably leave this as is.
@@ -98,7 +100,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "file", source: "scripts/config_user.sh", destination: "/tmp/config_user.sh"
   config.vm.provision "file", source: "scripts/run_user_install.sh", destination: "/tmp/run_user_install.sh"
   config.vm.provision "file", source: "scripts/install_perl.sh", destination: "/tmp/install_perl.sh"
-  config.vm.provision "shell", inline: "chmod a+rx /tmp/config_user.sh"
+  config.vm.provision "shell", inline: "chmod a+rx /tmp/config_user.sh /tmp/run_user_install.sh /tmp/install_perl.sh"
   config.vm.provision "file", source: "metabase/metabase_id.json", destination: "/tmp/metabase_id.json"
   config.vm.provision "shell", inline: "chmod a+r /tmp/metabase_id.json"
   config.vm.provision "shell", path: "scripts/basic_setup.sh", args: [openbsd_mirror, keyboard]

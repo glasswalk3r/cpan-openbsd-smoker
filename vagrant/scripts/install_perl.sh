@@ -1,6 +1,6 @@
 #!/usr/local/bin/bash
 PERL=${1}
-
+source "${HOME}/.bash_profile"
 # some tests fails on OpenBSD and that's expected since the official Perl tests are changed
 # Not enabling multi-core compiling since this will run in parallel with two users
 perlbrew install ${PERL} --notest
