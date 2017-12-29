@@ -4,9 +4,7 @@
 # ${1} is the script itself
 echo "All parameters received: $@"
 CPAN_MIRROR=${1}
-echo $CPAN_MIRROR
 USER=${2}
-echo $USER
 PERL=${3}
 BUILD_DIR=${4}
 PROCESSORS=${5}
@@ -41,7 +39,7 @@ export EXTENDED_TESTING=1
 
 function start_smoker() {
     echo 'Cleaning up previous executions...'
-    rm -rf "${BUILD_DIR}/*" $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
+    rm -rf ${BUILD_DIR}/${user}/* $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
     perl -MCPAN::Reporter::Smoker -e 'start(clean_cache_after => 50, install => 1)'
 }
 END
@@ -154,7 +152,7 @@ curl -s -L https://install.perlbrew.pl | bash
 create_profile ${USER}
 source "/home/${USER}/.bash_profile"
 
-# some tests fails on OpenBSD and that's expected since the oficial Perl tests are changed
+# some tests fails on OpenBSD and that's expected since the official Perl tests are changed
 perlbrew install ${PERL} --notest -j ${PROCESSORS}
 if ! [ $? -eq 0 ]
 then
@@ -176,7 +174,7 @@ ret_code=$?
 if [ ${ret_code} -ne 0 ]
 then
     echo "perlbrew switch failed with ${ret_code} return code, trying 'perlbrew list' to fetch it"
-    installed=$(perlbrew list | tail -1| awk '{print $1}')
+    installed=$(perlbrew list | tail -1 | awk '{print $1}')
     perlbrew switch ${installed}
     ret_code=$?
     if [ ${ret_code} -ne 0 ]

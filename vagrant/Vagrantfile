@@ -6,27 +6,28 @@
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure("2") do |config|
-  # All boxes available for this project
-  #config.vm.box = "arfreitas/openbsd-6.0-cpan-smoker"
-  config.vm.box = "arfreitas/openbsd-6.1-cpan-smoker"
+  # All boxes available for this project:
+  config.vm.box = "arfreitas/openbsd-6.0-cpan-smoker"
+  #config.vm.box = "arfreitas/openbsd-6.1-cpan-smoker"
   #config.vm.box = "arfreitas/openbsd-6.2-cpan-smoker"
-  # You may want to hide your network name given by the internal DHCP server.
-  # In order to do that with Virtualbox, execute the following command:
-  # vboxmanage modifyvm "OpenBSD CPAN Smoker" --natdnspassdomain1 off
-  config.vm.hostname = "smoker-60"
+  config.vm.hostname = "cpan-smoker-openbsd"
   config.vm.synced_folder "/tmp", "/vagrant", disabled: true
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
-  #
   config.vm.provider "virtualbox" do |vb|
-  # Display the VirtualBox GUI when booting the machine
-  # Useful for troubleshooting
-     vb.gui = true
-  # Customize the amount of memory on the VM:
-     vb.memory = "1548"
-     vb.name = "OpenBSD CPAN Smoker"
+    # Display the VirtualBox GUI when booting the machine
+    # Useful for troubleshooting if true
+    vb.gui = false
+    # Customize the amount of memory on the VM:
+    vb.memory = "1548"
+    vb.name = "OpenBSD CPAN Smoker"
+    # You may want to hide your network name given by the internal DHCP server.
+    # Assuming that the VM has only one NIC
+    vb.customize ["modifyvm", :id, "--natdnspassdomain1", "off"]
+    # Using the host resolver
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
   end
 
   ################################################################
@@ -44,8 +45,10 @@ Vagrant.configure("2") do |config|
   
   # cpan_mirror: setup the CPAN closest mirror you want to use. It can be even a 
   # one on your local network built with CPAN::Mini and Nginx.
+  # This is a "real" external mirror:
   # cpan_mirror="http://mirror.nbtelecom.com.br/CPAN"
-  cpan_mirror="http://192.168.1.113:2963/minicpan/"
+  # Below is a local one, using /etc/hosts for name resolution
+  cpan_mirror="http://minicpan:8090"
   # set to "true" (as a Ruby string) below if you want to have a minicpan mirror inside the VM
   # since it takes a considerable time to build one, it is set to false by default.
   # If you already have a mirror in your local network, you probably leave this as is.
@@ -66,7 +69,7 @@ Vagrant.configure("2") do |config|
   # "perl-stable" and "perl-blead" are special aliases, see perlbrew documentation
   # for details on them.
   perl_1="perl-stable"
-  perl_2="perl-5.27.6"
+  perl_2="perl-blead"
   
   # reports_from is from which person CPAN reports are being sent, see 
   # CPAN::Reporter for details on that be extra careful about 
@@ -96,13 +99,13 @@ Vagrant.configure("2") do |config|
   
   # this should be left alone (config.vm.provision)
   package_dir=File.dirname(__FILE__)
-  config.vm.provision "file", source: File.expand_path("scripts/config_user.sh", package_dir), destination: "/tmp/config_user.sh"
+  config.vm.provision "file", source: "scripts/config_user.sh", destination: "/tmp/config_user.sh"
   config.vm.provision "shell", inline: "chmod a+rx /tmp/config_user.sh"
-  config.vm.provision "file", source: File.expand_path("metabase/metabase_id.json", package_dir), destination: "/tmp/metabase_id.json"
+  config.vm.provision "file", source: "metabase/metabase_id.json", destination: "/tmp/metabase_id.json"
   config.vm.provision "shell", inline: "chmod a+r /tmp/metabase_id.json"
-  config.vm.provision "shell", path: File.expand_path("scripts/basic_setup.sh", package_dir), args: [openbsd_mirror, keyboard]
-  config.vm.provision "shell", path: File.expand_path("scripts/vagrant_user.sh", package_dir), args: [cpan_mirror, use_local_mirror, prefs_dir], privileged: false
-  config.vm.provision "shell", path: File.expand_path("scripts/config_smoker.sh", package_dir), args: [cpan_mirror, user_1, perl_1, user_2, perl_2, cpan_build_dir, processors, reports_from, use_local_mirror, prefs_dir]
+  config.vm.provision "shell", path: "scripts/basic_setup.sh", args: [openbsd_mirror, keyboard]
+  config.vm.provision "shell", path: "scripts/vagrant_user.sh", args: [cpan_mirror, use_local_mirror, prefs_dir], privileged: false
+  config.vm.provision "shell", path: "scripts/config_smoker.sh", args: [cpan_mirror, user_1, perl_1, user_2, perl_2, cpan_build_dir, processors, reports_from, use_local_mirror, prefs_dir]
   config.vm.provision "shell", inline: "rm -f /tmp/metabase_id.json"
   config.vm.post_up_message = <<MESSAGE
   Remember to execute the following manual steps after provisioning is finished:
