@@ -1,0 +1,5 @@
+---
+comment: Creates temporary directory that cannot be removed later
+disabled: 1
+match:
+  distribution: ^BUDNEY/Email-Fingerprint

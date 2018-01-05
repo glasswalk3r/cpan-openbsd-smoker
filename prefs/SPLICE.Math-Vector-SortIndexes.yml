@@ -1,0 +1,5 @@
+---
+comment: Tries to elevate prileges to root
+disabled: 1
+match:
+  distribution: ^SPLICE/Math-Vector-SortIndexes
