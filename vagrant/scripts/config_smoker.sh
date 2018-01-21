@@ -23,7 +23,7 @@ grant all privileges on test.* to '${user}'@'localhost';
 grant select on performance_schema.* to '${user}'@'localhost';
 BLOCK
 ) > "${temp_file}"
-    # ugly, but Mysql should be running for localhost only
+    # ugly, but MariaDB should be running for localhost only
     mysql -u root -pvagrant < "${temp_file}"
     rm "${temp_file}"
 }
