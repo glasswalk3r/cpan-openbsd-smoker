@@ -7,6 +7,9 @@ use Fcntl ':mode';
 use File::stat;
 use List::BinarySearch 0.25 'binsearch';
 
+# These tests are used to validate new boxes of OpenBSD created for Vagrant
+# since many of them are still done manually
+
 cmp_ok( check_cpu(), '>=', 2,          'the number of CPUs is 2 or more' );
 cmp_ok( check_mem(), '>=', 1568604160, 'available RAM is at least 1.5GB' );
 my %partitions = (

@@ -19,7 +19,7 @@ GROUP=testers
 
 function mariadb_add_user() {
     local user=${1}
-    echo "Adding ${user} to the local Mysql DB for DBD::mysql extended tests"
+    echo "Adding ${user} to the local MariaDB for DBD::mysql extended tests"
     local temp_file=$(mktemp)
     (cat <<BLOCK
 grant all privileges on test.* to '${user}'@'localhost';
@@ -71,7 +71,7 @@ else
         
         if [ -f "${config_script}" ]
         then
-		    echo "Configuring user with ${config_script}"
+            echo "Configuring user with ${config_script}"
             # required to avoid permission errors
             cd "/home/${user}"
 
