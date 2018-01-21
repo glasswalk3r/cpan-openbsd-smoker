@@ -66,9 +66,10 @@ vagrant up --provision
 ```
 This project Vangrafile is prepare to implement idempotent operations, so only the operations below will be repeated:
 
-  * updates OpenBSD packages
-  * update your local CPAN mirror
-  * updates CPAN-Reporter-Smoker-OpenBSD distribution (available also at CPAN).
+  * Updates OpenBSD packages.
+  * Update your local CPAN mirror
+  * Updates CPAN-Reporter-Smoker-OpenBSD distribution (available also at CPAN) for the vagrant and other users.
+  * Updates the keyboard configuration based on the Vagrantfile respective option.
   
 ### FAQ
 
