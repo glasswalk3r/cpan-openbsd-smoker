@@ -92,11 +92,13 @@ else
         
         cd "${olddir}"
     done
-
+    echo "Installing now the perl and required modules for the given users..."
+    start=${SECONDS}
     # this is an attempt to speed up things
     echo "Installing a new perl and required modules for users with parallel"
     parallel --link '/tmp/run_user_install.sh {} {#}' ::: ${USER_1} ${USER_2} ::: ${USERS[${USER_1}]} ${USERS[${USER_2}]}
-
+    total=$(($SECONDS - $start))
+    echo "Provisioning of users took ${total} seconds"
     rm -f "${reports_from_config}"
     touch "${idempotent_control}"
 fi

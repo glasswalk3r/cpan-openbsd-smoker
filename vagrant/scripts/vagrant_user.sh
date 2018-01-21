@@ -65,7 +65,7 @@ then
 
     echo 'Installing required Perl modules...'
     # using cpan client instead of cpanm to take advantage of mirror (if there is one in place)
-    perl -MCPAN -e "CPAN::Shell->notest('install', 'Module::Version', 'Bundle::CPAN', 'Log::Log4perl', 'Module::Pluggable')"
+    cpan Module::Version Bundle::CPAN Log::Log4perl Module::Pluggable
     # this guy below here will fail... but it's required although it's use is optional
     perl -MCPAN -e "CPAN::Shell->notest('install', 'POE::Component::SSLify')"
     cpan POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD
