@@ -33,6 +33,10 @@ END
 
 }
 
+function cleanup_cpan() {
+    rm -rf $HOME/.cpan/build/* $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
+}
+
 now=$(date)
 echo "Starting vagrant configuration at ${now}"
 
@@ -69,7 +73,7 @@ then
     # this guy below here will fail... but it's required although it's use is optional
     perl -MCPAN -e "CPAN::Shell->notest('install', 'POE::Component::SSLify')"
     cpan POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD
-    rm -rf $HOME/.cpan/build/* $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
+    cleanup_cpan
     touch "${idempotent_control}"    
     echo "Finished"
 fi
@@ -96,5 +100,6 @@ then
     mirror_cleanup
 fi
 cpanm CPAN::Reporter::Smoker::OpenBSD
+cleanup_cpan
 now=$(date)
 echo "Finished at ${now}"
