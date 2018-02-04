@@ -6,10 +6,10 @@
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure("2") do |config|
-  # All boxes available for this project:
+  # All available boxes for this project:
   #config.vm.box = "arfreitas/openbsd-6.0-cpan-smoker"
-  config.vm.box = "arfreitas/openbsd-6.1-cpan-smoker"
-  #config.vm.box = "arfreitas/openbsd-6.2-cpan-smoker"
+  #config.vm.box = "arfreitas/openbsd-6.1-cpan-smoker"
+  config.vm.box = "arfreitas/openbsd-6.2-cpan-smoker"
   config.vm.hostname = "cpan-smoker-openbsd"
   config.vm.synced_folder "/tmp", "/vagrant", disabled: true
 
