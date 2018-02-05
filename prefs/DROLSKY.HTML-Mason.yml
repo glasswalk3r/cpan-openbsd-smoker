@@ -1,5 +1,5 @@
 ---
-comment: Tests hang smoker
+comment: Tries to use root to install the distribution
 disabled: 1
 match:
   distribution: ^DROLSKY/HTML-Mason
