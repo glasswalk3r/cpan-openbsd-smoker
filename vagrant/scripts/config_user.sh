@@ -34,6 +34,11 @@ export DBD_MYSQL_TESTPASSWORD=
 export DBD_MYSQL_TESTPORT=3306
 export DBD_MYSQL_TESTUSER=${user}
 export EXTENDED_TESTING=1
+# DBIx::Class extended tests
+export DBICTEST_MYSQL_DSN="DBI:mysql:database=${DBD_MYSQL_TESTDB};host=${DBD_MYSQL_TESTHOST}"
+export DBICTEST_MYSQL_USER=${DBD_MYSQL_TESTUSER}
+export DBICTEST_MYSQL_PASS=${DBD_MYSQL_TESTPASSWORD}
+
 
 function start_smoker() {
     echo 'Cleaning up previous executions...'

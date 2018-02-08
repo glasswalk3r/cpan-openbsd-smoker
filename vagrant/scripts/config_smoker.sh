@@ -78,6 +78,7 @@ else
             if [ ${USE_LOCAL_MIRROR} == 'yes' ]
             then
                 params="file:///minicpan ${user} ${BUILD_DIR} ${reports_from_config} ${PREFS_DIR}"
+                chmod g+w /minicpan
             else
                 params="${CPAN_MIRROR} ${user} ${BUILD_DIR} ${reports_from_config} ${PREFS_DIR}"
             fi
