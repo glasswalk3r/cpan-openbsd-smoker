@@ -45,7 +45,9 @@ Vagrant.configure("2") do |config|
   
   # cpan_mirror: setup the CPAN closest mirror you want to use. It can be even a 
   # one on your local network built with CPAN::Mini and Nginx.
+  # This is a "real" external mirror:
   # cpan_mirror="http://mirror.nbtelecom.com.br/CPAN"
+  # Below is a local one, using /etc/hosts for name resolution
   cpan_mirror="http://minicpan:8090"
   # set to "true" (as a Ruby string) below if you want to have a minicpan mirror inside the VM
   # since it takes a considerable time to build one, it is set to false by default.
@@ -66,8 +68,8 @@ Vagrant.configure("2") do |config|
   # "perlbrew available" command to the respective user
   # "perl-stable" and "perl-blead" are special aliases, see perlbrew documentation
   # for details on them.
-  perl_1="perl-5.24.3"
-  perl_2="perl-5.22.4"
+  perl_1="perl-stable"
+  perl_2="perl-blead"
   
   # reports_from is from which person CPAN reports are being sent, see 
   # CPAN::Reporter for details on that be extra careful about 
@@ -96,7 +98,6 @@ Vagrant.configure("2") do |config|
   keyboard="br"
   
   # this should be left alone (config.vm.provision)
-  package_dir=File.dirname(__FILE__)
   config.vm.provision "file", source: "scripts/config_user.sh", destination: "/tmp/config_user.sh"
   config.vm.provision "file", source: "scripts/run_user_install.sh", destination: "/tmp/run_user_install.sh"
   config.vm.provision "file", source: "scripts/install_perl.sh", destination: "/tmp/install_perl.sh"

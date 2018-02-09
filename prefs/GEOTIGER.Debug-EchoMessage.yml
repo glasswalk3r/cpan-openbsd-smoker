@@ -1,0 +1,5 @@
+---
+comment: Tries to use root to install distribution
+disabled: 1
+match:
+  distribution: ^GEOTIGER/Debug-EchoMessage

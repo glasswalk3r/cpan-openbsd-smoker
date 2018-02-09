@@ -1,0 +1,5 @@
+---
+comment: Tests hang smoker
+disabled: 1
+match:
+  distribution: ^BADGERSRC/DBIx-PhraseBook

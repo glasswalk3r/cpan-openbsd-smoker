@@ -4,28 +4,30 @@ Configuration files and scripts to maintain a CPAN Smoker on OpenBSD
 This project includes the following:
 
   * The CPAN-Reporter-Smoker-OpenBSD distribution.
-  * A set of CPAN preference files to disable distributions that causes the smoker on OpenBSD to halt.
+  * A set of CPAN "distroprefs" files to disable distributions that causes the smoker on OpenBSD to halt.
   * A Vagrant configuration file (Vagrantfile) and corresponding shell scripts for provisioning.
-  * A VirtualBox image of OpenBSD, optimized to run a CPAN Smoker (available at Vagrant Cloud)
+  * A VirtualBox image of OpenBSD, optimized to run a CPAN Smoker (available at Vagrant Cloud).
 
 ## The Vagrant provisioned VM
 
-The associated VMs (see Vagranfile) with this project are based on Vagrant (and Virtualbox as the provider)  with the Smoker pre-configured on OpenBSD. Many aspects of the VM can be customized during the provisioning phase, like:
+The associated VMs (see Vagranfile) with this project are based on Vagrant (and Virtualbox as the provider) with the Smoker pre-configured on OpenBSD. Many aspects of the VM can be customized during the provisioning phase, like:
 
-  * Mirrors to be used (OpenBSD and CPAN)
-  * Which perl to compile and use for the smoker
-  * Tests submitter
-  * Number of processors in the VM (used for parallel tasks executing, for example)
-  * Keyboard selection
+  * Mirrors to be used (OpenBSD and CPAN).
+  * Which perl to compile and use for the smoker.
+  * Tests submitter identification.
+  * Number of processors in the VM (used for parallel tasks executing, for example).
+  * Keyboard selection.
   * Adds up to two users with low privileges to execute the CPAN::Reporter::Smoker application.
+  * Using a CPAN mirror: you can declare one already available on your local network, configure one inside the VM or do both! Well, not much useful configuration unless you just want to pre-initialize your VM local CPAN mirror first, then latter change the configuration.
+  * The OpenBSD version you want to use (see config.vm.box available values).
   
 The VM will have pre-installed and pre-configured:
 
   * the metabase-relayd to be executed under vagrant user.
   * a optional local CPAN mirror (implemented with [minicpan](http://search.cpan.org/search?query=minicpan&mode=all)).
   * related packages installed (like Git, compilers, etc).
-  * a running Mysql server, configured to run tests of [DBD::mysql](http://search.cpan.org/search?query=DBD%3A%3Amysql&mode=dist) automatically.
-  * shared preferences files for configuring (e.g. blocking) how distributions should be tested under the smoker.
+  * a running Mysql server, configured to run extended tests of [DBD::mysql](http://search.cpan.org/search?query=DBD%3A%3Amysql&mode=dist) automatically.
+  * shared "distroprefs" files for configuring (e.g. blocking) how distributions should be tested under the smoker.
   * several tools and libraries most used for modules that uses XS.
   * automatic updates for updating OpenBSD packages, minicpan (optional) and the CPAN-Reporter-Smoker-OpenBSD distribution by running the provisioning again (idempotent controls are in place to execute only the necessary).
   * the command line utilities provided by CPAN-Reporter-Smoker-OpenBSD distribution.
@@ -64,9 +66,10 @@ vagrant up --provision
 ```
 This project Vangrafile is prepare to implement idempotent operations, so only the operations below will be repeated:
 
-  * updates OpenBSD packages
-  * update your local CPAN mirror
-  * updates CPAN-Reporter-Smoker-OpenBSD distribution and injects it to your local CPAN mirror. That allows you to upgrade the scripts used by the smokers users automatically (well, almost, you will still need to update them with `cpanm CPAN::Reporter::Smoker::OpenBSD`)
+  * Updates OpenBSD packages.
+  * Update your local CPAN mirror
+  * Updates CPAN-Reporter-Smoker-OpenBSD distribution (available also at CPAN) for the vagrant and other users.
+  * Updates the keyboard configuration based on the Vagrantfile respective option.
   
 ### FAQ
 

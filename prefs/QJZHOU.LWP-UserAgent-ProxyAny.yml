@@ -1,0 +1,5 @@
+---
+comment: leaves unattended directories on build_dir (read-only permissions)
+disabled: 1
+match:
+  distribution: ^QJZHOU/LWP-UserAgent-ProxyAny

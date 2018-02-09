@@ -26,7 +26,7 @@ grant all privileges on test.* to '${user}'@'localhost';
 grant select on performance_schema.* to '${user}'@'localhost';
 BLOCK
 ) > "${temp_file}"
-    # ugly, but Mysql should be running for localhost only
+    # ugly, but MariaDB should be running for localhost only
     mysql -u root -pvagrant < "${temp_file}"
     rm "${temp_file}"
 }
@@ -60,6 +60,7 @@ else
     
     # TODO: convert this shell script to Perl, in order to read a YAML file created by Vagrantfile and use
     # multiple arbitrary arguments like users and their respective settings
+    
     for user in ${USER_1} ${USER_2}
     do
         echo "Adding user ${user} to ${GROUP} group"
@@ -106,4 +107,3 @@ fi
 
 now=$(date)
 echo "Finished provisioning at ${now}"
-
