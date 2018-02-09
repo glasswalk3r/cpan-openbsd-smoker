@@ -8,6 +8,9 @@ PERL_1=${3}
 USER_2=${4}
 PERL_2=${5}
 BUILD_DIR=${6}
+# TODO: configure automatically how to distribute the parallel tasks considering number
+# of given processors and the number of users, also considering that perl setup will be
+# done in parallel
 PROCESSORS=${7}
 REPORTS_FROM=${8}
 USE_LOCAL_MIRROR=${9}
@@ -16,7 +19,7 @@ GROUP=testers
 
 function mariadb_add_user() {
     local user=${1}
-    echo "Adding ${user} to the local Mysql DB for DBD::mysql extended tests"
+    echo "Adding ${user} to the local MariaDB for DBD::mysql extended tests"
     local temp_file=$(mktemp)
     (cat <<BLOCK
 grant all privileges on test.* to '${user}'@'localhost';
@@ -48,13 +51,16 @@ else
     dd if=/dev/zero of=bigemptyfile bs=1000 count=5000000
     rm bigemptyfile
     cd ${previous}
+    # TODO: remove this hardcode... the value should come from Vagrantfile
     config_script='/tmp/config_user.sh'
     # WORKAROUND: this is to avoid issues with strings containing spaces that might be interpreted
     # incorrectly by Bash, config_user.sh should read it from a file
     reports_from_config='/tmp/reports_from.cfg'
     echo "${REPORTS_FROM}" > "${reports_from_config}"
     
-    start=${SECONDS}
+    # TODO: convert this shell script to Perl, in order to read a YAML file created by Vagrantfile and use
+    # multiple arbitrary arguments like users and their respective settings
+    
     for user in ${USER_1} ${USER_2}
     do
         echo "Adding user ${user} to ${GROUP} group"
@@ -66,35 +72,38 @@ else
         
         if [ -f "${config_script}" ]
         then
-	    echo "Configuring user with ${config_script}"
+            echo "Configuring user with ${config_script}"
             # required to avoid permission errors
             cd "/home/${user}"
 
             if [ ${USE_LOCAL_MIRROR} == 'yes' ]
             then
-                params="file:///minicpan ${user} ${USERS[${user}]} ${BUILD_DIR} ${PROCESSORS} ${reports_from_config} ${PREFS_DIR}"
+                params="file:///minicpan ${user} ${BUILD_DIR} ${reports_from_config} ${PREFS_DIR}"
+                chmod g+w /minicpan
             else
-                params="${CPAN_MIRROR} ${user} ${USERS[${user}]} ${BUILD_DIR} ${PROCESSORS} ${reports_from_config} ${PREFS_DIR}"
+                params="${CPAN_MIRROR} ${user} ${BUILD_DIR} ${reports_from_config} ${PREFS_DIR}"
             fi
+            # this script expects too many parameters to be practical to use with parallel... and should execute fast enough
             echo "Executing 'su -l ${user} -c \"${config_script} ${params}\"'"
             su -l ${user} -c "${config_script} ${params}"
         else
-            echo "/tmp/config_user.sh not available, cannot continue"
+            echo ""${config_script}" not available, cannot continue"
             ls -l /tmp
             exit 1
         fi
         
         cd "${olddir}"
     done
+    echo "Installing now the perl and required modules for the given users..."
+    start=${SECONDS}
+    # this is an attempt to speed up things
+    echo "Installing a new perl and required modules for users with parallel"
+    parallel --link '/tmp/run_user_install.sh {} {#}' ::: ${USER_1} ${USER_2} ::: ${USERS[${USER_1}]} ${USERS[${USER_2}]}
     total=$(($SECONDS - $start))
     echo "Provisioning of users took ${total} seconds"
-
-    rm -f "${config_script}"
     rm -f "${reports_from_config}"
-    rm -rf /tmp/cpan-openbsd-smoker
     touch "${idempotent_control}"
 fi
 
 now=$(date)
 echo "Finished provisioning at ${now}"
-

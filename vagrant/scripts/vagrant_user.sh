@@ -12,6 +12,31 @@ idempotent_control='/home/vagrant/.vagrant_provision'
 # - The last modules (depend on the above): POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD
 # - configure metabase-relayd
 
+function config_metabase() {
+    local metabase_id=/home/vagrant/.metabase/metabase_id.json
+    if ! [ -d /home/vagrant/.metabase ]
+    then
+        mkdir /home/vagrant/.metabase
+    fi
+    cp /tmp/metabase_id.json "${metabase_id}"
+    chmod 400 "${metabase_id}"
+
+    (cat <<END
+debug=1
+idfile=${metabase_id}
+dbfile=/home/vagrant/.metabase/relaydb
+url=http://metabase.cpantesters.org/api/v1/
+port=8080
+multiple=1
+END
+) > /home/vagrant/.metabase/relayd
+
+}
+
+function cleanup_cpan() {
+    rm -rf $HOME/.cpan/build/* $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
+}
+
 now=$(date)
 echo "Starting vagrant configuration at ${now}"
 
@@ -24,12 +49,8 @@ then
         echo "Failed to execute git, aborting..."
         exit 1
     fi
-    if ! [ -d /home/vagrant/.metabase ]
-    then
-        mkdir /home/vagrant/.metabase
-    fi
-    cp /tmp/metabase_id.json /home/vagrant/.metabase/metabase_id.json
-    chmod 400 /home/vagrant/.metabase/metabase_id.json
+
+    config_metabase
     echo 'Installing required Perl modules...'
     # using cpan client instead of cpanm to take advantage of mirror (if there is one in place)
     cpan Module::Version Bundle::CPAN Log::Log4perl Module::Pluggable
@@ -51,6 +72,14 @@ then
     else
         (echo "o conf urllist ${CPAN_MIRROR}"; echo 'o conf commit') | cpan
     fi
+
+    echo 'Installing required Perl modules...'
+    # using cpan client instead of cpanm to take advantage of mirror (if there is one in place)
+    cpan Module::Version Bundle::CPAN Log::Log4perl Module::Pluggable
+    # this guy below here will fail... but it's required although it's use is optional
+    perl -MCPAN -e "CPAN::Shell->notest('install', 'POE::Component::SSLify')"
+    cpan POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD
+    cleanup_cpan
     touch "${idempotent_control}"    
     echo "Finished"
 fi
@@ -77,5 +106,6 @@ then
     mirror_cleanup
 fi
 cpanm CPAN::Reporter::Smoker::OpenBSD
+cleanup_cpan
 now=$(date)
 echo "Finished at ${now}"

@@ -6,7 +6,7 @@
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure("2") do |config|
-  # All boxes available for this project:
+  # All available boxes for this project:
   #config.vm.box = "arfreitas/openbsd-6.0-cpan-smoker"
   #config.vm.box = "arfreitas/openbsd-6.1-cpan-smoker"
   config.vm.box = "arfreitas/openbsd-6.2-cpan-smoker"
@@ -18,7 +18,7 @@ Vagrant.configure("2") do |config|
   # Example for VirtualBox:
   config.vm.provider "virtualbox" do |vb|
     # Display the VirtualBox GUI when booting the machine
-    # Useful for troubleshooting if true
+    # Useful for troubleshooting when true
     vb.gui = false
     # Customize the amount of memory on the VM:
     vb.memory = "1548"
@@ -99,20 +99,24 @@ Vagrant.configure("2") do |config|
   
   # this should be left alone (config.vm.provision)
   config.vm.provision "file", source: "scripts/config_user.sh", destination: "/tmp/config_user.sh"
-  config.vm.provision "shell", inline: "chmod a+rx /tmp/config_user.sh"
+  config.vm.provision "file", source: "scripts/run_user_install.sh", destination: "/tmp/run_user_install.sh"
+  config.vm.provision "file", source: "scripts/install_perl.sh", destination: "/tmp/install_perl.sh"
+  config.vm.provision "shell", inline: "chmod a+rx /tmp/config_user.sh /tmp/run_user_install.sh /tmp/install_perl.sh"
   config.vm.provision "file", source: "metabase/metabase_id.json", destination: "/tmp/metabase_id.json"
   config.vm.provision "shell", inline: "chmod a+r /tmp/metabase_id.json"
   config.vm.provision "shell", path: "scripts/basic_setup.sh", args: [openbsd_mirror, keyboard]
   config.vm.provision "shell", path: "scripts/vagrant_user.sh", args: [cpan_mirror, use_local_mirror, prefs_dir], privileged: false
   config.vm.provision "shell", path: "scripts/config_smoker.sh", args: [cpan_mirror, user_1, perl_1, user_2, perl_2, cpan_build_dir, processors, reports_from, use_local_mirror, prefs_dir]
-  config.vm.provision "shell", inline: "rm -f /tmp/metabase_id.json"
+  config.vm.provision "shell", inline: "rm -f /tmp/metabase_id.json /tmp/config_user.sh /tmp/run_user_install.sh /tmp/install_perl.sh"
   config.vm.post_up_message = <<MESSAGE
   Remember to execute the following manual steps after provisioning is finished:
     1 - Configure passwords for the new users with 'passwd'. Change the default password of vagrant user, same thing for root.
-    2 - Spend some time validating tests results. Tests will not be submitted automatically, but saved to a local directory before submission. This will give you a chance to validate the smoker configuration first.
+    2 - Spend some time validating tests results. Tests will not be submitted automatically, but saved to a local directory before submission.
+    This will give you a chance to validate the smoker configuration first.
     3 - Once everything is fine, start the metabase-relayd application with the vagrant user.
     4 - With the new users, start the smoker with the alias 'start_smoker'.
-    5 - Submit reports with the script 'send_reports'. Check out it's documentation with 'perldoc send_reports'. Skip reports with "unknown" grade until you're sure the errors weren't caused by the smoker itself.
+    5 - Submit reports with the script 'send_reports'. Check out it's documentation with 'perldoc send_reports'.
+    Skip reports with "unknown" grade until you're sure the errors weren't caused by the smoker itself.
     6 - If some distribution halts the smoker, block it with 'dblock'. Check out it's documentation with 'perldoc dblock'.
 MESSAGE
 end
