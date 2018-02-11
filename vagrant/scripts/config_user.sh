@@ -23,21 +23,24 @@ source ~/perl5/perlbrew/etc/bashrc
 END
 ) > "${profile}"
 
+    local test_db=test
+    local test_host=localhost
+
     echo "Creating ${rc}"
     (cat <<END
 export CPAN_SQLITE_NO_LOG_FILES=1
 export PATH=/home/${user}/bin:$PATH
 # DBD::mysql extended testing
-export DBD_MYSQL_TESTDB=test
-export DBD_MYSQL_TESTHOST=localhost
+export DBD_MYSQL_TESTDB=${test_db}
+export DBD_MYSQL_TESTHOST=${test_host}
 export DBD_MYSQL_TESTPASSWORD=
 export DBD_MYSQL_TESTPORT=3306
 export DBD_MYSQL_TESTUSER=${user}
 export EXTENDED_TESTING=1
 # DBIx::Class extended tests
-export DBICTEST_MYSQL_DSN="DBI:mysql:database=${DBD_MYSQL_TESTDB};host=${DBD_MYSQL_TESTHOST}"
-export DBICTEST_MYSQL_USER=${DBD_MYSQL_TESTUSER}
-export DBICTEST_MYSQL_PASS=${DBD_MYSQL_TESTPASSWORD}
+export DBICTEST_MYSQL_DSN=DBI:mysql:database=${test_db};host=${test_host}
+export DBICTEST_MYSQL_USER=${user}
+export DBICTEST_MYSQL_PASS=
 
 
 function start_smoker() {
