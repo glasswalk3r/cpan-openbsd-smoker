@@ -30,15 +30,6 @@ echo "perl version in use is: ${current_version}"
 perlbrew clean
 
 # using CPAN to be able to fetch from minicpan
-perl -MCPAN -e "CPAN::Shell->notest('install', 'YAML::XS', 'CPAN::SQLite', 'Module::Version', 'Log::Log4perl')"
-perl -MCPAN -e "CPAN::Shell->notest('install', 'Bundle::CPAN')"
-perl -MCPAN -e "CPAN::Shell->notest('install', 'Bundle::CPAN::Reporter::Smoker::Tests')"
-perl -MCPAN -e "CPAN::Shell->notest('install', 'Task::CPAN::Reporter', 'CPAN::Reporter::Smoker', 'Test::Reporter::Transport::Socket')"
-perl -MCPAN -e "CPAN::Shell->notest('install', 'CPAN::Reporter::Smoker::OpenBSD')"
-# to test DBD::mysql, currently DBD::mysql is failing the tests, forcing it's install
-perl -MCPAN -e "CPAN::Shell->notest('install', 'Proc::ProcessTable', 'DBD::mysql')"
-# TODO: these are LOTS of dependencies, and should be tested as well. Move those guys to start_smoker
-# to test DBIx::Class completely under Mysql
-perl -MCPAN -e "CPAN::Shell->notest('install', 'JSON::Any', 'Moose', 'MooseX::Types', 'MooseX::Types::JSON', 'MooseX::Types::LoadableClass', 'MooseX::Types::Path::Class', 'Class::DBI', 'JSON::DWIW', 'Time::Piece::MySQL')"
-perl -MCPAN -e "CPAN::Shell->notest('install', 'DateTime', 'Text::CSV_XS', 'Getopt::Long::Descriptive', 'SQL::Translator', 'DateTime::Format::Strptime', 'DateTime::Format::SQLite', 'DateTime::Format::MySQL')"
+echo "Installing required modules as described at ${SMOKER_CFG}/modules/required.txt"
+cat "${SMOKER_CFG}/modules/required.txt" | xargs cpan -T 
 echo "Finished installing ${PERL} and required modules"
