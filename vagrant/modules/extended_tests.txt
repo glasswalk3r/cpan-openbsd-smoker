@@ -8,9 +8,13 @@ Class::DBI
 JSON::DWIW
 Time::Piece::MySQL
 DateTime
+Text::CSV
 Text::CSV_XS
 Getopt::Long::Descriptive
 SQL::Translator
 DateTime::Format::Strptime
 DateTime::Format::SQLite
 DateTime::Format::MySQL
+Class::DBI::Plugin::DeepAbstractSearch
+Test::EOL
+Test::NoTabs
