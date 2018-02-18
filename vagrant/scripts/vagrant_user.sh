@@ -44,6 +44,7 @@ if ! [ -f "${idempotent_control}" ]
 then
     echo "Configuring vagrant user"
     git clone https://github.com/glasswalk3r/cpan-openbsd-smoker.git
+
     if [ $? -ne 0 ]
     then 
         echo "Failed to execute git, aborting..."
@@ -52,11 +53,12 @@ then
 
     config_metabase
     echo 'Installing required Perl modules...'
+    (echo "o conf urllist ${CPAN_MIRROR}"; echo 'o conf commit') | cpan
     # using cpan client instead of cpanm to take advantage of mirror (if there is one in place)
-    cpan Module::Version Bundle::CPAN Log::Log4perl Module::Pluggable
+    cpan -i Module::Version Bundle::CPAN Log::Log4perl Module::Pluggable
     # this guy below here will fail... but it's required although it's use is optional
-    perl -MCPAN -e "CPAN::Shell->notest('install', 'POE::Component::SSLify')"
-    cpan POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD
+    cpan -T POE::Component::SSLify
+    cpan -i POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD
 
     if [ ${USE_LOCAL_MIRROR} == 'true' ]
     then
@@ -65,20 +67,12 @@ then
         echo "remote: ${CPAN_MIRROR}" >> "${minicpanrc}"
         echo 'also_mirror: indices/find-ls.gz' >> "${minicpanrc}"
         (echo "o conf urllist file:///minicpan ${CPAN_MIRROR}"; echo 'o conf commit') | cpan
-        cpanm CPAN::Mini CPAN::Mini::LatestDistVersion 
+        cpan -i CPAN::Mini CPAN::Mini::LatestDistVersion 
         echo 'source ~/.bashrc' >> ~/.bash_profile
         echo "alias minicpan='minicpan -c CPAN::Mini::LatestDistVersion'" >> ~/.bashrc
         alias minicpan='minicpan -c CPAN::Mini::LatestDistVersion'
-    else
-        (echo "o conf urllist ${CPAN_MIRROR}"; echo 'o conf commit') | cpan
     fi
 
-    echo 'Installing required Perl modules...'
-    # using cpan client instead of cpanm to take advantage of mirror (if there is one in place)
-    cpan Module::Version Bundle::CPAN Log::Log4perl Module::Pluggable
-    # this guy below here will fail... but it's required although it's use is optional
-    perl -MCPAN -e "CPAN::Shell->notest('install', 'POE::Component::SSLify')"
-    cpan POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD
     cleanup_cpan
     touch "${idempotent_control}"    
     echo "Finished"
@@ -99,13 +93,15 @@ else
     sudo chmod g+w "${PREFS_DIR}"
 fi
 cp prefs/*.yml "${PREFS_DIR}"
+
 if [ ${USE_LOCAL_MIRROR} == 'true' ]
 then
     echo 'Updating local CPAN mirror...'
-    minicpan
+    minicpan -c CPAN::Mini::LatestDistVersion
     mirror_cleanup
 fi
-cpanm CPAN::Reporter::Smoker::OpenBSD
+
+cpan -i CPAN::Reporter::Smoker::OpenBSD
 cleanup_cpan
 now=$(date)
 echo "Finished at ${now}"

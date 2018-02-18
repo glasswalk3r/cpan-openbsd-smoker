@@ -11,6 +11,7 @@ PREFS_DIR=${5}
 
 function create_profile() {
     local user=${1}
+    local smoker_cfg=${2}
     local profile="/home/${user}/.bash_profile"
     local rc="/home/${user}/.bashrc"
     echo "Creating ${profile}"
@@ -23,8 +24,10 @@ source ~/perl5/perlbrew/etc/bashrc
 END
 ) > "${profile}"
 
+
     local test_db=test
     local test_host=localhost
+    local first_run="${smoker_cfg}/extended_tests_installed"
 
     echo "Creating ${rc}"
     (cat <<END
@@ -41,11 +44,23 @@ export EXTENDED_TESTING=1
 export DBICTEST_MYSQL_DSN=DBI:mysql:database=${test_db};host=${test_host}
 export DBICTEST_MYSQL_USER=${user}
 export DBICTEST_MYSQL_PASS=
-
+export SMOKER_CFG="${smoker_cfg}"
 
 function start_smoker() {
     echo 'Cleaning up previous executions...'
     rm -rf ${BUILD_DIR}/${user}/* $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
+    find "\${PERLBREW_ROOT}" -name 'build.?perl-*.log' -delete
+    local control="\${SMOKER_CFG}/extended_tests_installed"
+
+    if ! [ -f "\${control}" ]
+    then
+        echo "First time running the Smoker, let's add some required modules for DBIx::Class extended tests..."
+        cat "\${SMOKER_CFG}/modules/extended_tests.txt" | xargs cpan -i 
+        now=\$(date '+%Y-%m-%s %H:%M:%S')
+        echo "All modules installed at \${now}, before first run" > "\${control}"
+        echo "All done. Those steps will not be repeated again."
+    fi
+
     perl -MCPAN::Reporter::Smoker -e 'start(clean_cache_after => 50, install => 1)'
 }
 END
@@ -155,7 +170,18 @@ function config_reporter() {
 echo "Configuring ${USER}"
 echo "Installing Perlbrew"
 curl -s -L https://install.perlbrew.pl | bash
-create_profile ${USER}
+
+smoker_cfg="/home/${USER}/.smoker"
+
+if ! [ -d "${smoker_cfg}" ]
+then
+    mkdir -p "${smoker_cfg}/modules"
+fi
+
+cp /tmp/required.txt "${smoker_cfg}/modules"
+cp /tmp/extended_tests.txt "${smoker_cfg}/modules"
+
+create_profile ${USER} "${smoker_cfg}"
 source "${HOME}/.bash_profile"
 config_cpan ${USER} "${BUILD_DIR}" "${CPAN_MIRROR}" "${PREFS_DIR}"
 echo 'Done'
@@ -171,3 +197,4 @@ echo 'Enabling test reporting'
 (echo 'o conf test_report 1'; echo 'o conf commit') | cpan
 config_reporter "${REPORTS_FROM_CFG}"
 echo "Finished configuring user ${USER}."
+
