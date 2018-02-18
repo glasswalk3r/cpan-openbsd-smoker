@@ -49,6 +49,7 @@ export SMOKER_CFG="${smoker_cfg}"
 function start_smoker() {
     echo 'Cleaning up previous executions...'
     rm -rf ${BUILD_DIR}/${user}/* $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
+    find "\${PERLBREW_ROOT}" -name 'build.?perl-*.log' -delete
     local control="\${SMOKER_CFG}/extended_tests_installed"
 
     if ! [ -f "\${control}" ]
