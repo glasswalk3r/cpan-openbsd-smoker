@@ -1,0 +1,7 @@
+---
+comment: Tests hang smoker
+disabled: 1
+match:
+  distribution: ^JKEGL/Marpa-R2
+  env:
+    PERLBREW_PERL: ^cperl
