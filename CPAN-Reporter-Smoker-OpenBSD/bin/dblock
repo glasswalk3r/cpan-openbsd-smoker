@@ -32,8 +32,11 @@ my $filename     = "$distro.yml";
 $filename =~ s/\//./;
 my %data = (
     comment => $comment || 'Tests hang smoker',
-    match    => { distribution  => $distribution },
-    env      => { PERLBREW_PERL => $ENV{PERLBREW_PERL} },
+    match    => { distribution  => $distribution, 
+                  env           => { 
+                      PERLBREW_PERL => $ENV{PERLBREW_PERL}
+                  },
+                },
     disabled => 1
 );
 
