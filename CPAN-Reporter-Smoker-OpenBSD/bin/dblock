@@ -6,6 +6,7 @@ use File::Spec;
 use Getopt::Long;
 use Pod::Usage 1.69;
 use CPAN::Reporter::Smoker::OpenBSD qw(is_distro_ok block_distro);
+use Config;
 
 # VERSION
 my ( $distro, $help, $version_check, $comment );
@@ -31,15 +32,14 @@ my $perl_version;
 if (exists($ENV{PERLBREW_ROOT})) {
     $perl_version = $ENV{PERLBREW_PERL};
 } else {
-    require Config;
     $perl_version = 'perl-'. $Config{version};
 }
 
-unless ($data_ref = block_distro($distro, $perl_version, ($comment || 'Tests hang smoker')) {
+unless (my $data_ref = block_distro($distro, $perl_version, ($comment || 'Tests hang smoker'))) {
     exit(1);
 } else {
     my $path = delete($data_ref->{full_path});
-    DumpFile($path);
+    DumpFile($path, $data_ref);
 }
 
 
