@@ -15,6 +15,6 @@ for (1..2) {
 plan tests => scalar(@programs);
 
 for my $script(@programs) {
-    is(system('perl', '-cw', File::Spec->catfile('bin', $script)), 0, "$script sintax is OK");
+    is(system($^X, '-cw', File::Spec->catfile('bin', $script)), 0, "$script sintax is OK");
 }
 
