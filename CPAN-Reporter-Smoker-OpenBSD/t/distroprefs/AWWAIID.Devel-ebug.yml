@@ -2,6 +2,6 @@
 comment: Tests hang smoker
 disabled: 1
 match:
-  distribution: ^AWWAIID/Devel-ebug
+  distribution: ^ARFREITAS/Foo-Bar
   env:
-    PERLBREW_PERL: cperl-5.24.3
+    PERLBREW_PERL: perl-5.24.3

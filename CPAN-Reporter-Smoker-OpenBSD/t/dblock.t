@@ -23,11 +23,19 @@ SKIP: {
       $total_tests
       unless ( -d $prefs_dir && -r $prefs_dir && -w $prefs_dir );
 
+    my $cpan_id = 'ARFREITAS';
+    my $distro_name = gen_random($cpan_id); 
     my $data_ref =
-      block_distro( 'AWWAIID/Devel-ebug', 'cperl-5.24.3', 'Tests hang smoker' );
+      block_distro( $distro_name, 'perl-5.24.3', 'Tests hang smoker' );
     ok( delete( $data_ref->{full_path} ), 'can remove full_path property' );
     my $expected = LoadFile(
-        File::Spec->catfile( 't', 'distroprefs', 'AWWAIID.Devel-ebug.yml' ) );
-
+        File::Spec->catfile( 't', 'distroprefs', 'ARFREITAS.Foo-Bar.yml' ) );
     is_deeply( $data_ref, $expected, 'block_distro works as expected' );
+}
+
+sub gen_random {
+    my $cpan_id = shift;
+    my @chars = ("A".."Z", "a".."z", 0..9);
+    my $string .= $chars[int rand scalar @chars] for 1..20;
+    return "$cpan_id/$string";
 }

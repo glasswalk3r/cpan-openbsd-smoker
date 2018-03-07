@@ -39,6 +39,7 @@ unless (my $data_ref = block_distro($distro, $perl_version, ($comment || 'Tests 
     exit(1);
 } else {
     my $path = delete($data_ref->{full_path});
+    # TODO: be sure to define umask for group write
     DumpFile($path, $data_ref);
 }
 
