@@ -7,7 +7,7 @@ use File::Spec;
 use CPAN;
 use CPAN::HandleConfig;
 
-my $total_tests = 2;
+my $total_tests = 3;
 plan tests => $total_tests;
 
 SKIP: {
@@ -30,12 +30,16 @@ SKIP: {
     ok( delete( $data_ref->{full_path} ), 'can remove full_path property' );
     my $expected = LoadFile(
         File::Spec->catfile( 't', 'distroprefs', 'ARFREITAS.Foo-Bar.yml' ) );
+    like($data_ref->{match}->{distribution}, qr/^\^ARFREITAS/, 'the created distroprefs has the expected distro name');
+    # must replace since we're using a random name to avoid clashing during tests
+    $data_ref->{match}->{distribution} = $expected->{match}->{distribution};
     is_deeply( $data_ref, $expected, 'block_distro works as expected' );
 }
 
 sub gen_random {
     my $cpan_id = shift;
     my @chars = ("A".."Z", "a".."z", 0..9);
-    my $string .= $chars[int rand scalar @chars] for 1..20;
+    my $string;
+    $string .= $chars[int rand scalar @chars] for 1..20;
     return "$cpan_id/$string";
 }
