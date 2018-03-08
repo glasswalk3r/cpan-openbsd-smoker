@@ -1,0 +1,12 @@
+---
+comment: Tests hang smoker
+disabled: 1
+match:
+  distribution: ^BJOERN/Set-IntSpan-Partition
+  perlconfig:
+    version: '5.26.1'
+    useithreads: 'define'
+    usemultiplicity: 'define'
+    use64bitint: 'define'
+    use64bitall: 'define'
+    uselongdouble: 'define'

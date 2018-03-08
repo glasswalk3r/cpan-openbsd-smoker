@@ -1,0 +1,11 @@
+---
+comment: Tests hang smoker
+disabled: 1
+match:
+  distribution: ^MLEHMANN/IO-AIO
+  perlconfig:
+    useithreads: 'define'
+    usemultiplicity: 'define'
+    use64bitint: 'define'
+    use64bitall: 'define'
+    uselongdouble: 'define'

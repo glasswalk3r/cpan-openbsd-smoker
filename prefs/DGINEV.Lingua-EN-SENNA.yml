@@ -1,0 +1,5 @@
+---
+comment: uses too much space on build_dir
+disabled: 1
+match:
+  distribution: ^DGINEV/Lingua-EN-SENNA

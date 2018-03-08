@@ -1,0 +1,5 @@
+---
+comment: Tests consume too much build_dir storage 
+disabled: 1
+match:
+  distribution: ^ISHIGAKI/Parse-PMFile
