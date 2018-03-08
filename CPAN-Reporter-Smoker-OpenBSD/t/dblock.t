@@ -23,23 +23,20 @@ SKIP: {
       $total_tests
       unless ( -d $prefs_dir && -r $prefs_dir && -w $prefs_dir );
 
-    my $cpan_id = 'ARFREITAS';
-    my $distro_name = gen_random($cpan_id); 
+    my $distro_name = 'ARFREITAS/Foo-Bar';
+    my %perl_info = (
+        useithreads => 'define',
+        usemultiplicity => 'define',
+        use64bitint => 'define',
+        use64bitall => 'define',
+        uselongdouble => 'define',
+        version => '5.24.3'
+    );
     my $data_ref =
-      block_distro( $distro_name, 'perl-5.24.3', 'Tests hang smoker' );
+      block_distro( $distro_name, \%perl_info, 'Tests hang smoker' );
     ok( delete( $data_ref->{full_path} ), 'can remove full_path property' );
     my $expected = LoadFile(
         File::Spec->catfile( 't', 'distroprefs', 'ARFREITAS.Foo-Bar.yml' ) );
     like($data_ref->{match}->{distribution}, qr/^\^ARFREITAS/, 'the created distroprefs has the expected distro name');
-    # must replace since we're using a random name to avoid clashing during tests
-    $data_ref->{match}->{distribution} = $expected->{match}->{distribution};
     is_deeply( $data_ref, $expected, 'block_distro works as expected' );
-}
-
-sub gen_random {
-    my $cpan_id = shift;
-    my @chars = ("A".."Z", "a".."z", 0..9);
-    my $string;
-    $string .= $chars[int rand scalar @chars] for 1..20;
-    return "$cpan_id/$string";
 }

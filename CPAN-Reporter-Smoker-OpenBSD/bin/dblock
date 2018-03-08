@@ -27,15 +27,16 @@ if ($version_check) {
 
 pod2usage( -exitval => 1, -verbose => 1 ) unless ( is_distro_ok($distro) );
 
-my $perl_version;
+my %perl_info = (
+    useithreads => $Config{useithreads},
+    usemultiplicity => $Config{usemultiplicity},
+    use64bitint => $Config{use64bitint},
+    use64bitall => $Config{use64bitall},
+    uselongdouble => $Config{uselongdouble},
+    version => $Config{version},
+);
 
-if (exists($ENV{PERLBREW_ROOT})) {
-    $perl_version = $ENV{PERLBREW_PERL};
-} else {
-    $perl_version = 'perl-'. $Config{version};
-}
-
-unless (my $data_ref = block_distro($distro, $perl_version, ($comment || 'Tests hang smoker'))) {
+unless (my $data_ref = block_distro($distro, \%perl_info, $comment)) {
     exit(1);
 } else {
     my $path = delete($data_ref->{full_path});

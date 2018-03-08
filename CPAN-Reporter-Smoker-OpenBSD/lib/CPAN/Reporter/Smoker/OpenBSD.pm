@@ -4,6 +4,7 @@ use strict;
 use Exporter 'import';
 use CPAN;
 use CPAN::HandleConfig;
+
 our @EXPORT_OK = qw(is_distro_ok block_distro);
 # VERSION
 #
@@ -80,7 +81,7 @@ If there is an already file created as defined in C<full_path> key, it will C<wa
 =cut
 
 sub block_distro {
-    my ($distro, $perlbrew_perl, $comment) = @_;
+    my ($distro, $perl_info, $comment) = @_;
     my $distribution = '^' . $distro;
     my $filename     = "$distro.yml";
     $filename =~ s/\//./;
@@ -88,9 +89,14 @@ sub block_distro {
     my %data = (
         comment => $comment || 'Tests hang smoker',
         match   => { distribution  => $distribution, 
-                     env           => { 
-                          PERLBREW_PERL => $perlbrew_perl
-                        },
+                     perlconfig => {
+                         useithreads => $perl_info->{useithreads},
+                         usemultiplicity => $perl_info->{usemultiplicity},
+                         use64bitint => $perl_info->{use64bitint},
+                         use64bitall => $perl_info->{use64bitall},
+                         uselongdouble => $perl_info->{uselongdouble},
+                         version => $perl_info->{version},
+                         },
                     },
         disabled => 1
     );
