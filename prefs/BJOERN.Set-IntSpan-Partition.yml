@@ -9,4 +9,7 @@ match:
     usemultiplicity: 'define'
     use64bitint: 'define'
     use64bitall: 'define'
+    osname: openbsd
+    osvers: '6.2'
+    archname: OpenBSD.amd64-openbsd
     uselongdouble: 'define'

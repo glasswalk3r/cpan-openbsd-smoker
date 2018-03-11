@@ -4,4 +4,8 @@ match:
 pl:
   expect:
     - "libqdbm link type: [1]"
+perlconfig:
+    osname: openbsd
+    osvers: '6.2'
+    archname: OpenBSD.amd64-openbsd
     - "\n"
