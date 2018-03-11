@@ -10,3 +10,6 @@ match:
     use64bitall: 'define'
     uselongdouble: 'define'
     version: '5.24.3'
+    osname: openbsd
+    osvers: '6.2'
+    archname: Openbsd.amd64-openbsd
