@@ -2,7 +2,7 @@
 comment: "Tests hang smoker"
 match:
   distribution: ^ALTREUS/OpusVL-SysParams
-perlconfig:
+  perlconfig:
     osname: openbsd
     osvers: '6.2'
     archname: OpenBSD.amd64-openbsd

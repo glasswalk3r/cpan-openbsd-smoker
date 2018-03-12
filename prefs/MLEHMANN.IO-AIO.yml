@@ -8,7 +8,6 @@ match:
     usemultiplicity: 'define'
     use64bitint: 'define'
     use64bitall: 'define'
-perlconfig:
     osname: openbsd
     osvers: '6.2'
     archname: OpenBSD.amd64-openbsd

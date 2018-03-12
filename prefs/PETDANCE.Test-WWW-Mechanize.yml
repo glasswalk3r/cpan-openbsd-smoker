@@ -2,7 +2,7 @@
 comment: https://github.com/petdance/test-www-mechanize/issues/34
 disabled: 1
 match:
-perlconfig:
+  perlconfig:
     osname: openbsd
     osvers: '6.2'
     archname: OpenBSD.amd64-openbsd

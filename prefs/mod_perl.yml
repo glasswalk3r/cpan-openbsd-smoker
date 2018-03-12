@@ -2,7 +2,7 @@
 comment: "Don't build mod_perl if required by some other module"
 match:
   distribution: od_perl-\d
-perlconfig:
+  perlconfig:
     osname: openbsd
     osvers: '6.2'
     archname: OpenBSD.amd64-openbsd

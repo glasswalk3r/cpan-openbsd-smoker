@@ -2,7 +2,7 @@
 comment: leaves unattended directories on build_dir (read-only permissions)
 disabled: 1
 match:
-perlconfig:
+  perlconfig:
     osname: openbsd
     osvers: '6.2'
     archname: OpenBSD.amd64-openbsd

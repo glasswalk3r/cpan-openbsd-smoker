@@ -2,7 +2,7 @@
 comment: brokes IPC::Cmd
 disabled: 1
 match:
-perlconfig:
+  perlconfig:
     osname: openbsd
     osvers: '6.2'
     archname: OpenBSD.amd64-openbsd
