@@ -17,7 +17,7 @@ my $PREFS_DIR        = $ARGV[5];
 my $now = localtime(time);
 print "Starting provisioning at $now\n";
 print 'Using', IDEMPOTENT_CONTROL, ' to control provisioning', "\n";
-my $yaml = Load($CONFIG_YAML);
+my $yaml = LoadFile($CONFIG_YAML);
 
 if ( -f IDEMPOTENT_CONTROL ) {
     print "All implemented, exiting...\n";
@@ -41,15 +41,16 @@ else {
     print $out $yaml->{reports_from};
     close($out);
 
-    for my $user ( @{ $yaml->{users} } ) {
+    for my $user ( keys( %{ $yaml->{users} } ) ) {
         print "Adding user $user to ", GROUP, "group\n";
 
         # password created with:
         # encrypt -c default vagrant
         my $password =
           '$2b$10$jwgI5jv2x5d9VFFnU.I9s..f8ndKQqsBRb8wB/LapqqX.jKpt2/9q';
-        system( "adduser -shell bash -batch $user " . GROUP . " $user" );
-        mariadb_add_user($user);
+        system( "adduser -shell bash -batch $user " . GROUP . " $user" ) == 0
+          or die "Failed to execute adduser: $?";
+        mariadb_user($user);
         my $old_dir = getcwd();
 
         if ( -f $config_script ) {
@@ -77,6 +78,7 @@ else {
             print "'$config_script' not available, cannot continue\n";
             opendir( DIR, '/tmp' ) or die "Cannot list the /tmp directory: $!";
             while (<readdir(DIR)>) {
+                next if ( ( $_ eq '.' ) or ( $_ eq '..' ) );
                 print $_, "\n";
             }
             close(DIR);
@@ -93,6 +95,17 @@ else {
     # this is an attempt to speed up things
     print
       "Installing a new perl and required modules for users with parallel\n";
+    my $parallel_config = parallel_input( $yaml->{users} );
+    system(
+        'parallel', '-a', $parallel_config->{users_file},
+        '-a', $parallel_config->{yaml_location},
+        '/tmp/run_user_install.sh', '{}', '{#}'
+      ) == 0
+      or die "Failed to execute parallel: $?";
+
+    for my $filename ( keys( %{$parallel_config} ) ) {
+        unlink $filename;
+    }
 
 #    parallel --link '/tmp/run_user_install.sh {} {#}' ::: ${USER_1} ${USER_2} ::: ${USERS[${USER_1}]} ${USERS[${USER_2}]}
     my $total = time() - $start;
@@ -106,6 +119,30 @@ else {
 
 $now = localtime(time);
 print "Finished provisioning at $now\n";
+
+# Allows an arbitrary number of users to be provided to install perl
+sub parallel_input {
+    my $users_conf = shift;
+    my %files;
+
+    my $users_file = '/tmp/install_perl_users.txt';
+    open( my $users_fh, '>', $users_file )
+      or die "Cannot create $users_file: $!";
+
+    for my $user ( keys( %{$users_conf} ) ) {
+        print $users_fh "$user\n";
+    }
+
+    close($users_fh);
+    $files{users_file} = $users_file;
+    my $yaml_location = '/tmp/yaml_location.txt';
+    open( my $yaml, '>', $yaml_location )
+      or die "Cannot create $yaml_location file: $!";
+    print $yaml "$CONFIG_YAML\n";
+    close($yaml);
+    $files{yaml_location} = $yaml_location;
+    return \%files;
+}
 
 sub mariadb_user {
     my $user = shift;
