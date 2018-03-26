@@ -48,7 +48,7 @@ else {
         # encrypt -c default vagrant
         my $password =
           '$2b$10$jwgI5jv2x5d9VFFnU.I9s..f8ndKQqsBRb8wB/LapqqX.jKpt2/9q';
-        system( "adduser -shell bash -batch $user " . GROUP . " $user" ) == 0
+        system( 'adduser', '-shell', 'bash', '-batch', $user,  GROUP, $user, $password ) == 0
           or die "Failed to execute adduser: $?";
         mariadb_user($user);
         my $old_dir = getcwd();
@@ -107,13 +107,12 @@ else {
         unlink $filename;
     }
 
-#    parallel --link '/tmp/run_user_install.sh {} {#}' ::: ${USER_1} ${USER_2} ::: ${USERS[${USER_1}]} ${USERS[${USER_2}]}
     my $total = time() - $start;
     print "Provisioning of users took $total seconds\n";
     unlink $reports_from_config;
     open( my $idem, '>', IDEMPOTENT_CONTROL )
       or die 'Cannot create ' . IDEMPOTENT_CONTROL . ": $!";
-    print $idem, localtime(time);
+    print $idem scalar(localtime(time));
     close($idem);
 }
 

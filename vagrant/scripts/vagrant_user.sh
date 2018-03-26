@@ -89,6 +89,7 @@ cd /home/vagrant/cpan-openbsd-smoker
 git pull
 echo 'Updating the minicpan shared preferences directory'
 (echo "o conf prefs_dir ${PREFS_DIR}"; echo 'o conf commit') | cpan
+
 if [ -d "${PREFS_DIR}" ]
 then
     rm "${PREFS_DIR}/*.yml"
@@ -98,13 +99,16 @@ else
     sudo chgrp testers "${PREFS_DIR}"
     sudo chmod g+w "${PREFS_DIR}"
 fi
+
 cp prefs/*.yml "${PREFS_DIR}"
+
 if [ ${USE_LOCAL_MIRROR} == 'true' ]
 then
     echo 'Updating local CPAN mirror...'
     minicpan
     mirror_cleanup
 fi
+
 cpanm CPAN::Reporter::Smoker::OpenBSD
 cleanup_cpan
 now=$(date)

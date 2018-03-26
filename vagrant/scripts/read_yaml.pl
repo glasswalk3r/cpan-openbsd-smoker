@@ -17,7 +17,7 @@ my $perlbrew =
 my @options = (
     $perlbrew, 'install',
     $yaml->{users}->{$self}->{perl},
-    @{ $yaml->{users}->{$self}->{args} }
+    map {"--$_"} @{ $yaml->{users}->{$self}->{args} }
 );
 my $install_perl_cmd = File::Spec->catfile( $ENV{HOME}, 'install_perl.txt' );
 open( my $out, '>', $install_perl_cmd )

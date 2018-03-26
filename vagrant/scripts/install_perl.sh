@@ -36,6 +36,6 @@ perlbrew clean
 rm "${install_info}"
 
 # using CPAN to be able to fetch from minicpan
-echo "Installing required modules as described at ${SMOKER_CFG}/modules/required.txt"
-cat "${SMOKER_CFG}/modules/required.txt" | xargs cpan -T 
+echo "Installing required modules as described at ${SMOKER_CFG}/required.txt"
+cat "${SMOKER_CFG}/required.txt" | xargs cpan -T
 echo "Finished installing ${perl} and required modules"

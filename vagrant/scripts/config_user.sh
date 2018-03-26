@@ -53,11 +53,11 @@ function start_smoker() {
     if ! [ -f "${control}" ]
     then
         echo "First time running the Smoker, let's add some required modules for DBIx::Class extended tests..."
-        cat "${SMOKER_CFG}/modules/extended_tests.txt" | xargs cpan -i 
+        cat "${SMOKER_CFG}/extended_tests.txt" | xargs cpan -i 
         now=$(date "+%Y-%m-%dT%H:%M:%S")
         echo "All modules installed at ${now}, before first run" > "${control}"
         echo "Now let's tests all required modules and submit the results"
-        cat "${SMOKER_CFG}/modules/required.txt" | xargs cpan -t
+        cat "${SMOKER_CFG}/required.txt" | xargs cpan -t
         echo "All done. Those steps will not be repeated again."
     fi
 
