@@ -27,6 +27,7 @@ END
 
     local test_db=test
     local test_host=localhost
+    local first_run="${smoker_cfg}/extended_tests_installed"
 
     echo "Creating ${rc}"
     (cat <<END
@@ -48,16 +49,15 @@ export SMOKER_CFG="${smoker_cfg}"
 function start_smoker() {
     echo 'Cleaning up previous executions...'
     rm -rf ${BUILD_DIR}/${user}/* $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
-    local control="${SMOKER_CFG}/.extended_tests_installed"
+    find "\${PERLBREW_ROOT}" -name 'build.?perl-*.log' -delete
+    local control="\${SMOKER_CFG}/extended_tests_installed"
 
-    if ! [ -f "${control}" ]
+    if ! [ -f "\${control}" ]
     then
         echo "First time running the Smoker, let's add some required modules for DBIx::Class extended tests..."
-        cat "${SMOKER_CFG}/extended_tests.txt" | xargs cpan -i 
-        now=$(date "+%Y-%m-%dT%H:%M:%S")
-        echo "All modules installed at ${now}, before first run" > "${control}"
-        echo "Now let's tests all required modules and submit the results"
-        cat "${SMOKER_CFG}/required.txt" | xargs cpan -t
+        cat "\${SMOKER_CFG}/modules/extended_tests.txt" | xargs cpan -i
+        now=\$(date '+%Y-%m-%s %H:%M:%S')
+        echo "All modules installed at \${now}, before first run" > "\${control}"
         echo "All done. Those steps will not be repeated again."
     fi
 
@@ -175,11 +175,11 @@ smoker_cfg="/home/${USER}/.smoker"
 
 if ! [ -d "${smoker_cfg}" ]
 then
-    mkdir "${smoker_cfg}"
+    mkdir -p "${smoker_cfg}/modules"
 fi
 
-cp /tmp/required.txt "${smoker_cfg}"
-cp /tmp/extended_tests.txt "${smoker_cfg}"
+cp /tmp/required.txt "${smoker_cfg}/modules"
+cp /tmp/extended_tests.txt "${smoker_cfg}/modules"
 
 create_profile ${USER} "${smoker_cfg}"
 source "${HOME}/.bash_profile"
