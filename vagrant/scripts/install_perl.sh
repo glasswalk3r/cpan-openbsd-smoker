@@ -1,6 +1,5 @@
 #!/usr/local/bin/bash
 source "${HOME}/.bash_profile"
-<<<<<<< HEAD
 # some tests fails on OpenBSD and that's expected since the official Perl tests are changed
 # Not enabling multi-core compiling since this will run in parallel with two users
 
@@ -11,18 +10,13 @@ then
     exit 1
 fi
 
-perlbrew install ${PERL} --notest
-
-if [ $? -ne 0 ]
-=======
 install_info="${HOME}/install_perl.txt"
 install_cmd=$(head -1 "${install_info}")
 perl=$(tail -1 "${install_info}")
 
 $install_cmd
 
-if ! [ $? -eq 0 ]
->>>>>>> using_yaml
+if [ $? -ne 0 ]
 then
     echo "perlbrew install failed with ${?} error code, cannot continue"
     exit 1
