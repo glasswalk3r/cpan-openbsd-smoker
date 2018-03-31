@@ -8,7 +8,7 @@ idempotent_control=/var/vagrant_provision_basic
 if ! [ -f "${idempotent_control}" ]
 then
     echo "Installing required software..."
-    pkg_add bzip2 unzip--iconv wget curl bash ntp tidyp sqlite3 sudo-- git parallel libxml gmp libxslt mpfr gd pkg_mgr
+    pkg_add bzip2 unzip--iconv wget curl bash ntp tidyp sqlite3 sudo-- git parallel libxml gmp libxslt mpfr gd pkg_mgr p5-YAML-XS
 fi
 
 echo "Updating existing packages with ${PKG_PATH}..."
