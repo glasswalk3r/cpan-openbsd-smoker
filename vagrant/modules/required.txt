@@ -1,5 +1,4 @@
 YAML::XS
-CPAN::SQLite
 Module::Version
 Log::Log4perl
 Bundle::CPAN

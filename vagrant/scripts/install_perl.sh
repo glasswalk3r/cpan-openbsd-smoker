@@ -34,8 +34,12 @@ current_version=$(perl -e 'print "$]\n"')
 echo "perl version in use is: ${current_version}"
 perlbrew clean
 rm "${install_info}"
+rm -f "${HOME}/perlbrew.*"
 
 # using CPAN to be able to fetch from minicpan
+echo 'Installing CPAN::SQLite and initializing the database...'
+cpan -T CPAN::SQLite
+echo 'reload index' | cpan
 echo "Installing required modules as described at ${SMOKER_CFG}/modules/required.txt"
 cat "${SMOKER_CFG}/modules/required.txt" | xargs cpan -T
 echo "Finished installing ${perl} and required modules"
