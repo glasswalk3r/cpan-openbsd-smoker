@@ -23,7 +23,7 @@ then
 fi
 
 # if we don't receive an explicit perl version, we won't be able to switch to it without checking first
-perlbrew switch ${PERL} 2> /dev/null
+perlbrew switch ${perl}
 ret_code=$?
 
 if [ ${ret_code} -ne 0 ]
