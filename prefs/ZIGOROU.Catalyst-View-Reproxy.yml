@@ -1,0 +1,15 @@
+---
+comment: Tests hang smoker
+disabled: 1
+match:
+  distribution: ^ZIGOROU/Catalyst-View-Reproxy
+  perlconfig:
+    archname: OpenBSD.amd64-openbsd-thread-multi-ld
+    osname: openbsd
+    osvers: '6.2'
+    use64bitall: define
+    use64bitint: define
+    useithreads: define
+    uselongdouble: define
+    usemultiplicity: define
+    version: 5.24.3

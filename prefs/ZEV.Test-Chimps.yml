@@ -1,0 +1,14 @@
+---
+comment: Tests hang smoker, tries to use root throught sudo
+disabled: 1
+match:
+  distribution: ^ZEV/Test-Chimps
+  perlconfig:
+    archname: OpenBSD.amd64-openbsd-thread-multi-ld
+    osname: openbsd
+    osvers: '6.2'
+    use64bitall: define
+    use64bitint: define
+    useithreads: define
+    uselongdouble: define
+    usemultiplicity: define
