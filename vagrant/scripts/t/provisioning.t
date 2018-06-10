@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 40;
+use Test::More tests => 41;
 use Capture::Tiny 0.46 qw(capture);
 use Filesys::Df;
 use Fcntl ':mode';
@@ -38,10 +38,11 @@ ok( mfs_perm(), 'the MFS partition has the correct directory permissions' );
 my @wanted =
   qw(bzip2 unzip wget curl bash ntp tidyp libxml gmp libxslt mpfr gd pkg_mgr mariadb-server mariadb-client);
 
-if (check_os_version() eq '6.0') {
-    push(@wanted, 'sqlite');
-} else {
-    push(@wanted, 'sqlite3');
+if ( check_os_version() eq '6.0' ) {
+    push( @wanted, 'sqlite' );
+}
+else {
+    push( @wanted, 'sqlite3' );
 }
 my $all_pkgs_ref = list_pkgs();
 for my $package (@wanted) {
@@ -50,18 +51,28 @@ for my $package (@wanted) {
 
 is( check_mysqld(), 'mysqld(ok)', 'mariadb server is running' );
 
-my @expected = ('performance_schema', 'performance-schema-instrument', 'performance-schema-consumer-events-stages-current', 'performance-schema-consumer-events-stages-history', 'performance-schema-consumer-events-stages-history-long');
+my @expected = (
+    'performance_schema',
+    'performance-schema-instrument',
+    'performance-schema-consumer-events-stages-current',
+    'performance-schema-consumer-events-stages-history',
+    'performance-schema-consumer-events-stages-history-long'
+);
 my $enabled_regex = qr/ON/;
-my $found_ref = read_mysql_perf();
+my $found_ref     = read_mysql_perf();
 
-for my $directive(@expected) {
-     my $result = exists($found_ref->{$directive});
-     ok($result, "$directive directive is available in /etc/my.cnf") or diag(explain($found_ref));
-     SKIP: {
-         skip "directive is not even available in /etc/my.cnf", 1 unless $result;
-         like($found_ref->{$directive}, $enabled_regex, "directive $directive is enabled on /etc/my.cnf");
-     }
+for my $directive (@expected) {
+    my $result = exists( $found_ref->{$directive} );
+    ok( $result, "$directive directive is available in /etc/my.cnf" )
+      or diag( explain($found_ref) );
+  SKIP: {
+        skip "directive is not even available in /etc/my.cnf", 1 unless $result;
+        like( $found_ref->{$directive},
+            $enabled_regex, "directive $directive is enabled on /etc/my.cnf" );
+    }
 }
+
+isnt(read_sshd_conf(),'yes', 'sshd config PermitRootLogin is disabled');
 
 # tries to find exact name with binsearch(), otherwise tries with index()
 sub find_pkg {
@@ -85,7 +96,7 @@ sub check_os_version {
       capture { system( '/usr/bin/uname', '-r' ); };
     chomp($stdout);
     note("Exit code is $exit, output '$stdout' and errors '$stderr'");
-return $stdout;
+    return $stdout;
 }
 
 sub check_cpu {
@@ -102,7 +113,8 @@ sub check_mem {
     my ( $stdout, $stderr, $exit );
 
     # hw.physmem=1568604160
-    ( $stdout, $stderr, $exit ) = capture { system( '/usr/sbin/sysctl', 'hw.physmem' ); };
+    ( $stdout, $stderr, $exit ) =
+      capture { system( '/usr/sbin/sysctl', 'hw.physmem' ); };
     chomp($stdout);
     my $mem = ( split( '=', $stdout ) )[1];
     note("Exit code is $exit, output '$stdout' and errors '$stderr'");
@@ -126,7 +138,8 @@ sub mfs_perm {
 
 sub list_pkgs {
     my ( $stdout, $stderr, $exit );
-    ( $stdout, $stderr, $exit ) = capture { system( '/usr/sbin/pkg_info', '-q' ); };
+    ( $stdout, $stderr, $exit ) =
+      capture { system( '/usr/sbin/pkg_info', '-q' ); };
     note("Exit code of pkg_info is $exit, errors '$stderr'");
     my @pkgs;
     for ( split /^/, $stdout ) {
@@ -150,18 +163,37 @@ sub check_mysqld {
 
 sub read_mysql_perf {
     my $cfg = '/etc/my.cnf';
-    open(my $in, '<', $cfg) or die "Cannot read $cfg: $!";
+    open( my $in, '<', $cfg ) or die "Cannot read $cfg: $!";
     my %perf_settings;
     my $regex = qr/^performance/;
     while (<$in>) {
-        if ($_ =~ $regex) {
+        if ( $_ =~ $regex ) {
             my $line = $_;
             chomp($line);
+
             # required to limit to 2 since there are value with "="
-            my ($directive, $value) = split(/=/, $line, 2);
+            my ( $directive, $value ) = split( /=/, $line, 2 );
             $perf_settings{$directive} = $value;
         }
     }
     close($in);
     return \%perf_settings;
+}
+
+sub read_sshd_conf {
+    my $conf  = '/etc/ssh/sshd_config';
+    my $regex = qr/^PermitRootLogin\s(\w+)/;
+    open( my $in, '<', $conf ) or die "Cannot read $conf: $!";
+    my $value;
+
+    while (<$in>) {
+        if ( $_ =~ $regex ) {
+            chomp;
+            $value = $1;
+            last;
+        }
+    }
+
+    close($in);
+    return $value;
 }
