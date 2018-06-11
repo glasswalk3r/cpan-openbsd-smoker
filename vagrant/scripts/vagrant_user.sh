@@ -1,4 +1,6 @@
 #!/usr/local/bin/bash
+source functions/cpan
+
 CPAN_MIRROR=${1}
 USE_LOCAL_MIRROR=${2}
 PREFS_DIR=${3}
@@ -31,10 +33,6 @@ multiple=1
 END
 ) > /home/vagrant/.metabase/relayd
 
-}
-
-function cleanup_cpan() {
-    rm -rf $HOME/.cpan/build/* $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
 }
 
 now=$(date)

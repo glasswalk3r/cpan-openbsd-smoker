@@ -1,0 +1,3 @@
+function cleanup_cpan() {
+    rm -rf $HOME/.cpan/build/* $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
+}

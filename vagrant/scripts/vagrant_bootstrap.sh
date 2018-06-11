@@ -1,6 +1,8 @@
 #!/usr/local/bin/bash
 # Bootstraps the VM configuration for the vagrant user
 
+source functions/cpan
+
 function config_cpan() {
     mkdir -p "/home/${USER}/.cpan/CPAN"
     echo '$CPAN::Config = {' > "/home/vagrant/.cpan/CPAN/MyConfig.pm"
@@ -75,12 +77,12 @@ function config_cpan() {
   1;
   __END__
 BLOCK
-    ) >> "/home/vagrant/.cpan/CPAN/MyConfig.pm"
+    ) > "/home/vagrant/.cpan/CPAN/MyConfig.pm"
 }
 
 config_cpan
 curl -s -L https://install.perlbrew.pl | bash
-perlbrew install perl-stable --noman --notest -j 2
+perlbrew install perl-stable --noman --notest -j 2 --as perl-stable
 perlbrew install-cpanm
 source ~/perl5/perlbrew/etc/bashrc
 echo 'source ~/perl5/perlbrew/etc/bashrc' > .bash_profile
@@ -88,5 +90,7 @@ perlbrew switch perl-stable
 cpanm --mirror http://minicpan:8090 --mirror-only Module::Version Bundle::CPAN Log::Log4perl Module::Pluggable
 cpanm --mirror http://minicpan:8090 --mirror-only --notest POE::Component::SSLify
 cpanm --mirror http://minicpan:8090 --mirror-only POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD List::BinarySearch Filesys::Df
+perlbrew cleanup
+cleanup_cpan
 cd /home/vagrant/cpan-openbsd-smoker/vagrant/scripts
 prove -l -v -m
