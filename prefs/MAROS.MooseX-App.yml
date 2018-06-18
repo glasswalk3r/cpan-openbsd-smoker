@@ -4,6 +4,5 @@ match:
   distribution: ^MAROS/MooseX-App
   perlconfig:
     osname: openbsd
-    osvers: '6.2'
     archname: OpenBSD.amd64-openbsd
 disabled: 1
