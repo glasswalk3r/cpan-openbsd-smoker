@@ -4,12 +4,4 @@ disabled: 1
 match:
   distribution: ^SCHWIGON/Benchmark-Perl-Formance-Plugin-Mandelbrot
   perlconfig:
-    archname: OpenBSD.amd64-openbsd-thread-multi-ld
     osname: openbsd
-    osvers: '6.2'
-    use64bitall: define
-    use64bitint: define
-    useithreads: define
-    uselongdouble: define
-    usemultiplicity: define
-    version: '^5.2'
