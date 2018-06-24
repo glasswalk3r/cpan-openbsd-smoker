@@ -96,7 +96,8 @@ cleanup_cpan
 # this is a hack, at best
 sudo sed -i '/^\[mysqld\]$/a \
 performance_schema=ON\
-performance-schema-instrument="stage/%=ON"\                                                                                                                                                   performance-schema-consumer-events-stages-current=ON\
+performance-schema-instrument="stage/%=ON"\
+performance-schema-consumer-events-stages-current=ON\
 performance-schema-consumer-events-stages-history=ON\
 performance-schema-consumer-events-stages-history-long=ON\
 ' /etc/my.cnf

@@ -7,6 +7,7 @@ This project includes the following:
   * A set of CPAN "distroprefs" files to disable distributions that causes the smoker on OpenBSD to halt.
   * A Vagrant configuration file (Vagrantfile) and corresponding shell scripts for provisioning.
   * A VirtualBox image of OpenBSD, optimized to run a CPAN Smoker (available at Vagrant Cloud).
+  * A (experimental) Packer configuration file, used to create the base image to be used with Vagrant.
 
 ## The Vagrant provisioned VM
 
@@ -51,9 +52,12 @@ First clone this repository. Then go to the `vagrant` directory. You should see 
 
 ```
 
-Once there, you will find the `Vagrantfile`, where the definitions of the CPAN::Reporter::Smoker VM. You will want to look up for the section named "CONFIGURABLE STEPS". Some options are required, others not. Make sure to read the comments, they are currently the only documentation available.
+Once there, you will find the `Vagrantfile`, where the definitions of the CPAN::Reporter::Smoker VM.
+You will want to look up for the section named "CONFIGURABLE STEPS". Some options are required, 
+others not. Make sure to read the comments, they are currently the only documentation available.
 
-Besides editing the Vagrantfile, you need to copy your metabase_id.json to the `metabase` directory (there is even a tip over there ;-) ).
+Besides editing the Vagrantfile, you need to copy your `metabase_id.json` to the `metabase` directory
+(there is even a tip over there ;-) ).
 
 Finally, make sure you are in the same directory where the `Vagranfile` is located and hit `vagrant up`.
 
@@ -72,6 +76,18 @@ This project Vangrafile is prepared to implement idempotent operations, so only 
   * Update your local CPAN mirror
   * Updates CPAN-Reporter-Smoker-OpenBSD distribution (available also at CPAN) for the vagrant and other users.
   * Updates the keyboard configuration based on the Vagrantfile respective option.
+
+### Packer
+
+This project is now using [Packer](https://www.packer.io/) to build the base image for Vagrant. Packer allows the setup of the VM and install of OpenBSD automatically.
+
+Although still experimental, you might want to test it. Unfortunately the format of the configuration 
+file for Packer is JSON, which doesn't allow for comments, so documentation is still to be developed.
+
+Lines that you probably want to tweak with are:
+
+* variables
+* builders
   
 ### FAQ
 
