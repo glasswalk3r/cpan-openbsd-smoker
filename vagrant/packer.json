@@ -32,21 +32,23 @@
                 "/usr/local/bin/mysql -u root -p{{user `mysql_root_pass`}} < {{user `mysql_temp_file`}}",
                 "/bin/rm -f {{user `mysql_temp_file`}}",
                 "echo 'vagrant ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers",
-                "usermod -G wheel vagrant",
                 "groupadd testers",
-                "usermod -G testers vagrant",
+                "usermod -G wheel,testers vagrant",
+                "/usr/bin/chsh -s /usr/local/bin/bash vagrant",
                 "echo 'swap /mnt/cpan_build_dir mfs rw,async,nodev,nosuid,-s=1024m 0 0' >> /etc/fstab",
                 "mkdir /mnt/cpan_build_dir",
                 "chgrp testers /mnt/cpan_build_dir",
                 "chmod g+w /mnt/cpan_build_dir",
                 "mount -a",
                 "sed -i -E 's/^(PermitRootLogin )yes/\\1no/' /etc/ssh/sshd_config",
-                "/usr/bin/chsh -s /usr/local/bin/bash vagrant",
+                "echo 'bootstraping vagrant user'",
+                "cd /tmp",
                 "/usr/bin/su vagrant -c 'mkdir -p /home/vagrant/.ssh'",
                 "/usr/bin/su vagrant -c 'wget https://raw.githubusercontent.com/hashicorp/vagrant/master/keys/vagrant.pub --output-document /home/vagrant/.ssh/authorized_keys'",
                 "/usr/bin/su vagrant -c 'chmod 700 /home/vagrant/.ssh'",
                 "/usr/bin/su vagrant -c 'chmod 600 /home/vagrant/.ssh/authorized_keys'",
-                "/usr/bin/su vagrant -c 'git clone https://github.com/glasswalk3r/cpan-openbsd-smoker.git && cd /home/vagrant/cpan-openbsd-smoker/vagrant/scripts && bash vagrant_bootstrap'"
+                "/usr/bin/su vagrant -c 'cd /home/vagrant;git clone https://github.com/glasswalk3r/cpan-openbsd-smoker.git;cd /home/vagrant/cpan-openbsd-smoker/vagrant/scripts;bash vagrant_bootstrap.sh'",
+                "/usr/sbin/rcctl restart mysqld"
             ]
         }
     ],

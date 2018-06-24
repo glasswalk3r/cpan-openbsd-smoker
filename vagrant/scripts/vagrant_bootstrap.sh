@@ -91,7 +91,7 @@ export AUTOMATED_TESTING=1
 cpanm --mirror http://minicpan:8090 --mirror-only Module::Version Bundle::CPAN Log::Log4perl Module::Pluggable
 cpanm --mirror http://minicpan:8090 --mirror-only --notest POE::Component::SSLify
 cpanm --mirror http://minicpan:8090 --mirror-only POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD List::BinarySearch Filesys::Df
-perlbrew cleanup
+perlbrew clean
 cleanup_cpan
 # this is a hack, at best
 sudo sed '/^\[mysqld\]$/a \
@@ -100,5 +100,5 @@ performance-schema-instrument="stage/%=ON"\                                     
 performance-schema-consumer-events-stages-history=ON\
 performance-schema-consumer-events-stages-history-long=ON\
 ' /etc/my.cnf
-cd /home/vagrant/cpan-openbsd-smoker/vagrant/scripts \
+cd /home/vagrant/cpan-openbsd-smoker/vagrant/scripts
 prove -l -v -m
