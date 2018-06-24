@@ -82,15 +82,23 @@ BLOCK
 
 config_cpan
 curl -s -L https://install.perlbrew.pl | bash
-perlbrew install perl-stable --noman --notest -j 2 --as perl-stable
-perlbrew install-cpanm
 source ~/perl5/perlbrew/etc/bashrc
 echo 'source ~/perl5/perlbrew/etc/bashrc' > .bash_profile
+perlbrew install perl-5.26.2 --noman --notest -j 2 --as perl-stable
+perlbrew install-cpanm
 perlbrew switch perl-stable
+export AUTOMATED_TESTING=1
 cpanm --mirror http://minicpan:8090 --mirror-only Module::Version Bundle::CPAN Log::Log4perl Module::Pluggable
 cpanm --mirror http://minicpan:8090 --mirror-only --notest POE::Component::SSLify
 cpanm --mirror http://minicpan:8090 --mirror-only POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD List::BinarySearch Filesys::Df
 perlbrew cleanup
 cleanup_cpan
-cd /home/vagrant/cpan-openbsd-smoker/vagrant/scripts
+# this is a hack, at best
+sudo sed '/^\[mysqld\]$/a \
+performance_schema=ON\
+performance-schema-instrument="stage/%=ON"\                                                                                                                                                   performance-schema-consumer-events-stages-current=ON\
+performance-schema-consumer-events-stages-history=ON\
+performance-schema-consumer-events-stages-history-long=ON\
+' /etc/my.cnf
+cd /home/vagrant/cpan-openbsd-smoker/vagrant/scripts \
 prove -l -v -m

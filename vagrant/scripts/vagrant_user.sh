@@ -1,5 +1,5 @@
 #!/usr/local/bin/bash
-source functions/cpan
+source 'functions/cpan.sh'
 
 CPAN_MIRROR=${1}
 USE_LOCAL_MIRROR=${2}

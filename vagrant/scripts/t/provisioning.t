@@ -72,7 +72,7 @@ for my $directive (@expected) {
     }
 }
 
-isnt(read_sshd_conf(),'yes', 'sshd config PermitRootLogin is disabled');
+isnt( read_sshd_conf(), 'yes', 'sshd config PermitRootLogin is disabled' );
 
 # tries to find exact name with binsearch(), otherwise tries with index()
 sub find_pkg {
@@ -159,6 +159,26 @@ sub check_mysqld {
     note("Exit code of pkg_info is $exit, errors '$stderr'");
     chomp($stdout);
     return $stdout;
+}
+
+sub read_mysql_logging {
+    my $cfg    = '/etc/my.cnf';
+    my $regex1 = qr/log-bin/;
+    my $regex2 = qr/binlog_format/;
+    my $regex3 = qr/expire_log_days/;
+    my @values;
+    open( my $in, '<', $cfg ) or die "Cannot read $cfg: $!";
+
+    while (<$in>) {
+        if ( ( $_ =~ $regex1 ) or ( $_ =~ $regex2 ) or ( $_ =~ $regex3 ) ) {
+            my $line = $_;
+            chomp($line);
+            push( @values, $line );
+        }
+    }
+
+    close($in);
+    return \@values;
 }
 
 sub read_mysql_perf {
