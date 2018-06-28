@@ -4,6 +4,5 @@ disabled: 1
 match:
   perlconfig:
     osname: openbsd
-    osvers: '6.2'
     archname: OpenBSD.amd64-openbsd
   distribution: ^ATHOMASON/Gearman-Spawner

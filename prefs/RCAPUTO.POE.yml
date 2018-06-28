@@ -6,6 +6,5 @@ match:
   perlconfig:
     useithreads: 'define'
     osname: openbsd
-    osvers: '6.2'
     archname: OpenBSD.amd64-openbsd
     version: '5.24.3'
