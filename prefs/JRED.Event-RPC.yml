@@ -1,0 +1,8 @@
+---
+comment: Tests hang smoker
+disabled: 1
+match:
+  distribution: ^JRED/Event-RPC
+  perlconfig:
+    osname: openbsd
+    archname: OpenBSD.amd64-openbsd
