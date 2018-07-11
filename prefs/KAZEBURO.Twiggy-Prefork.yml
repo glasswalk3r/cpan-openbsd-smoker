@@ -2,6 +2,7 @@
 comment: Tests hang smoker
 disabled: 1
 match:
-  distribution: ^PANIKAL/Thread-Workers
+  distribution: ^KAZEBURO/Twiggy-Prefork
   perlconfig:
+    archname: OpenBSD.amd64-openbsd
     osname: openbsd

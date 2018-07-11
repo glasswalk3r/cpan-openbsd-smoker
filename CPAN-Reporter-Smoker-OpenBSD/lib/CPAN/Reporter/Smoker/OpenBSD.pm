@@ -93,7 +93,7 @@ sub block_distro {
         comment => $comment || 'Tests hang smoker',
         match => {
             distribution => $distribution,
-            perlconfig   => $perl_info
+            perlconfig   => %{$perl_info}
         },
         disabled => 1
     );

@@ -35,7 +35,6 @@ my %perl_info = (
     uselongdouble   => $Config{uselongdouble},
     version         => $Config{version},
     osname          => $Config{osname},
-    osvers          => $Config{osvers},
     archname        => $Config{archname}
 );
 
