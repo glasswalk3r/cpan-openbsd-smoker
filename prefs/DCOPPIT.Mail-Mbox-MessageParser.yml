@@ -1,5 +1,5 @@
 ---
-comment: Tests hang smoker
+comment: Tests uses too much /tmp space
 disabled: 1
 match:
   distribution: ^DCOPPIT/Mail-Mbox-MessageParser
