@@ -28,12 +28,6 @@ if ($version_check) {
 pod2usage( -exitval => 1, -verbose => 1 ) unless ( is_distro_ok($distro) );
 
 my %perl_info = (
-    useithreads     => $Config{useithreads},
-    usemultiplicity => $Config{usemultiplicity},
-    use64bitint     => $Config{use64bitint},
-    use64bitall     => $Config{use64bitall},
-    uselongdouble   => $Config{uselongdouble},
-    version         => $Config{version},
     osname          => $Config{osname},
     archname        => $Config{archname}
 );
