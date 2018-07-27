@@ -9,6 +9,4 @@ match:
     use64bitall: define
     use64bitint: define
     useithreads: define
-    uselongdouble: define
     usemultiplicity: define
-    version: 5.24.3

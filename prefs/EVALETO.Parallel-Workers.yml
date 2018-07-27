@@ -1,0 +1,12 @@
+---
+comment: Tests hang smoker
+disabled: 1
+match:
+  distribution: ^EVALETO/Parallel-Workers
+  perlconfig:
+    osname: openbsd
+    archname: OpenBSD.amd64-openbsd-thread-multi
+    useithreads: define
+    usemultiplicity: define
+    use64bitint: define
+    use64bitall: define

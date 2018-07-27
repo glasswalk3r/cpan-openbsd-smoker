@@ -1,0 +1,7 @@
+---
+comment: Doesn't hang smoker but leaves a lot of garbage in the mail box
+disabled: 1
+match:
+  distribution: ^PFEIFFER/makepp
+  perlconfig:
+    osname: openbsd
