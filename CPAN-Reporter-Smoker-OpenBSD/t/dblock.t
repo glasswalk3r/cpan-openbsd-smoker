@@ -27,13 +27,7 @@ SKIP: {
     my $distro_name = 'ARFREITAS/Foo-Bar';
     my %perl_info   = (
         useithreads     => 'define',
-        usemultiplicity => 'define',
-        use64bitint     => 'define',
-        use64bitall     => 'define',
-        uselongdouble   => 'define',
-        version         => '5.24.3',
         osname          => 'openbsd',
-        osvers          => '6.2',
         archname        => 'Openbsd.amd64-openbsd'
     );
     my $data_ref =

@@ -28,8 +28,9 @@ if ($version_check) {
 pod2usage( -exitval => 1, -verbose => 1 ) unless ( is_distro_ok($distro) );
 
 my %perl_info = (
-    osname          => $Config{osname},
-    archname        => $Config{archname}
+    osname      => $Config{osname},
+    archname    => $Config{archname},
+    useithreads => $Config{useithreads},
 );
 
 unless ( my $data_ref = block_distro( $distro, \%perl_info, $comment ) ) {
