@@ -1,5 +1,8 @@
 #!/usr/local/bin/bash
-source 'scripts/functions/cpan'
+
+function cleanup_cpan() {
+    rm -rf $HOME/.cpan/build/* $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
+}
 
 CPAN_MIRROR=${1}
 USE_LOCAL_MIRROR=${2}
@@ -37,6 +40,16 @@ END
 
 now=$(date)
 echo "Starting vagrant configuration at ${now}"
+source "${HOME}/perl5/perlbrew/etc/bashrc"
+perl_version=$(perl -v | head -3)
+echo "Using perl ${perl_version}"
+
+if [ -f "${HOME}/.bash_profile" ]
+then
+    cat "${HOME}/.bash_profile"
+else
+    echo 'source ~/perl5/perlbrew/etc/bashrc' > "${HOME}/.bash_profile"
+fi
 
 if ! [ -f "${idempotent_control}" ]
 then

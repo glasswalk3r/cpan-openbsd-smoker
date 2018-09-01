@@ -1,11 +1,9 @@
 #!/usr/local/bin/bash
 # Bootstraps the VM configuration for the vagrant user
 
-source functions/cpan
-
 function config_cpan() {
-    mkdir -p "/home/${USER}/.cpan/CPAN"
-    echo '$CPAN::Config = {' > /home/${USER}/.cpan/CPAN/MyConfig.pm
+    mkdir -p "${HOME}/.cpan/CPAN"
+    echo '$CPAN::Config = {' > "${HOME}/.cpan/CPAN/MyConfig.pm"
     (cat <<BLOCK
     'applypatch' => q[],
     'auto_commit' => q[0],
@@ -20,20 +18,20 @@ function config_cpan() {
     'colorize_output' => q[0],
     'commandnumber_in_prompt' => q[1],
     'connect_to_internet_ok' => q[0],
-    'cpan_home' => q[/home/${USER}/.cpan],
+    'cpan_home' => q[${HOME}/.cpan],
     'ftp_passive' => q[1],
     'ftp_proxy' => q[],
     'getcwd' => q[cwd],
     'gpg' => q[],
     'gzip' => q[/usr/bin/gzip],
     'halt_on_failure' => q[0],
-    'histfile' => q[/home/${USER}/.cpan/histfile],
+    'histfile' => q[${HOME}/.cpan/histfile],
     'histsize' => q[100],
     'http_proxy' => q[],
     'inactivity_timeout' => q[0],
     'index_expire' => q[1],
     'inhibit_startup_message' => q[0],
-    'keep_source_where' => q[/home/${USER}/.cpan/sources],
+    'keep_source_where' => q[${HOME}/.cpan/sources],
     'load_module_verbosity' => q[none],
     'make' => q[/usr/bin/make],
     'make_arg' => q[-j3],
@@ -50,7 +48,7 @@ function config_cpan() {
     'perl5lib_verbosity' => q[none],
     'prefer_external_tar' => q[1],
     'prefer_installer' => q[MB],
-    'prefs_dir' => q[/home/${USER}/.cpan/prefs],
+    'prefs_dir' => q[${HOME}/.cpan/prefs],
     'prerequisites_policy' => q[follow],
     'recommends_policy' => q[1],
     'scan_cache' => q[atstart],
@@ -77,13 +75,13 @@ function config_cpan() {
   1;
   __END__
 BLOCK
-    ) >> "/home/${USER}/.cpan/CPAN/MyConfig.pm"
+    ) >> "${HOME}/.cpan/CPAN/MyConfig.pm"
 }
 
 config_cpan
 curl -s -L https://install.perlbrew.pl | bash
-source ~/perl5/perlbrew/etc/bashrc
-echo 'source ~/perl5/perlbrew/etc/bashrc' > .bash_profile
+source "${HOME}/perl5/perlbrew/etc/bashrc"
+echo 'source ~/perl5/perlbrew/etc/bashrc' > "${HOME}/.bash_profile"
 perlbrew install perl-5.26.2 --noman --notest -j 2 --as perl-stable
 perlbrew install-cpanm
 perlbrew switch perl-stable
@@ -92,7 +90,7 @@ cpanm --mirror http://minicpan:8090 --mirror-only Module::Version Bundle::CPAN L
 cpanm --mirror http://minicpan:8090 --mirror-only --notest POE::Component::SSLify
 cpanm --mirror http://minicpan:8090 --mirror-only POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD List::BinarySearch Filesys::Df
 perlbrew clean
-cleanup_cpan
+rm -rf $HOME/.cpan/build/* $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
 # this is a hack, at best
 sudo sed -i '/^\[mysqld\]$/a \
 performance_schema=ON\
@@ -101,5 +99,5 @@ performance-schema-consumer-events-stages-current=ON\
 performance-schema-consumer-events-stages-history=ON\
 performance-schema-consumer-events-stages-history-long=ON\
 ' /etc/my.cnf
-cd /home/${USER}/cpan-openbsd-smoker/${USER}/scripts
+cd ${HOME}/cpan-openbsd-smoker/vagrant/scripts
 prove -l -v -m
