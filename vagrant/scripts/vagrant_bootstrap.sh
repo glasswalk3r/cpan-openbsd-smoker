@@ -5,7 +5,7 @@ source functions/cpan
 
 function config_cpan() {
     mkdir -p "/home/${USER}/.cpan/CPAN"
-    echo '$CPAN::Config = {' > "/home/vagrant/.cpan/CPAN/MyConfig.pm"
+    echo '$CPAN::Config = {' > /home/${USER}/.cpan/CPAN/MyConfig.pm
     (cat <<BLOCK
     'applypatch' => q[],
     'auto_commit' => q[0],
@@ -20,20 +20,20 @@ function config_cpan() {
     'colorize_output' => q[0],
     'commandnumber_in_prompt' => q[1],
     'connect_to_internet_ok' => q[0],
-    'cpan_home' => q[/home/vagrant/.cpan],
+    'cpan_home' => q[/home/${USER}/.cpan],
     'ftp_passive' => q[1],
     'ftp_proxy' => q[],
     'getcwd' => q[cwd],
     'gpg' => q[],
     'gzip' => q[/usr/bin/gzip],
     'halt_on_failure' => q[0],
-    'histfile' => q[/home/vagrant/.cpan/histfile],
+    'histfile' => q[/home/${USER}/.cpan/histfile],
     'histsize' => q[100],
     'http_proxy' => q[],
     'inactivity_timeout' => q[0],
     'index_expire' => q[1],
     'inhibit_startup_message' => q[0],
-    'keep_source_where' => q[/home/vagrant/.cpan/sources],
+    'keep_source_where' => q[/home/${USER}/.cpan/sources],
     'load_module_verbosity' => q[none],
     'make' => q[/usr/bin/make],
     'make_arg' => q[-j3],
@@ -50,7 +50,7 @@ function config_cpan() {
     'perl5lib_verbosity' => q[none],
     'prefer_external_tar' => q[1],
     'prefer_installer' => q[MB],
-    'prefs_dir' => q[/home/vagrant/.cpan/prefs],
+    'prefs_dir' => q[/home/${USER}/.cpan/prefs],
     'prerequisites_policy' => q[follow],
     'recommends_policy' => q[1],
     'scan_cache' => q[atstart],
@@ -68,7 +68,7 @@ function config_cpan() {
     'unzip' => q[/usr/local/bin/unzip],
     'urllist' => [q[http://minicpan:8090/]],
     'use_prompt_default' => q[0],
-    'use_sqlite' => q[1],
+    'use_sqlite' => q[0],
     'version_timeout' => q[15],
     'wget' => q[/usr/local/bin/wget],
     'yaml_load_code' => q[0],
@@ -77,7 +77,7 @@ function config_cpan() {
   1;
   __END__
 BLOCK
-    ) > "/home/vagrant/.cpan/CPAN/MyConfig.pm"
+    ) >> "/home/${USER}/.cpan/CPAN/MyConfig.pm"
 }
 
 config_cpan
@@ -101,5 +101,5 @@ performance-schema-consumer-events-stages-current=ON\
 performance-schema-consumer-events-stages-history=ON\
 performance-schema-consumer-events-stages-history-long=ON\
 ' /etc/my.cnf
-cd /home/vagrant/cpan-openbsd-smoker/vagrant/scripts
+cd /home/${USER}/cpan-openbsd-smoker/${USER}/scripts
 prove -l -v -m

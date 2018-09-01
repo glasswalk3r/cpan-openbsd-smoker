@@ -16,7 +16,7 @@ my $PREFS_DIR        = $ARGV[5];
 
 my $now = localtime(time);
 print "Starting provisioning at $now\n";
-print 'Using', IDEMPOTENT_CONTROL, ' to control provisioning', "\n";
+print 'Using ', IDEMPOTENT_CONTROL, ' to control provisioning', "\n";
 my $yaml = LoadFile($CONFIG_YAML);
 
 if ( -f IDEMPOTENT_CONTROL ) {
@@ -42,7 +42,7 @@ else {
     close($out);
 
     for my $user ( keys( %{ $yaml->{users} } ) ) {
-        print "Adding user $user to ", GROUP, "group\n";
+        print "Adding user $user to ", GROUP, " group\n";
 
         # password created with:
         # encrypt -c default vagrant
