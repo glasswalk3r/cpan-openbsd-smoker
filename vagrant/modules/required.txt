@@ -9,3 +9,4 @@ Test::Reporter::Transport::Socket
 CPAN::Reporter::Smoker::OpenBSD
 Proc::ProcessTable
 DBD::mysql
+CPAN::SQLite
