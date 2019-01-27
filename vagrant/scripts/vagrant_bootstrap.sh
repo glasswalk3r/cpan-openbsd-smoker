@@ -2,13 +2,14 @@
 # Bootstraps the VM configuration for the vagrant user
 
 function config_cpan() {
+	local local_mirror=$1
     mkdir -p "${HOME}/.cpan/CPAN"
     echo '$CPAN::Config = {' > "${HOME}/.cpan/CPAN/MyConfig.pm"
     (cat <<BLOCK
     'applypatch' => q[],
     'auto_commit' => q[0],
     'build_cache' => q[100],
-    'build_dir' => q[/mnt/cpan_build_dir],
+    'build_dir' => q[/mnt/cpan_build_dir/vagrant],
     'build_dir_reuse' => q[0],
     'build_requires_install_policy' => q[yes],
     'bzip2' => q[/usr/local/bin/bzip2],
@@ -64,7 +65,7 @@ function config_cpan() {
     'test_report' => q[0],
     'trust_test_report_history' => q[0],
     'unzip' => q[/usr/local/bin/unzip],
-    'urllist' => [q[http://minicpan:8090/]],
+    'urllist' => [q[${local_mirror}]],
     'use_prompt_default' => q[0],
     'use_sqlite' => q[0],
     'version_timeout' => q[15],
@@ -78,17 +79,19 @@ BLOCK
     ) >> "${HOME}/.cpan/CPAN/MyConfig.pm"
 }
 
-config_cpan
+export LOCAL_MIRROR='http://minicpan:8090'
+
+config_cpan ${LOCAL_MIRROR}
 curl -s -L https://install.perlbrew.pl | bash
 source "${HOME}/perl5/perlbrew/etc/bashrc"
 echo 'source ~/perl5/perlbrew/etc/bashrc' > "${HOME}/.bash_profile"
-perlbrew install perl-5.26.2 --noman --notest -j 2 --as perl-stable
+perlbrew install perl-stable --noman --notest -j 2 --as perl-stable
 perlbrew install-cpanm
 perlbrew switch perl-stable
 export AUTOMATED_TESTING=1
-cpanm --mirror http://minicpan:8090 --mirror-only Module::Version Bundle::CPAN Log::Log4perl Module::Pluggable
-cpanm --mirror http://minicpan:8090 --mirror-only --notest POE::Component::SSLify
-cpanm --mirror http://minicpan:8090 --mirror-only POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD List::BinarySearch Filesys::Df
+cpanm --mirror ${LOCAL_MIRROR} --mirror-only Module::Version Bundle::CPAN Log::Log4perl Module::Pluggable
+cpanm --mirror ${LOCAL_MIRROR} --mirror-only --notest POE::Component::SSLify
+cpanm --mirror ${LOCAL_MIRROR} --mirror-only POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD List::BinarySearch Filesys::Df
 perlbrew clean
 rm -rf $HOME/.cpan/build/* $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
 # this is a hack, at best

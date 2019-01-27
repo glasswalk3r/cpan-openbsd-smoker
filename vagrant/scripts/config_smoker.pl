@@ -97,7 +97,8 @@ else {
       "Installing a new perl and required modules for users with parallel\n";
     my $parallel_config = parallel_input( $yaml->{users} );
     system(
-        'parallel', '-a', $parallel_config->{users_file},
+        'parallel', '--will-cite',
+		'-a', $parallel_config->{users_file},
         '-a', $parallel_config->{yaml_location},
         '/tmp/run_user_install.sh', '{}', '{#}'
       ) == 0

@@ -9,8 +9,9 @@
     ],
     "variables": {
         "mysql_root_pass": "vagrant",
-        "openbsd_version": "6.3",
-        "openbsd_mirror": "openbsd.c3sl.ufpr.br"
+        "openbsd_version": "6.4",
+        "openbsd_mirror": "openbsd.c3sl.ufpr.br",
+        "timezone": "America/Sao_Paulo"
     },
     "provisioners": [
         {
@@ -61,12 +62,12 @@
                 "/tmp 1G-*<enter>",
                 "EOF<enter>",
                 "cat <<EOF >>install.conf<enter>",
-                "System hostname = openbsd63<enter>",
+                "System hostname = openbsd{{user `openbsd_version`}}<enter>",
                 "Password for root = vagrant<enter>",
                 "Setup a user = vagrant<enter>",
                 "Password for user = vagrant<enter>",
                 "Allow root ssh login = yes<enter>",
-                "What timezone are you in = America/Sao_Paulo<enter>",
+                "What timezone are you in = {{user `timezone`}}<enter>",
                 "Location of sets = cd0<enter>",
                 "Set name(s) = -game*.tgz -xshare*.tgz -xfont*.tgz -xserv*.tgz <enter>",
                 "Directory does not contain SHA256.sig. Continue without verification = yes<enter>",
@@ -76,9 +77,9 @@
             ],
             "type": "virtualbox-iso",
             "guest_os_type": "OpenBSD_64",
-            "iso_url": "file://ISO/install63.iso",
-            "iso_checksum": "3f649153b3c62c1e1b1c57b5aa31b8df",
-            "iso_checksum_type": "md5",
+            "iso_url": "file://ISO/install64.iso",
+            "iso_checksum": "81833b79e23dc0f961ac5fb34484bca66386deb3181ddb8236870fa4f488cdd2",
+            "iso_checksum_type": "sha256",
             "ssh_username": "root",
             "ssh_password": "vagrant",
             "shutdown_command": "/sbin/halt -p",
@@ -87,7 +88,7 @@
             "disk_size": 55000,
             "output_directory": "",
             "ssh_wait_timeout": "10000s",
-            "vm_name": "openbsd6.3-base",
+            "vm_name": "openbsd{{user `openbsd_version`}}-base",
             "vboxmanage": [
                 [
                     "modifyvm",
