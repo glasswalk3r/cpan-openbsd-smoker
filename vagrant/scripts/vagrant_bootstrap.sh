@@ -89,6 +89,7 @@ perlbrew install perl-stable --noman --notest -j 2 --as perl-stable
 perlbrew install-cpanm
 perlbrew switch perl-stable
 export AUTOMATED_TESTING=1
+cpanm --mirror ${LOCAL_MIRROR} --mirror-only CPAN
 cpanm --mirror ${LOCAL_MIRROR} --mirror-only Module::Version Bundle::CPAN Log::Log4perl Module::Pluggable
 cpanm --mirror ${LOCAL_MIRROR} --mirror-only --notest POE::Component::SSLify
 cpanm --mirror ${LOCAL_MIRROR} --mirror-only POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD List::BinarySearch Filesys::Df

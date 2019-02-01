@@ -54,7 +54,7 @@ Vagrant.configure("2") do |config|
   # set to "true" (as a Ruby string) below if you want to have a minicpan mirror inside the VM
   # since it takes a considerable time to build one, it is set to false by default.
   # If you already have a mirror in your local network, you probably leave this as is.
-  use_local_mirror="false"
+  use_local_mirror="true"
 
   # the perlbrew homepage. Shouldn't be necessary to change it
   perlbrew_url="https://install.perlbrew.pl"

@@ -41,8 +41,8 @@ END
 now=$(date)
 echo "Starting vagrant configuration at ${now}"
 source "${HOME}/perl5/perlbrew/etc/bashrc"
-perl_version=$(perl -v | head -3)
-echo "Using perl ${perl_version}"
+perl_version=$(perl -v)
+echo -e "Using the following perl:\n${perl_version}"
 
 if [ -f "${HOME}/.bash_profile" ]
 then
@@ -70,20 +70,26 @@ then
     fi
 
     config_metabase
-    echo 'Installing required Perl modules...'
-    (echo "o conf urllist ${CPAN_MIRROR}"; echo 'o conf commit') | cpan
 
     if [ ${USE_LOCAL_MIRROR} == 'true' ]
     then
+	    echo 'Installing required Perl modules...'
+		(echo "o conf urllist ${CPAN_MIRROR}"; echo 'o conf commit') | cpan
+		cpan -i CPAN::SQLite
+		(echo 'o conf use_sqlite 1'; echo 'o conf commit') | cpan
+		echo "Using ${CPAN_MIRROR} as remote mirror for minicpan"
         minicpanrc=/home/vagrant/.minicpanrc
-        echo 'local: /minicpan/' > "${minicpanrc}"
+		local_mirror=/minicpan
+		sudo chmod g+rwx "${local_mirror}"
+        echo "local: ${local_mirror}" > "${minicpanrc}"
         echo "remote: ${CPAN_MIRROR}" >> "${minicpanrc}"
         echo 'also_mirror: indices/find-ls.gz' >> "${minicpanrc}"
-        (echo "o conf urllist file:///minicpan ${CPAN_MIRROR}"; echo 'o conf commit') | cpan
-        cpan -i CPAN::Mini CPAN::Mini::LatestDistVersion
+		cpan -i CPAN::Mini CPAN::Mini::LatestDistVersion
         echo 'source ~/.bashrc' >> ~/.bash_profile
         echo "alias minicpan='minicpan -c CPAN::Mini::LatestDistVersion'" >> ~/.bashrc
         alias minicpan='minicpan -c CPAN::Mini::LatestDistVersion'
+		echo "Adding now ${local_mirror} as preferred remote mirror for CPAN client"
+		(echo "o conf urllist file://${local_mirror} ${CPAN_MIRROR}"; echo 'o conf commit') | cpan
     fi
 
     cleanup_cpan
