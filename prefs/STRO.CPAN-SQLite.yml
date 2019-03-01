@@ -1,0 +1,7 @@
+---
+comment: Brokes the CPAN client 
+disabled: 1
+match:
+  distribution: ^STRO/CPAN-SQLite-0.213
+  perlconfig:
+    osname: openbsd

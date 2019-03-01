@@ -1,0 +1,9 @@
+---
+comment: Tries to run rpm tools over OpenBSD
+disabled: 1
+match:
+  distribution: ^SPLICE/Lingua-EN-Segmenter
+  perlconfig:
+    archname: OpenBSD.amd64-openbsd-thread-multi
+    osname: openbsd
+    useithreads: define

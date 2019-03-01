@@ -1,0 +1,7 @@
+---
+comment: Tests hang smoker
+disabled: 1
+match:
+  distribution: ^DCANTRELL/Unix-Sudo
+  perlconfig:
+    osname: openbsd
