@@ -1,0 +1,8 @@
+---
+comment: Tries to elevate privileges of non-root users with sudo
+disabled: 1
+match:
+  distribution: ^MIYAGAWA/Plack
+  perlconfig:
+    archname: OpenBSD.amd64-openbsd
+    osname: openbsd

@@ -2,6 +2,6 @@
 comment: Tests hang smoker
 disabled: 1
 match:
-  distribution: ^KAZUHO/Starlet
+  distribution: ^EDAVIS/xmltv
   perlconfig:
     osname: openbsd
