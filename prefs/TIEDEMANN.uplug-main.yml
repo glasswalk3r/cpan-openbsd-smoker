@@ -1,0 +1,8 @@
+---
+comment: Uses too much space on build_dir
+disabled: 1
+match:
+  distribution: ^TIEDEMANN/uplug-main
+  perlconfig:
+    osname: openbsd
+    useithreads: define

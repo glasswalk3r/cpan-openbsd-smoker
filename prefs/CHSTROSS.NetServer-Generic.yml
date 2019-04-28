@@ -1,0 +1,9 @@
+---
+comment: Tests hang smoker without ithreads enabled
+disabled: 1
+match:
+  distribution: ^CHSTROSS/NetServer-Generic
+  perlconfig:
+    archname: OpenBSD.amd64-openbsd-multi
+    osname: openbsd
+    useithreads: undef
