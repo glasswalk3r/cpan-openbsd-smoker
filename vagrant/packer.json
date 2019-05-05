@@ -1,126 +1,143 @@
 {
-    "post-processors": [
-        [
-            {
-                "type": "vagrant",
-                "output": "openbsd-{{user `openbsd_version`}}-amd64.box"
-            }
-        ]
-    ],
-    "variables": {
-        "mysql_root_pass": "vagrant",
-        "openbsd_version": "6.4",
-        "openbsd_mirror": "openbsd.c3sl.ufpr.br",
-        "timezone": "America/Sao_Paulo"
-    },
-    "provisioners": [
-        {
-            "type": "shell",
-            "environment_vars": [
-                "PKG_PATH=https://{{user `openbsd_mirror`}}/pub/OpenBSD/{{user `openbsd_version`}}/packages/amd64/"
-            ],
-            "inline": [
-                "/usr/sbin/pkg_add bzip2 unzip--iconv wget curl bash ntp tidyp sqlite3 sudo-- git parallel libxml gmp libxslt mpfr gd pkg_mgr mariadb-server",
-                "/usr/local/bin/mysql_install_db",
-                "/usr/sbin/rcctl enable mysqld",
-                "sed -i -E 's/^(log-bin=)/#\\1/' /etc/my.cnf",
-                "sed -i -E 's/^(binlog_format=)/#\\1/' /etc/my.cnf",
-                "/usr/sbin/rcctl start mysqld",
-                "/bin/echo -e '\n\n{{user `mysql_root_pass`}}\n{{user `mysql_root_pass`}}\n\n\nn\n\n' | mysql_secure_installation 2> /dev/null",
-                "echo 'vagrant ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers",
-                "groupadd testers",
-                "usermod -G wheel,testers vagrant",
-                "/usr/bin/chsh -s /usr/local/bin/bash vagrant",
-                "echo 'swap /mnt/cpan_build_dir mfs rw,async,nodev,nosuid,-s=1024m 0 0' >> /etc/fstab",
-                "mkdir /mnt/cpan_build_dir",
-                "chgrp testers /mnt/cpan_build_dir",
-                "chmod g+w /mnt/cpan_build_dir",
-                "mount -a",
-                "sed -i -E 's/^(PermitRootLogin )yes/\\1no/' /etc/ssh/sshd_config",
-                "echo 'bootstraping vagrant user'",
-                "cd /tmp",
-                "/usr/bin/su vagrant -c 'mkdir -p /home/vagrant/.ssh'",
-                "/usr/bin/su vagrant -c 'wget https://raw.githubusercontent.com/hashicorp/vagrant/master/keys/vagrant.pub --output-document /home/vagrant/.ssh/authorized_keys'",
-                "/usr/bin/su vagrant -c 'chmod 700 /home/vagrant/.ssh'",
-                "/usr/bin/su vagrant -c 'chmod 600 /home/vagrant/.ssh/authorized_keys'",
-                "/usr/bin/su vagrant -c 'cd /home/vagrant;git clone https://github.com/glasswalk3r/cpan-openbsd-smoker.git;cd /home/vagrant/cpan-openbsd-smoker/vagrant/scripts;bash vagrant_bootstrap.sh'",
-                "/usr/sbin/rcctl restart mysqld"
-            ]
-        }
-    ],
-    "builders": [
-        {
-            "boot_command": [
-                "S<enter>",
-                "cat <<EOF >> openbsd.disklabel<enter>",
-                "/ 250M<enter>",
-                "swap 1548M<enter>",
-                "/home 40G<enter>",
-                "/minicpan 5G<enter>",
-                "/usr 5G<enter>",
-                "/var 500M<enter>",
-                "/tmp 1G-*<enter>",
-                "EOF<enter>",
-                "cat <<EOF >>install.conf<enter>",
-                "System hostname = openbsd{{user `openbsd_version`}}<enter>",
-                "Password for root = vagrant<enter>",
-                "Setup a user = vagrant<enter>",
-                "Password for user = vagrant<enter>",
-                "Allow root ssh login = yes<enter>",
-                "What timezone are you in = {{user `timezone`}}<enter>",
-                "Location of sets = cd0<enter>",
-                "Set name(s) = -game*.tgz -xshare*.tgz -xfont*.tgz -xserv*.tgz <enter>",
-                "Directory does not contain SHA256.sig. Continue without verification = yes<enter>",
-                "URL to autopartitioning template for disklabel = file://./openbsd.disklabel<enter>",
-                "EOF<enter>",
-                "install -af install.conf && reboot<enter>"
-            ],
-            "type": "virtualbox-iso",
-            "guest_os_type": "OpenBSD_64",
-            "iso_url": "file://ISO/install64.iso",
-            "iso_checksum": "81833b79e23dc0f961ac5fb34484bca66386deb3181ddb8236870fa4f488cdd2",
-            "iso_checksum_type": "sha256",
-            "ssh_username": "root",
-            "ssh_password": "vagrant",
-            "shutdown_command": "/sbin/halt -p",
-            "guest_additions_mode": "disable",
-            "boot_wait": "30s",
-            "disk_size": 55000,
-            "output_directory": "",
-            "ssh_wait_timeout": "10000s",
-            "vm_name": "openbsd{{user `openbsd_version`}}-base",
-            "vboxmanage": [
-                [
-                    "modifyvm",
-                    "{{.Name}}",
-                    "--memory",
-                    "1548"
-                ],
-                [
-                    "modifyvm",
-                    "{{.Name}}",
-                    "--cpus",
-                    "2"
-                ],
-                [
-                    "modifyvm",
-                    "{{.Name}}",
-                    "--natdnspassdomain1",
-                    "off"
-                ],
-                [
-                    "modifyvm",
-                    "{{.Name}}",
-                    "--natdnshostresolver1",
-                    "on"
-                ],
-                [
-                    "modifyvm",
-                    "{{.Name}}",
-                    "--uartmode1",
-                    "disconnected"
-                ]
-            ]
-        }
+  "post-processors": [
+    [
+      {
+        "type": "vagrant",
+        "output": "openbsd-{{user `openbsd_version`}}-amd64.box"
+      }
     ]
+  ],
+  "variables": {
+    "mysql_root_pass": "vagrant",
+    "openbsd_version": "6.5",
+    "openbsd_mirror": "openbsd.c3sl.ufpr.br",
+    "timezone": "America/Sao_Paulo"
+  },
+  "provisioners": [
+    {
+      "type": "shell",
+      "environment_vars": [
+        "PKG_PATH=https://{{user `openbsd_mirror`}}/pub/OpenBSD/{{user `openbsd_version`}}/packages/amd64/"
+      ],
+      "inline": [
+        "/usr/sbin/pkg_add bzip2 unzip--iconv wget curl bash ntp tidyp sqlite3 sudo-- git parallel libxml gmp libxslt mpfr gd pkg_mgr mariadb-server",
+        "/usr/local/bin/mysql_install_db",
+        "/usr/sbin/rcctl enable mysqld",
+        "sed -i -E 's/^(log-bin=)/#\\1/' /etc/my.cnf",
+        "sed -i -E 's/^(binlog_format=)/#\\1/' /etc/my.cnf",
+        "/usr/sbin/rcctl start mysqld",
+        "/bin/echo -e '\n\n{{user `mysql_root_pass`}}\n{{user `mysql_root_pass`}}\n\n\nn\n\n' | mysql_secure_installation 2> /dev/null",
+        "echo 'vagrant ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers",
+        "groupadd testers",
+        "usermod -G wheel,testers vagrant",
+        "/usr/bin/chsh -s /usr/local/bin/bash vagrant",
+        "echo 'swap /mnt/cpan_build_dir mfs rw,async,nodev,nosuid,-s=1024m 0 0' >> /etc/fstab",
+        "mkdir /mnt/cpan_build_dir",
+        "chgrp testers /mnt/cpan_build_dir",
+        "chmod g+w /mnt/cpan_build_dir",
+        "mount -a",
+        "sed -i -E 's/^(PermitRootLogin )yes/\\1no/' /etc/ssh/sshd_config",
+        "echo 'bootstraping vagrant user'",
+        "cd /tmp",
+        "/usr/bin/su vagrant -c 'mkdir -p /home/vagrant/.ssh'",
+        "/usr/bin/su vagrant -c 'wget https://raw.githubusercontent.com/hashicorp/vagrant/master/keys/vagrant.pub --output-document /home/vagrant/.ssh/authorized_keys'",
+        "/usr/bin/su vagrant -c 'chmod 700 /home/vagrant/.ssh'",
+        "/usr/bin/su vagrant -c 'chmod 600 /home/vagrant/.ssh/authorized_keys'",
+        "/usr/bin/su vagrant -c 'cd /home/vagrant;git clone https://github.com/glasswalk3r/cpan-openbsd-smoker.git;cd /home/vagrant/cpan-openbsd-smoker/vagrant/scripts;bash vagrant_bootstrap.sh'",
+        "/usr/sbin/rcctl restart mysqld"
+      ]
+    }
+  ],
+  "builders": [
+    {
+      "boot_command": [
+        "S<enter>",
+        "cat <<EOF >> openbsd.disklabel<enter>",
+        "/ 250M<enter>",
+        "swap 1548M<enter>",
+        "/home 40G<enter>",
+        "/minicpan 5G<enter>",
+        "/usr 5G<enter>",
+        "/var 500M<enter>",
+        "/tmp 1G-*<enter>",
+        "EOF<enter>",
+        "cat <<EOF >>install.conf<enter>",
+        "System hostname = openbsd{{user `openbsd_version`}}<enter>",
+        "Which network interface do you wish to configure? (or 'done') em0<enter>",
+        "IPv4 address for em0? (or 'dhcp' or 'none') dhcp<enter>",
+        "Which network interface do you wish to configure? (or 'done') done<enter>",
+        "Password for root = vagrant<enter>",
+        "Setup a user = vagrant<enter>",
+        "Password for user = vagrant<enter>",
+        "Allow root ssh login = yes<enter>",
+        "What timezone are you in = {{user `timezone`}}<enter>",
+        "Location of sets = cd0<enter>",
+        "Set name(s) = -game*.tgz -xshare*.tgz -xfont*.tgz -xserv*.tgz <enter>",
+        "Directory does not contain SHA256.sig. Continue without verification = yes<enter>",
+        "URL to autopartitioning template for disklabel = file:///openbsd.disklabel<enter>",
+        "EOF<enter>",
+        "install -af install.conf && reboot<enter>"
+      ],
+      "type": "virtualbox-iso",
+      "guest_os_type": "OpenBSD_65",
+      "iso_url": "file://ISO/install65.iso",
+      "iso_checksum": "38d1f8cadd502f1c27bf05c5abde6cc505dd28f3f34f8a941048ff9a54f9f608",
+      "iso_checksum_type": "sha256",
+      "ssh_username": "root",
+      "ssh_password": "vagrant",
+      "shutdown_command": "/sbin/halt -p",
+      "guest_additions_mode": "disable",
+      "boot_wait": "30s",
+      "disk_size": 55000,
+      "output_directory": "",
+      "ssh_wait_timeout": "10000s",
+      "vm_name": "openbsd{{user `openbsd_version`}}-base",
+      "vboxmanage": [
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--memory",
+          "1548"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--cpus",
+          "2"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--natdnspassdomain1",
+          "off"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--natdnshostresolver1",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--uartmode1",
+          "disconnected"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--nic1",
+          "nat",
+          "--nictype1",
+          "82540EM"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--vrde",
+          "off"
+        ]
+      ]
+    }
+  ]
 }

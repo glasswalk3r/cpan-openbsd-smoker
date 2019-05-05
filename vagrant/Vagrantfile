@@ -7,7 +7,8 @@ Vagrant.configure("2") do |config|
   #config.vm.box = "arfreitas/openbsd-6.1-cpan-smoker"
   #config.vm.box = "arfreitas/openbsd-6.2-cpan-smoker"
   #config.vm.box = "arfreitas/openbsd-6.3-cpan-smoker"
-  config.vm.box = "arfreitas/openbsd-6.4-cpan-smoker"
+  #config.vm.box = "arfreitas/openbsd-6.4-cpan-smoker"
+  config.vm.box = "arfreitas/openbsd-6.5-cpan-smoker"
   config.vm.hostname = "cpan-smoker-openbsd"
   config.vm.synced_folder "/tmp", "/vagrant", disabled: true
 
@@ -22,11 +23,13 @@ Vagrant.configure("2") do |config|
     vb.memory = "1548"
     vb.name = "OpenBSD CPAN Smoker"
     # You may want to hide your network name given by the internal DHCP server.
-    # Assuming that the VM has only one NIC
     vb.customize ["modifyvm", :id, "--natdnspassdomain1", "off"]
     # Using the host resolver
     vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
     vb.customize ["modifyvm", :id, "--uartmode1", "disconnected"]
+    vb.customize ["modifyvm", :id, "--nic1", "nat", "--nictype1", "82540EM"]
+    vb.customize ["modifyvm", :id, "--vrde", "off"]
+    vb.customize ["modifyvm", :id, "--vram", 1]
   end
 
   ################################################################
