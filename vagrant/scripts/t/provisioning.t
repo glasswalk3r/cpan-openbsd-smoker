@@ -1,11 +1,13 @@
 use warnings;
 use strict;
-use Test::More tests => 41;
+use Config;
+use Test::More;    # tests => 41;
 use Capture::Tiny 0.46 qw(capture);
 use Filesys::Df;
 use Fcntl ':mode';
 use File::stat;
 use List::BinarySearch 0.25 'binsearch';
+use Module::Version qw(get_version);
 
 # These tests are used to validate new boxes of OpenBSD created for Vagrant
 # since many of them are still done manually
@@ -44,10 +46,34 @@ if ( check_os_version() eq '6.0' ) {
 else {
     push( @wanted, 'sqlite3' );
 }
+
 my $all_pkgs_ref = list_pkgs();
+
 for my $package (@wanted) {
     ok( find_pkg( $package, $all_pkgs_ref ), "package $package is installed" );
 }
+
+@wanted = (
+    'Module::Version',
+    'Bundle::CPAN',
+    'Log::Log4perl',
+    'Module::Pluggable',
+    'POE::Component::Metabase::Client::Submit',
+    'POE::Component::Metabase::Relay::Server',
+    'metabase::relayd',
+    'CPAN::Reporter::Smoker::OpenBSD',
+);
+
+my $all_modules_ref = list_modules();
+
+for my $wanted_module (@wanted) {
+    ok( ( binsearch { $a cmp $b } $wanted_module, @{$all_modules_ref} ),
+        "$wanted_module is installed" );
+}
+
+note('Specific for modules that are installed without passing the tests');
+my $broken = 'POE::Component::SSLify';
+ok(get_version($broken), "$broken is installed even though fail the tests");
 
 is( check_mysqld(), 'mysqld(ok)', 'mariadb server is running' );
 
@@ -73,6 +99,8 @@ for my $directive (@expected) {
 }
 
 isnt( read_sshd_conf(), 'yes', 'sshd config PermitRootLogin is disabled' );
+
+done_testing;
 
 # tries to find exact name with binsearch(), otherwise tries with index()
 sub find_pkg {
@@ -217,3 +245,32 @@ sub read_sshd_conf {
     close($in);
     return $value;
 }
+
+# returns all modules names installed by checking perllocal.pod file
+# returns an sorted array reference
+sub list_modules {
+    my $file = "$Config{archlib}/perllocal.pod";
+    open( my $in, "<", $file ) or die "Cannot read $file: $!";
+    my @data = <$in>;
+    close($in);
+    chomp(@data);
+
+    my @temp = grep( /^=head2.*\:\sC<Module>/, @data );
+    my @new;
+
+    for my $module_line (@temp) {
+
+     # =head2 Sat May 25 19:37:40 2019: C<Module> L<Capture::Tiny|Capture::Tiny>
+        my $t = ( ( split( /\|/, $module_line ) ) )[1];
+        die "Could not extract a value from $module_line" unless(defined($t));
+
+        # removes ">" from the Pod line
+        chop $t;
+        push( @new, $t );
+    }
+
+    @new = sort(@new);
+    return \@new;
+
+}
+

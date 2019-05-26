@@ -20,6 +20,7 @@
         "PKG_PATH=https://{{user `openbsd_mirror`}}/pub/OpenBSD/{{user `openbsd_version`}}/packages/amd64/"
       ],
       "inline": [
+        "echo 'PS1=\"[\\u@\\h:\\w]$ \"' > /etc/profile",
         "/usr/sbin/pkg_add bzip2 unzip--iconv wget curl bash ntp tidyp sqlite3 sudo-- git parallel libxml gmp libxslt mpfr gd pkg_mgr mariadb-server",
         "/usr/local/bin/mysql_install_db",
         "/usr/sbin/rcctl enable mysqld",
