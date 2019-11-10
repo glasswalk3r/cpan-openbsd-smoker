@@ -90,6 +90,8 @@ perlbrew install-cpanm
 perlbrew switch perl-stable
 export AUTOMATED_TESTING=1
 cpanm --mirror ${LOCAL_MIRROR} --mirror-only CPAN
+echo 'Installing Archive::Zip without testing, see https://github.com/redhotpenguin/perl-Archive-Zip/issues/70'
+cpanm --mirror ${LOCAL_MIRROR} --mirror-only --notest Archive::Zip
 cpanm --mirror ${LOCAL_MIRROR} --mirror-only Module::Version Bundle::CPAN Log::Log4perl Module::Pluggable
 cpanm --mirror ${LOCAL_MIRROR} --mirror-only --notest POE::Component::SSLify
 cpanm --mirror ${LOCAL_MIRROR} --mirror-only POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD List::BinarySearch Filesys::Df

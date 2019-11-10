@@ -2,3 +2,4 @@ vagrant/.vagrant/
 vagrant/metabase/metabase_id.json
 vagrant/*.box
 vagrant/scripts/config.yaml
+.vagrant
