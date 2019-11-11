@@ -149,6 +149,7 @@ sub mariadb_user {
     print "Adding $user to the local MariaDB for DBD::mysql extended tests";
     my ( $fh, $filename ) = tempfile( UNLINK => 0 );
     print $fh <<BLOCK;
+create user '$user'\@'localhost';
 grant all privileges on test.* to '$user'\@'localhost';
 grant select on performance_schema.* to '$user'\@'localhost';
 BLOCK
