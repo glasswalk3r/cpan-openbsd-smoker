@@ -3,7 +3,7 @@
     [
       {
         "type": "vagrant",
-        "output": "openbsd-{{user `openbsd_version`}}-amd64.box"
+        "output": "openbsd-{{user `openbsd_version`}}-cpan-smoker.box"
       }
     ]
   ],
@@ -11,7 +11,8 @@
     "mysql_root_pass": "vagrant",
     "openbsd_version": "6.6",
     "openbsd_mirror": "openbsd.c3sl.ufpr.br",
-    "timezone": "America/Sao_Paulo"
+    "timezone": "America/Sao_Paulo",
+    "cpan_mirror": null
   },
   "provisioners": [
     {
@@ -44,7 +45,7 @@
         "/usr/bin/su vagrant -c 'wget https://raw.githubusercontent.com/hashicorp/vagrant/master/keys/vagrant.pub --output-document /home/vagrant/.ssh/authorized_keys'",
         "/usr/bin/su vagrant -c 'chmod 700 /home/vagrant/.ssh'",
         "/usr/bin/su vagrant -c 'chmod 600 /home/vagrant/.ssh/authorized_keys'",
-        "/usr/bin/su vagrant -c 'cd /home/vagrant;git clone https://github.com/glasswalk3r/cpan-openbsd-smoker.git;cd /home/vagrant/cpan-openbsd-smoker/vagrant/scripts;bash vagrant_bootstrap.sh'",
+        "/usr/bin/su vagrant -c 'cd /home/vagrant;git clone https://github.com/glasswalk3r/cpan-openbsd-smoker.git;cd /home/vagrant/cpan-openbsd-smoker/vagrant/scripts;bash vagrant_bootstrap.sh {{user `cpan_mirror`}}'",
         "/usr/sbin/rcctl restart mysqld",
         "dd if=/dev/zero of=/EMPTY bs=1M || true; rm -f /EMPTY; sync"
       ]

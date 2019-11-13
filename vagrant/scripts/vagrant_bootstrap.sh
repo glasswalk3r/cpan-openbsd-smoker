@@ -2,7 +2,7 @@
 # Bootstraps the VM configuration for the vagrant user
 
 function config_cpan() {
-	local local_mirror=$1
+    local local_mirror=$1
     mkdir -p "${HOME}/.cpan/CPAN"
     echo '$CPAN::Config = {' > "${HOME}/.cpan/CPAN/MyConfig.pm"
     (cat <<BLOCK
@@ -79,7 +79,7 @@ BLOCK
     ) >> "${HOME}/.cpan/CPAN/MyConfig.pm"
 }
 
-export LOCAL_MIRROR='http://minicpan:8090'
+export LOCAL_MIRROR="${1}"
 
 config_cpan ${LOCAL_MIRROR}
 curl -s -L https://install.perlbrew.pl | bash
