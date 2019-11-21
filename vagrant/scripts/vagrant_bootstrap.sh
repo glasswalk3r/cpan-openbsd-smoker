@@ -2,7 +2,7 @@
 # Bootstraps the VM configuration for the vagrant user
 
 function config_cpan() {
-	local local_mirror=$1
+    local local_mirror=$1
     mkdir -p "${HOME}/.cpan/CPAN"
     echo '$CPAN::Config = {' > "${HOME}/.cpan/CPAN/MyConfig.pm"
     (cat <<BLOCK
