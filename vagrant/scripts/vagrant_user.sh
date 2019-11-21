@@ -74,22 +74,22 @@ then
     if [ ${USE_LOCAL_MIRROR} == 'true' ]
     then
         echo 'Installing required Perl modules...'
-		    (echo "o conf urllist ${CPAN_MIRROR}"; echo 'o conf commit') | cpan
-		    cpan -i CPAN::SQLite
-		    (echo 'o conf use_sqlite 1'; echo 'o conf commit') | cpan
-		    echo "Using ${CPAN_MIRROR} as remote mirror for minicpan"
+        (echo "o conf urllist ${CPAN_MIRROR}"; echo 'o conf commit') | cpan
+        cpan -i CPAN::SQLite
+        (echo 'o conf use_sqlite 1'; echo 'o conf commit') | cpan
+        echo "Using ${CPAN_MIRROR} as remote mirror for minicpan"
         minicpanrc=/home/vagrant/.minicpanrc
-		    local_mirror=/minicpan
-		    sudo chmod g+rwx "${local_mirror}"
+        local_mirror=/minicpan
+        sudo chmod g+rwx "${local_mirror}"
         echo "local: ${local_mirror}" > "${minicpanrc}"
         echo "remote: ${CPAN_MIRROR}" >> "${minicpanrc}"
         echo 'also_mirror: indices/find-ls.gz' >> "${minicpanrc}"
-		    cpan -i CPAN::Mini CPAN::Mini::LatestDistVersion
+        cpan -i CPAN::Mini CPAN::Mini::LatestDistVersion
         echo 'source ~/.bashrc' >> ~/.bash_profile
         echo "alias minicpan='minicpan -c CPAN::Mini::LatestDistVersion'" >> ~/.bashrc
         alias minicpan='minicpan -c CPAN::Mini::LatestDistVersion'
-		    echo "Adding now ${local_mirror} as preferred remote mirror for CPAN client"
-		    (echo "o conf urllist file://${local_mirror} ${CPAN_MIRROR}"; echo 'o conf commit') | cpan
+        echo "Adding now ${local_mirror} as preferred remote mirror for CPAN client"
+        (echo "o conf urllist file://${local_mirror} ${CPAN_MIRROR}"; echo 'o conf commit') | cpan
     fi
 
     cleanup_cpan
@@ -97,10 +97,15 @@ then
     echo "Finished"
 fi
 
-echo 'Injecting preferences updates from Github...'
+echo "Setting CPAN client to use ${CPAN_MIRROR}"
+(echo "o conf urllist ${CPAN_MIRROR}"; echo 'o conf commit') | cpan
+
+# Even if the local CPAN mirror is not used, the preferences are still shared between the
+# users, so it must be updated anyway
+echo 'Injecting CPAN preferences updates from Github...'
 cd /home/vagrant/cpan-openbsd-smoker
 git pull
-echo 'Updating the minicpan shared preferences directory'
+echo 'Updating the shared distribution preferences prefs_dir directory'
 (echo "o conf prefs_dir ${PREFS_DIR}"; echo 'o conf commit') | cpan
 
 if [ -d "${PREFS_DIR}" ]
@@ -108,7 +113,7 @@ then
     rm "${PREFS_DIR}/*.yml"
 else
     sudo mkdir -p "${PREFS_DIR}"
-    # to enable smoker users to update the distro preferences
+    # to enable smoker users to add new distro preferences
     sudo chgrp testers "${PREFS_DIR}"
     sudo chmod g+w "${PREFS_DIR}"
 fi

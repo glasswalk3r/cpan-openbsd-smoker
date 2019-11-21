@@ -79,7 +79,13 @@ BLOCK
     ) >> "${HOME}/.cpan/CPAN/MyConfig.pm"
 }
 
-export LOCAL_MIRROR='http://minicpan:8090'
+if [ -z $LOCAL_MIRROR ]
+then
+    echo "LOCAL_MIRROR environment variable not available!" 1>&2
+    exit 1
+else
+    echo "Using ${LOCAL_MIRROR} for downloading required Perl modules"
+fi
 
 config_cpan ${LOCAL_MIRROR}
 curl -s -L https://install.perlbrew.pl | bash
@@ -97,13 +103,4 @@ cpanm --mirror ${LOCAL_MIRROR} --mirror-only --notest POE::Component::SSLify
 cpanm --mirror ${LOCAL_MIRROR} --mirror-only POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD List::BinarySearch Filesys::Df
 perlbrew clean
 rm -rf $HOME/.cpan/build/* $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
-# this is a hack, at best
-sudo sed -i '/^\[mysqld\]$/a \
-performance_schema=ON\
-performance-schema-instrument="stage/%=ON"\
-performance-schema-consumer-events-stages-current=ON\
-performance-schema-consumer-events-stages-history=ON\
-performance-schema-consumer-events-stages-history-long=ON\
-' /etc/my.cnf
-cd ${HOME}/cpan-openbsd-smoker/vagrant/scripts
-prove -l -v -m
+prove -l -v -m "${HOME}/provisioning.t"
