@@ -110,9 +110,10 @@ Vagrant.configure("2") do |config|
   # keyboard encoding, see wsconsctl manpage for details
   keyboard="br"
 
-  # All options from here should be left alone (config.vm.provision)
+  # All options from here should be left alone!
   require 'yaml'
   perl_config = { "reports_from" => reports_from, "users" => users, "config_script" => "/tmp/config_user.sh" }
+
   File.open('scripts/config.yaml', 'w') do |file|
       file.write(perl_config.to_yaml)
   end
@@ -121,9 +122,9 @@ Vagrant.configure("2") do |config|
 
   from_to = [
       ["scripts/config.yaml", "modules/required.txt", "modules/extended_tests.txt", "scripts/config_user.sh",
-       "scripts/read_yaml.pl", "scripts/run_user_install.sh", "scripts/install_perl.sh", "metabase/metabase_id.json"],
+       "scripts/read_yaml.pl", "scripts/run_user_install.sh", "scripts/install_perl.sh", "metabase/metabase_id.json", "packages.txt"],
       [internal_yaml, "/tmp/required.txt", "/tmp/extended_tests.txt", "/tmp/config_user.sh", "/tmp/read_yaml.pl",
-       "/tmp/run_user_install.sh", "/tmp/install_perl.sh", "/tmp/metabase_id.json"]
+       "/tmp/run_user_install.sh", "/tmp/install_perl.sh", "/tmp/metabase_id.json", "/tmp/packages.txt"]
   ]
 
   from_to[0].length.times { |index| config.vm.provision "file", source: "#{from_to[0][index]}", destination: "#{from_to[1][index]}" }

@@ -140,7 +140,7 @@ function config_cpan() {
   'test_report' => q[0],
   'trust_test_report_history' => q[0],
   'unzip' => q[/usr/local/bin/unzip],
-  'urllist' => [q[${CPAN_MIRROR}]],
+  'urllist' => [q[${CPAN_MIRROR}],q[http://www.cpan.org/]],
   'use_prompt_default' => q[0],
   'use_sqlite' => q[1],
   'version_timeout' => q[15],
@@ -197,4 +197,3 @@ echo 'Enabling test reporting'
 (echo 'o conf test_report 1'; echo 'o conf commit') | cpan
 config_reporter "${REPORTS_FROM_CFG}"
 echo "Finished configuring user ${USER}."
-

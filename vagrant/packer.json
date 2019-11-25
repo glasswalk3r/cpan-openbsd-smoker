@@ -4,6 +4,10 @@
       {
         "type": "vagrant",
         "output": "openbsd-{{user `openbsd_version`}}-cpan-smoker.box"
+      },
+      {
+          "type": "checksum",
+          "checksum_types": ["sha256"]
       }
     ]
   ],
@@ -36,12 +40,22 @@
       "destination": "/tmp/provisioning.t"
     },
     {
+      "type": "file",
+      "source": "scripts/t/fix_fstab.pl",
+      "destination": "/tmp/fix_fstab.pl"
+    },
+    {
       "type": "shell",
       "inline": [
         "mv /tmp/adduser.conf /etc/adduser.conf",
         "chmod 644 /etc/adduser.conf",
         "chown root.wheel /etc/adduser.conf"
       ]
+    },
+    {
+      "type": "file",
+      "source": "packages.txt",
+      "destination": "/tmp/packages.txt"
     },
     {
       "type": "shell",
@@ -51,7 +65,7 @@
       ],
       "inline": [
         "echo 'PS1=\"[\\u@\\h:\\w]$ \"' > /etc/profile",
-        "/usr/sbin/pkg_add bzip2 unzip--iconv wget curl bash ntp tidyp sqlite3 sudo-- git parallel libxml gmp libxslt mpfr gd pkg_mgr mariadb-server",
+        "/usr/sbin/pkg_add -l /tmp/packages.txt",
         "/usr/local/bin/mysql_install_db",
         "/usr/sbin/rcctl enable mysqld",
         "sed -i -E 's/^(log-bin=)/#\\1/' /etc/my.cnf",
@@ -72,6 +86,7 @@
         "sed -i -E 's/^(PermitRootLogin )yes/\\1no/' /etc/ssh/sshd_config",
         "echo 'bootstraping vagrant user'",
         "cd /tmp",
+        "./fix_fstab.pl",
         "/usr/bin/su vagrant -c 'mkdir -p /home/vagrant/.ssh'",
         "/usr/bin/su vagrant -c 'wget https://raw.githubusercontent.com/hashicorp/vagrant/master/keys/vagrant.pub --output-document /home/vagrant/.ssh/authorized_keys'",
         "/usr/bin/su vagrant -c 'chmod 700 /home/vagrant/.ssh'",

@@ -49,6 +49,8 @@ rm -f "${HOME}/perlbrew.*"
 # using CPAN to be able to fetch from minicpan
 echo 'Installing CPAN::SQLite and initializing the database...'
 cpan -T CPAN::SQLite
+# to solve circular dependencies issue
+cpan -i -f -T Role::Tiny
 echo 'reload index' | cpan
 echo "Installing required modules as described at ${SMOKER_CFG}/modules/required.txt"
 cat "${SMOKER_CFG}/modules/required.txt" | xargs cpan -T
