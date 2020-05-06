@@ -75,7 +75,7 @@ see the following structure:
 ```
 
 Once there, you will find the `Vagrantfile`, where the definitions of the
-CPAN::Reporter::Smoker VM.
+`CPAN::Reporter::Smoker` VM.
 
 You will want to look up for the section named "CONFIGURABLE STEPS". Some
 options are required, others not. Make sure to read the comments, they are
