@@ -41,7 +41,7 @@ The VM will have pre-installed and pre-configured:
   * a optional local CPAN mirror (implemented with
   [minicpan](http://search.cpan.org/search?query=minicpan&mode=all)).
   * related packages installed (like Git, compilers, etc).
-  * a running Mysql server, configured to run extended tests of
+  * a running MariaDB server, configured to run extended tests of
   [DBD::mysql](http://search.cpan.org/search?query=DBD%3A%3Amysql&mode=dist)
   automatically.
   * shared "distroprefs" files for configuring (e.g. blocking) how
@@ -106,6 +106,28 @@ the operations below will be repeated:
   for the vagrant and other users.
   * Updates the keyboard configuration based on the `Vagrantfile` respective
   option.
+
+### Packer
+
+This project uses [Packer](https://www.packer.io/) to build the base image for
+Vagrant. Packer allows the setup of the VM and install of OpenBSD automatically.
+
+Unfortunately the format of the configuration file for Packer is JSON, which
+doesn't allow for comments, so documentation is still to be developed.
+
+Sections that you probably want to tweak with are:
+
+* variables
+* builders: specially the parameter `iso_checksum` needs to be specified because
+Packer won't support putting the OpenBSD url to `SHA256` file. Instead, you will
+need to read this file and copy the hashsum yourself.
+
+After `git clone`ning the project, move to `cpan-openbsd-smoker/vagrant`, where
+the `packer.json` is located and type:
+
+```
+$ make packer
+```
 
 #### Troubleshooting
 
@@ -187,26 +209,6 @@ Result: PASS
 Those tests don't cover everything, but might help you do some troubleshooting,
 and will be executed right after the provisioning executed by `packer`.
 
-### Packer
-
-This project uses [Packer](https://www.packer.io/) to build the base image for
-Vagrant. Packer allows the setup of the VM and install of OpenBSD automatically.
-
-Unfortunately the format of the configuration file for Packer is JSON, which
-doesn't allow for comments, so documentation is still to be developed.
-
-Sections that you probably want to tweak with are:
-
-* variables
-* builders
-
-After `git clone`ning the project, move to `cpan-openbsd-smoker/vagrant`, where
-the `packer.json` is located and type:
-
-```
-$ packer build packer.json
-```
-
 #### Requirements
 
 It is expected to have a local CPAN mirror (see `CPAN::Mini` module for that)
@@ -220,9 +222,19 @@ your preferred web server with the `CPAN::Mini` mirror in order to achieve that.
 It takes a considerable time to implement a CPAN smoker, so this project takes
 care of automating most of it.
 
+#### Why the vagrant user has a custom perl?
+
+Because it comes with metabase-relayd installed, and this daemon has a lot of
+dependencies and some of them are currently broken. Better not to mess up with
+the standard perl available on OpenBSD and use the latest dependencies versions
+available at CPAN.
+
+Also, this custom perl doesn't come with threads enabled, so it should be
+faster.
+
 #### Does this works with any "basic" OpenBSD VM?
 
-No. The VM specified in the `Vagrantfile` contains customizations as documented
+No. The VM specified in the `Vagrantfile` contains customization as documented
 in [here](http://wiki.cpantesters.org/wiki/SmokerOnOpenBSD). Besides, this box
 already has required software installed, which reduces the provisioning time
 substantially.
