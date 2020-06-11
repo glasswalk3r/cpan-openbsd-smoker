@@ -1,6 +1,8 @@
 #!/usr/local/bin/bash
 # Bootstraps the VM configuration for the vagrant user
 
+set -e
+
 function config_cpan() {
     local local_mirror=$1
     mkdir -p "${HOME}/.cpan/CPAN"
@@ -79,6 +81,8 @@ BLOCK
     ) >> "${HOME}/.cpan/CPAN/MyConfig.pm"
 }
 
+echo "Initiating the vagrant user configuration..."
+
 if [ -z $LOCAL_MIRROR ]
 then
     echo "LOCAL_MIRROR environment variable not available!" 1>&2
@@ -87,6 +91,10 @@ else
     echo "Using ${LOCAL_MIRROR} for downloading required Perl modules"
 fi
 
+mkdir -p /home/vagrant/.ssh
+chmod 700 /home/vagrant/.ssh
+wget https://raw.githubusercontent.com/hashicorp/vagrant/master/keys/vagrant.pub --output-document /home/vagrant/.ssh/authorized_keys
+chmod 600 /home/vagrant/.ssh/authorized_keys
 config_cpan ${LOCAL_MIRROR}
 curl -s -L https://install.perlbrew.pl | bash
 source "${HOME}/perl5/perlbrew/etc/bashrc"
@@ -96,8 +104,7 @@ perlbrew install-cpanm
 perlbrew switch perl-stable
 export AUTOMATED_TESTING=1
 cpanm --mirror ${LOCAL_MIRROR} --mirror-only CPAN
-echo 'Installing Archive::Zip without testing, see https://github.com/redhotpenguin/perl-Archive-Zip/issues/70'
-cpanm --mirror ${LOCAL_MIRROR} --mirror-only --notest Archive::Zip
+cpanm --mirror ${LOCAL_MIRROR} --mirror-only Archive::Zip
 cpanm --mirror ${LOCAL_MIRROR} --mirror-only Module::Version Bundle::CPAN Log::Log4perl Module::Pluggable
 cpanm --mirror ${LOCAL_MIRROR} --mirror-only --notest POE::Component::SSLify
 cpanm --mirror ${LOCAL_MIRROR} --mirror-only POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd CPAN::Reporter::Smoker::OpenBSD List::BinarySearch Filesys::Df
