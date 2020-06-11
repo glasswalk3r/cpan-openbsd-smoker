@@ -4,11 +4,14 @@ curl--
 gd--
 git--
 gmp--
+gnupg-2
 libxml--
 libxslt--
+llvm
 mariadb-server--
 mpfr--
 ntp--
+p5-local-lib
 p5-YAML-XS--
 parallel--
 pkg_mgr--
