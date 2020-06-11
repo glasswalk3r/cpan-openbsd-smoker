@@ -1,7 +1,7 @@
 use warnings;
 use strict;
 use Config;
-use Test::More;    # tests => 41;
+use Test::More tests => 50;
 use Capture::Tiny 0.46 qw(capture);
 use Filesys::Df;
 use Fcntl ':mode';
@@ -9,11 +9,17 @@ use File::stat;
 use List::BinarySearch 0.25 'binsearch';
 use Module::Version qw(get_version);
 
-# These tests are used to validate new boxes of OpenBSD created for Vagrant
-# since many of them are still done manually
+my $msg = <<'EOF';
+Setup unit tests
+These tests are used to validate new boxes of OpenBSD created for Vagrant
+after they setup is finished.
+EOF
 
-cmp_ok( check_cpu(), '>=', 2,          'the number of CPUs is 2 or more' );
-cmp_ok( check_mem(), '>=', 1568604160, 'available RAM is at least 1.5GB' );
+note($msg);
+cmp_ok( check_with_sysctl('hw.ncpufound'),
+    '>=', 2, 'the number of CPUs is 2 or more' );
+cmp_ok( check_with_sysctl('hw.physmem'),
+    '>=', 1568604160, 'available RAM is at least 1.5GB' );
 my %partitions = (
     '/'                   => 251790,
     '/home'               => 10000000,
@@ -24,10 +30,15 @@ my %partitions = (
     '/mnt/cpan_build_dir' => 1014455
 );
 
+my $tolerance = 0.9;
+note('Tolerance of difference is 90% here');
+
 for my $partition ( keys(%partitions) ) {
-    my $result = df($partition);
-    cmp_ok( $result->{blocks}, '>=', $partitions{$partition},
-        "$partition has the expected size" );
+    my $current_size = df($partition);
+    my $result       = $current_size->{blocks} / $partitions{$partition};
+
+    cmp_ok( $result, '>=', $tolerance,
+        "$partition size ~= $partitions{$partition}" );
 }
 
 isnt( check_membership( 'vagrant', 'wheel' ),
@@ -73,7 +84,7 @@ for my $wanted_module (@wanted) {
 
 note('Specific for modules that are installed without passing the tests');
 my $broken = 'POE::Component::SSLify';
-ok(get_version($broken), "$broken is installed even though fail the tests");
+ok( get_version($broken), "$broken is installed even though fail the tests" );
 
 is( check_mysqld(), 'mysqld(ok)', 'mariadb server is running' );
 
@@ -100,8 +111,6 @@ for my $directive (@expected) {
 
 isnt( read_sshd_conf(), 'yes', 'sshd config PermitRootLogin is disabled' );
 
-done_testing;
-
 # tries to find exact name with binsearch(), otherwise tries with index()
 sub find_pkg {
     my ( $pkg_name, $pkgs_ref ) = @_;
@@ -127,26 +136,15 @@ sub check_os_version {
     return $stdout;
 }
 
-sub check_cpu {
+sub check_with_sysctl {
+    my $info = shift;
     my ( $stdout, $stderr, $exit );
     ( $stdout, $stderr, $exit ) =
-      capture { system( '/usr/sbin/sysctl', 'hw.ncpufound' ); };
+      capture { system( '/usr/sbin/sysctl', $info ); };
     chomp($stdout);
-    note("Exit code is $exit, output '$stdout' and errors '$stderr'");
+    note("sysctl exit code is $exit, output '$stdout' and errors '$stderr'");
     my $cpu_num = ( split( '=', $stdout ) )[1];
     return $cpu_num;
-}
-
-sub check_mem {
-    my ( $stdout, $stderr, $exit );
-
-    # hw.physmem=1568604160
-    ( $stdout, $stderr, $exit ) =
-      capture { system( '/usr/sbin/sysctl', 'hw.physmem' ); };
-    chomp($stdout);
-    my $mem = ( split( '=', $stdout ) )[1];
-    note("Exit code is $exit, output '$stdout' and errors '$stderr'");
-    return $mem;
 }
 
 sub check_membership {
@@ -262,7 +260,8 @@ sub list_modules {
 
      # =head2 Sat May 25 19:37:40 2019: C<Module> L<Capture::Tiny|Capture::Tiny>
         my $t = ( ( split( /\|/, $module_line ) ) )[1];
-        die "Could not extract a value from $module_line" unless(defined($t));
+        die "Could not extract a value from $module_line"
+          unless ( defined($t) );
 
         # removes ">" from the Pod line
         chop $t;
@@ -273,4 +272,3 @@ sub list_modules {
     return \@new;
 
 }
-
