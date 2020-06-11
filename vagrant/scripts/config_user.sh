@@ -46,6 +46,9 @@ export DBICTEST_MYSQL_USER=${user}
 export DBICTEST_MYSQL_PASS=
 export SMOKER_CFG="${smoker_cfg}"
 
+export CXX=$(which clang++)
+export CC=$(which clang)
+
 function start_smoker() {
     echo 'Cleaning up previous executions...'
     rm -rf ${BUILD_DIR}/${user}/* $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
@@ -84,7 +87,7 @@ function config_cpan() {
     (cat <<BLOCK
   'applypatch' => q[],
   'auto_commit' => q[0],
-  'build_cache' => q[100],
+  'build_cache' => q[50],
   'build_dir' => q[${CPAN_BUILD_DIR}],
   'build_dir_reuse' => q[0],
   'build_requires_install_policy' => q[yes],
@@ -138,7 +141,7 @@ function config_cpan() {
   'term_is_latin' => q[1],
   'term_ornaments' => q[1],
   'test_report' => q[0],
-  'trust_test_report_history' => q[0],
+  'trust_test_report_history' => q[1],
   'unzip' => q[/usr/local/bin/unzip],
   'urllist' => [q[${CPAN_MIRROR}],q[http://www.cpan.org/]],
   'use_prompt_default' => q[0],
