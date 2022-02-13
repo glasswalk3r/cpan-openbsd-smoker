@@ -4,15 +4,8 @@
 # vi: set ft=ruby :
 
 Vagrant.configure('2') do |config|
-  # All available boxes for this project. Beware that the used OpenBSD might
-  # not have the requested OpenBSD version, if the chosen old is too old.
-  # config.vm.box = "arfreitas/openbsd-6.0-cpan-smoker"
-  # config.vm.box = "arfreitas/openbsd-6.1-cpan-smoker"
-  # config.vm.box = "arfreitas/openbsd-6.2-cpan-smoker"
-  # config.vm.box = "arfreitas/openbsd-6.3-cpan-smoker"
-  # config.vm.box = "arfreitas/openbsd-6.4-cpan-smoker"
-  # config.vm.box = "arfreitas/openbsd-6.5-cpan-smoker"
-  config.vm.box = 'arfreitas/openbsd-6.6-cpan-smoker'
+  config.ssh.shell = 'ksh -l'
+  config.vm.box = 'arfreitas/openbsd-7.0-cpan-smoker'
   config.vm.box_check_update = false
   config.vm.hostname = 'cpan-smoker-openbsd'
   config.vm.synced_folder '/tmp', '/vagrant', disabled: true
@@ -29,7 +22,7 @@ Vagrant.configure('2') do |config|
     # Useful for troubleshooting when true
     vb.gui = false
     # Customize the amount of memory on the VM:
-    vb.memory = '3072'
+    vb.memory = '2048'
     vb.name = 'OpenBSD CPAN Smoker'
     # You may want to hide your network name given by the internal DHCP server.
     vb.customize ['modifyvm', :id, '--natdnspassdomain1', 'off']
@@ -50,10 +43,12 @@ Vagrant.configure('2') do |config|
   # subdirectory "metabase" where this Vagrantfile is located
   ################################################################
 
+  cpan_user = 'vagrant'
+
   # setup the OpenBSD closest mirror you want to use. Use just the base URL,
   # like "http://openbsd.c3sl.ufpr.br". The rest will be guessed by the related
   # script.
-  openbsd_mirror = 'https://mirror.edgecast.com'
+  openbsd_mirror = 'http://openbsd.c3sl.ufpr.br'
 
   # setups the expected time zone the VM will be running
   timezone = 'America/Sao_Paulo'
@@ -70,32 +65,9 @@ Vagrant.configure('2') do |config|
   # network, you probably leave this as is.
   use_local_mirror = 'false'
 
-  # Users: the names of users you want to execute the smoker
-  # This is a Ruby dictionary, containing the user login to be created,
-  # followed by the perl version choice to be installed with perlbrew and an
-  # array of options to be used by perlbrew. You can modify all those options
-  # at will,but remember that the number of CPUs is tied to the number of users
-  # running a CPAN smoker (in a relation 1:1).
-  # See the perlbrew documentation to get acquainted with the options available.
-  users = {
-    'goku' => {
-      'perl' => 'perl-stable',
-      'args' => %w[noman notest thread multi 64int 64all]
-    }
-  }
-
   # reports_from is from which person CPAN reports are being sent, see
   # CPAN::Reporter for details on that.
   reports_from = 'Alceu Rodrigues de Freitas Junior <arfreitas@cpan.org>'
-
-  # Number of CPUs
-  # Please consider that each user that will run the Smoker will use a CPU.
-  # That's not entirely true, but a single CPU should be enough for a smoker
-  # process.
-  # If you want more users, add more CPUs.
-  # The vagrant user will run metabase-relayd, but this daemon uses very
-  # little CPU too (when not attending to requests).
-  processors = 2
 
   # cpan_build_dir is something you shouldn't change unless you know what
   # you're doing.
@@ -106,82 +78,33 @@ Vagrant.configure('2') do |config|
   # Users are going to use the same directory since preference files should be
   # shared between them (you don't want neither smokers halted due bad designed
   # distributions).
-  prefs_dir = '/var/cpan/smoker/prefs'
+  prefs_dir = '/home/goku/cpan-openbsd-smoker/prefs'
 
   # keyboard encoding, see wsconsctl manpage for details
   keyboard = 'br'
+  config.vm.define 'single'
 
-  # All options from here should be left alone!
-  require 'yaml'
-  perl_config = { 'reports_from' => reports_from,
-                  'users' => users,
-                  'config_script' => '/tmp/config_user.sh' }
-
-  File.open('scripts/config.yaml', 'w') do |file|
-    file.write(perl_config.to_yaml)
+  config.vm.provision 'ansible' do |ansible|
+    ansible.playbook = 'playbook.yml'
+    compatibility_mode = '2.0'
+    ansible.host_vars = {
+      'single' => {
+        'cpan_user' => cpan_user,
+        'cpan_mirror' => cpan_mirror,
+        'cpan_build_dir' => cpan_build_dir
+      }
+    }
   end
 
-  internal_yaml = '/tmp/config.yaml'
-
-  from_to = [
-    [
-      'scripts/config.yaml',
-      'modules/required.txt',
-      'modules/extended_tests.txt',
-      'scripts/config_user.sh',
-      'scripts/read_yaml.pl',
-      'scripts/run_user_install.sh',
-      'scripts/install_perl.sh',
-      'metabase/metabase_id.json',
-      'packages.txt'
-    ],
-    [
-      internal_yaml,
-      '/tmp/required.txt',
-      '/tmp/extended_tests.txt',
-      '/tmp/config_user.sh',
-      '/tmp/read_yaml.pl',
-      '/tmp/run_user_install.sh',
-      '/tmp/install_perl.sh',
-      '/tmp/metabase_id.json',
-      '/tmp/packages.txt'
-    ]
-  ]
-
-  from_to[0].length.times do |index|
-    config.vm.provision 'file',
-                        source: (from_to[0][index]).to_s,
-                        destination: (from_to[1][index]).to_s
-  end
-
-  from_to[1].each do |item|
-    config.vm.provision 'shell', inline: "chmod a+rx #{item}"
-  end
-
-  config.vm.provision 'shell',
-                      path: 'scripts/basic_setup.sh',
-                      args: [openbsd_mirror, keyboard, timezone]
-  config.vm.provision 'shell',
-                      path: 'scripts/vagrant_user.sh',
-                      args: [
-                        cpan_mirror,
-                        use_local_mirror,
-                        prefs_dir
-                      ],
-                      privileged: false
-  config.vm.provision 'shell',
-                      path: 'scripts/config_smoker.pl',
-                      args: [
-                        cpan_mirror,
-                        internal_yaml,
-                        cpan_build_dir,
-                        processors,
-                        use_local_mirror,
-                        prefs_dir
-                      ]
-  from_to[1].each do |item|
-    config.vm.provision 'shell', inline: "rm -f #{item}"
-  end
+  config.vm.provision 'shell', name: 'Setting keyboard', inline: "/sbin/wsconsctl keyboard.encoding=#{keyboard}"
+  config.vm.provision 'shell', name: 'Setting timezone', inline: "/usr/sbin/zic -l #{timezone}"
+  config.vm.provision 'shell', name: 'Fine tunning file system', path: 'scripts/fix_fstab.pl', args: ['-b', cpan_build_dir]
+  config.vm.provision 'shell', name: 'Remounting all partitions', inline: 'mount -a'
+  config.vm.provision 'shell', name: 'Upgrading CPAN', path: '/usr/bin/cpan', args: ['CPAN'], privileged: false
+  config.vm.provision 'file', source: 'modules/required.txt', destination: '/tmp/required.txt'
+  config.vm.provision 'shell', name: 'Installing required Perl modules', inline: 'cat /tmp/required.txt | xargs cpan -T', privileged: false
+  config.vm.provision 'shell', name: 'Enabling CPAN::SQLite', inline: "echo 'o conf use_sqlite 1\no conf commit' | cpan", privileged: false
+  # config.vm.provision 'file', source: 'modules/extended_tests.txt', destination: '/tmp/extended.txt'
 
   config.vm.post_up_message = <<MESSAGE
   Remember to execute the following manual steps after provisioning is finished:
@@ -190,14 +113,11 @@ Vagrant.configure('2') do |config|
     2 - Spend some time validating tests results. Tests will not be submitted
     automatically, but saved to a local directory before submission. This will
     give you a chance to validate the smoker configuration first.
-    3 - Once everything is fine, start the metabase-relayd application with the
-    vagrant user.
-    4 - With the new users, start the smoker with the alias 'start_smoker'.
-    5 - Submit reports with the script 'send_reports'. Check out it's
+    3 - Submit reports with the script 'send_reports'. Check out it's
     documentation with 'perldoc send_reports'.
     Skip reports with "unknown" grade until you're sure the errors weren't
     caused by the smoker itself.
-    6 - If some distribution halts the smoker, block it with 'dblock'. Check out
+    4 - If some distribution halts the smoker, block it with 'dblock'. Check out
     it's documentation with 'perldoc dblock'.
 MESSAGE
 end
