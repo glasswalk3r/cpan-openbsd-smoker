@@ -1,12 +1,8 @@
-YAML::XS
 Module::Version
-Log::Log4perl
 Bundle::CPAN
 Bundle::CPAN::Reporter::Smoker::Tests
 Task::CPAN::Reporter
 CPAN::Reporter::Smoker
 Test::Reporter::Transport::Socket
 CPAN::Reporter::Smoker::OpenBSD
-Proc::ProcessTable
-DBD::mysql
 CPAN::SQLite
