@@ -1,0 +1,74 @@
+---
+- hosts: all
+  become: 'yes'
+  tasks:
+    - name: Update all packages on the system
+      openbsd_pkg:
+        name: '*'
+        state: latest
+    - name: Install required packages
+      openbsd_pkg:
+        state: present
+        name:
+          - 'vim--no_x11'
+          - 'bash--'
+          - 'bzip2--'
+          - 'curl--'
+          - 'gd--'
+          - 'git--'
+          - 'gmp--'
+          - 'libxml--'
+          - 'libxslt--'
+          - 'mariadb-server--'
+          - 'mpfr--'
+          - 'ntp--'
+          - 'quirks--'
+          - 'sqlite3--'
+          - 'tidyp--'
+          - 'unzip--iconv'
+          - 'wget--'
+          - p5-YAML-XS
+          - p5-Net-SSLeay
+          - p5-Moo
+          - p5-Moose
+          - p5-IO-Socket-SSL
+          - p5-Log-Log4perl
+          - p5-Proc-ProcessTable
+          - p5-MooseX-Types
+          - p5-MooseX-Types-LoadableClass
+          - p5-MooseX-Types-Path-Class
+          - p5-DateTime
+          - p5-DateTime-Format-Strptime
+          - p5-DateTime-Format-SQLite
+          - p5-DateTime-Format-MySQL
+          - p5-Class-DBI
+          - p5-Text-CSV
+          - p5-Text-CSV_XS
+          - p5-Test-EOL
+          - p5-Test-NoTabs
+          - p5-JSON-DWIW
+          - p5-Time-Piece-MySQL
+          - p5-SQL-Translator
+          - p5-JSON-Any
+          - p5-Getopt-Long-Descriptive
+    - name: Create a directory if it does not exist
+      file:
+        path: '/home/{{ cpan_user }}/.cpan/CPAN'
+        state: directory
+        owner: '{{ cpan_user }}'
+        group: '{{ cpan_user }}'
+        mode: '0755'
+    - name: Configure the cpan client
+      template:
+        src: MyConfig.pm.j2
+        dest: '/home/{{ cpan_user }}/.cpan/CPAN/MyConfig.pm'
+        owner: '{{ cpan_user }}'
+        mode: '0644'
+        group: '{{ cpan_user }}'
+    - name: Configure ksh
+      template:
+        src: profile.j2
+        dest: '/home/{{ cpan_user }}/.profile'
+        owner: '{{ cpan_user }}'
+        mode: '0644'
+        group: '{{ cpan_user }}'
