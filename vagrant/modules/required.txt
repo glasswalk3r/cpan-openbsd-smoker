@@ -6,3 +6,6 @@ CPAN::Reporter::Smoker
 Test::Reporter::Transport::Socket
 CPAN::Reporter::Smoker::OpenBSD
 CPAN::SQLite
+POE::Component::Metabase::Client::Submit
+POE::Component::Metabase::Relay::Server
+List::BinarySearch
