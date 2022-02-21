@@ -19,14 +19,12 @@
           - 'gmp--'
           - 'libxml--'
           - 'libxslt--'
-          - 'mariadb-server--'
           - 'mpfr--'
           - 'ntp--'
           - 'quirks--'
           - 'sqlite3--'
           - 'tidyp--'
           - 'unzip--iconv'
-          - 'wget--'
           - p5-YAML-XS
           - p5-Net-SSLeay
           - p5-Moo
@@ -50,7 +48,10 @@
           - p5-Time-Piece-MySQL
           - p5-SQL-Translator
           - p5-JSON-Any
+          - p5-Module-Pluggable
           - p5-Getopt-Long-Descriptive
+          - p5-Archive-Zip
+          - p5-Filesys-Df
     - name: Create a directory if it does not exist
       file:
         path: '/home/{{ cpan_user }}/.cpan/CPAN'
@@ -72,3 +73,10 @@
         owner: '{{ cpan_user }}'
         mode: '0644'
         group: '{{ cpan_user }}'
+    - name: Configure CPAN::Reporter
+      file:
+        path: '/home/{{ cpan_user }}/.cpanreporter'
+        state: directory
+        owner: '{{ cpan_user }}'
+        group: '{{ cpan_user }}'
+        mode: '0755'
