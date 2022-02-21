@@ -213,6 +213,21 @@ It is expected to have a local CPAN mirror (see `CPAN::Mini` module for that)
 running in your local network/host at http://minicpan:8090. You can combine
 your preferred web server with the `CPAN::Mini` mirror in order to achieve that.
 
+# Maintenance
+
+A list of the Perl modules that needs to be installed through `cpan` are
+available at the `modules` directory that includes:
+
+- `required.txt`: the modules that are **required** for the Smoker to work. To
+quickly enable the smoker, those modules should be installed without testing
+first, then tested in order to have the structure to send reports.
+- `extended_tests.txt`: the modules that enables more tests of the
+distributions available, i.e., they are commonly included for testing only.
+
+In both cases, only the Perl modules that **are not** included in the OpenBSD
+package repository should be include, since those packages were already
+validated and are installed much faster than using `cpan`.
+
 ### FAQ
 
 #### Why a project for that?
