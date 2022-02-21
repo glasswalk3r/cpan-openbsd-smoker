@@ -3,12 +3,13 @@ use warnings;
 use strict;
 use Getopt::Std;
 
-our %opts;
-getopts('b:', \%opts);
+# see also vagrant/packer.json for the creation of the $opts{b} directory
 
-die '-b is required' unless ((exists($opts{b})) and ($opts{b} ne ''));
-mkdir $opts{b} or die "Could not create $opts{b}: $!\n";
-chmod 0777, $opts{b};
+our %opts;
+getopts('b:s:', \%opts);
+
+die '-b <cpan_build_dir> is required' unless ((exists($opts{b})) and ($opts{b} ne ''));
+die '-s <MFS size in Mb> is required' unless ((exists($opts{s})) and ($opts{s} ne ''));
 
 my $fstab = '/etc/fstab';
 open( my $in, '<', $fstab ) or die "Cannot read $fstab: $!\n";
@@ -33,7 +34,7 @@ for my $line (@data) {
 }
 
 unless ($has_mfs) {
-    my @parts = ('swap', $opts{b}, 'mfs', 'rw,async,nodev,nosuid,-s=512m', '0', '0');
+    my @parts = ('swap', $opts{b}, 'mfs', "rw,async,nodev,nosuid,-s=$opts{s}m", '0', '0');
     print $out join( ' ', @parts ), "\n";
 }
 
