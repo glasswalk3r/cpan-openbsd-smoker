@@ -58,7 +58,7 @@ Vagrant.configure('2') do |config|
   # This is a "real" external mirror:
   # cpan_mirror="http://mirror.nbtelecom.com.br/CPAN"
   # Below is a local one
-  cpan_mirror = 'http://192.168.1.114:8090'
+  cpan_mirror = 'http://192.168.1.123:8090'
   # set to "true" (as a Ruby string) below if you want to have a minicpan
   # mirror inside the VM since it takes a considerable time to build one, it is
   # set to "false" by default. If you already have a mirror in your local
@@ -67,7 +67,7 @@ Vagrant.configure('2') do |config|
 
   # reports_from is from which person CPAN reports are being sent, see
   # CPAN::Reporter for details on that.
-  reports_from = 'Alceu Rodrigues de Freitas Junior <arfreitas@cpan.org>'
+  reports_from = '"Alceu Rodrigues de Freitas Junior" <arfreitas@cpan.org>'
 
   # cpan_build_dir is something you shouldn't change unless you know what
   # you're doing.
@@ -91,20 +91,21 @@ Vagrant.configure('2') do |config|
       'single' => {
         'cpan_user' => cpan_user,
         'cpan_mirror' => cpan_mirror,
-        'cpan_build_dir' => cpan_build_dir
+        'cpan_build_dir' => cpan_build_dir,
+        'reports_from' => reports_from
       }
     }
   end
 
   config.vm.provision 'shell', name: 'Setting keyboard', inline: "/sbin/wsconsctl keyboard.encoding=#{keyboard}"
   config.vm.provision 'shell', name: 'Setting timezone', inline: "/usr/sbin/zic -l #{timezone}"
-  config.vm.provision 'shell', name: 'Fine tunning file system', path: 'scripts/fix_fstab.pl', args: ['-b', cpan_build_dir]
+  config.vm.provision 'shell', name: 'Fine tunning file system', path: 'scripts/fix_fstab.pl', args: ['-b', cpan_build_dir, '-s', '512']
   config.vm.provision 'shell', name: 'Remounting all partitions', inline: 'mount -a'
   config.vm.provision 'shell', name: 'Upgrading CPAN', path: '/usr/bin/cpan', args: ['CPAN'], privileged: false
   config.vm.provision 'file', source: 'modules/required.txt', destination: '/tmp/required.txt'
   config.vm.provision 'shell', name: 'Installing required Perl modules', inline: 'cat /tmp/required.txt | xargs cpan -T', privileged: false
   config.vm.provision 'shell', name: 'Enabling CPAN::SQLite', inline: "echo 'o conf use_sqlite 1\no conf commit' | cpan", privileged: false
-  # config.vm.provision 'file', source: 'modules/extended_tests.txt', destination: '/tmp/extended.txt'
+  config.vm.provision 'file', source: 'modules/extended_tests.txt', destination: '/tmp/extended.txt'
 
   config.vm.post_up_message = <<MESSAGE
   Remember to execute the following manual steps after provisioning is finished:
