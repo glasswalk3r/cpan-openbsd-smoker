@@ -21,7 +21,8 @@ add:
 	vagrant box list ${NAMED_BOX} > /dev/null && vagrant box remove ${NAMED_BOX}
 	vagrant box add --name ${NAMED_BOX} ${BOX}
 clean:
-	@rm -f ${BOX} packer_virtualbox-iso_virtualbox-iso_sha256.checksum packer_cache
+	@rm -f ${BOX} packer_virtualbox-iso_virtualbox-iso_sha256.checksum
+	@rm -rf packer_cache
 init:
 	@rm -rf ${ISO_DIR} && mkdir -p ${ISO_DIR} && rm -rf packer_cache/
 	cd ISO && wget -c https://${OPENBSD_MIRROR}/pub/OpenBSD/${OPENBSD_VERSION}/${OPENBSD_ARCHITETURE}/${ISO_IMAGE}
