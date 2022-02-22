@@ -1,3 +1,7 @@
 ISO
 *.vdi
 *.checksum
+.vagrant/
+metabase_id.json
+*.box
+packer_cache
