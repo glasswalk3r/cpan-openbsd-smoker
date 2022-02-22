@@ -42,7 +42,6 @@ Vagrant.configure('2') do |config|
   # Before running, remember to copy a "metabase_id.json" file to the
   # subdirectory "metabase" where this Vagrantfile is located
   ################################################################
-
   cpan_user = 'vagrant'
 
   # setup the OpenBSD closest mirror you want to use. Use just the base URL,
@@ -106,6 +105,9 @@ Vagrant.configure('2') do |config|
   config.vm.provision 'shell', name: 'Installing required Perl modules', inline: 'cat /tmp/required.txt | xargs cpan -T', privileged: false
   config.vm.provision 'shell', name: 'Enabling CPAN::SQLite', inline: "echo 'o conf use_sqlite 1\no conf commit' | cpan", privileged: false
   config.vm.provision 'file', source: 'modules/extended_tests.txt', destination: '/tmp/extended.txt'
+  config.vm.provision 'shell', name: 'Installing extended Perl modules', inline: 'cat /tmp/extended.txt | xargs cpan -T', privileged: false
+  config.vm.provision 'shell', name: 'Enabling CPAN::Reporter', inline: "echo 'o conf test_report 1\no conf commit' | cpan", privileged: false
+  config.vm.provision 'shell', name: 'Testing extended Perl modules', inline: 'cat /tmp/extended.txt | xargs cpan -t', privileged: false  
 
   config.vm.post_up_message = <<MESSAGE
   Remember to execute the following manual steps after provisioning is finished:
