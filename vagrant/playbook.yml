@@ -1,12 +1,14 @@
 ---
 - hosts: all
-  become: 'yes'
+  become: 'false'
   tasks:
     - name: Update all packages on the system
+      become: 'true'
       openbsd_pkg:
         name: '*'
         state: latest
     - name: Install required packages
+      become: 'true'
       openbsd_pkg:
         state: present
         name:
@@ -74,9 +76,25 @@
         mode: '0644'
         group: '{{ cpan_user }}'
     - name: Configure CPAN::Reporter
-      file:
-        path: '/home/{{ cpan_user }}/.cpanreporter'
-        state: directory
-        owner: '{{ cpan_user }}'
-        group: '{{ cpan_user }}'
-        mode: '0755'
+      block:
+        - name: Configuration directory
+          file:
+            path: '/home/{{ cpan_user }}/.cpanreporter'
+            state: directory
+            owner: '{{ cpan_user }}'
+            group: '{{ cpan_user }}'
+            mode: '0755'
+        - name: Configuration file
+          template:
+            src: config.ini.j2
+            dest: '/home/{{ cpan_user }}/.cpanreporter/config.ini'
+            owner: '{{ cpan_user }}'
+            mode: '0644'
+            group: '{{ cpan_user }}'
+        - name: Sent reports directory
+          file:
+            path: '/home/{{ cpan_user }}/ready_reports'
+            state: directory
+            owner: '{{ cpan_user }}'
+            group: '{{ cpan_user }}'
+            mode: '0755'
