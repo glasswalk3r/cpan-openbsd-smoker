@@ -54,6 +54,9 @@
       ],
       "inline": [
         "echo 'PS1=\"[\\u@\\h:\\w]$ \"' > /etc/profile",
+        "echo 'PKG_PATH=${PKG_PATH}; export PKG_PATH' >> /root/.profile",
+        "sed -i -e \"s#libpth => '/usr/lib /usr/lib'#libpth => '/usr/lib /usr/local/lib'#\" /usr/libdata/perl5/amd64-openbsd/Config.pm",
+        "sed -i -e \"s#libpth='/usr/lib /usr/lib'#libpth='/usr/lib /usr/local/lib'#\" /usr/libdata/perl5/amd64-openbsd/Config_heavy.pl",
         "/usr/sbin/pkg_add 'mariadb-server--' 'wget--' 'sudo--' expect python-3.9.7",
         "/usr/local/bin/mysql_install_db",
         "/usr/sbin/rcctl enable mysqld",
