@@ -2,6 +2,8 @@
 comment: Tests hang smoker
 disabled: 1
 match:
+  distribution: ^ETJ/PDL-Fit-Levmar
   perlconfig:
+    archname: i386-openbsd
     osname: openbsd
-  distribution: ^SCHWIGON/Net-SSH-Perl
+    useithreads: ~
