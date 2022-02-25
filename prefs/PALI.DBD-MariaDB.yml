@@ -5,7 +5,7 @@ match:
   distribution: ^PALI/DBD-MariaDB
   perlconfig:
     osname: openbsd
-pl:
+test:
   env:
     DBD_MYSQL_TESTDB: test
     DBD_MYSQL_TESTHOST: localhost
