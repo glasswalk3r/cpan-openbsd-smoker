@@ -2,6 +2,8 @@
 comment: Tests hang smoker
 disabled: 1
 match:
+  distribution: ^GNUSTAVO/Git-Hooks
   perlconfig:
+    archname: i386-openbsd
     osname: openbsd
-  distribution: ^JPIERCE/Filesys-Ext2
+    useithreads: ~
