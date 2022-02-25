@@ -1,9 +1,9 @@
 ---
 - hosts: all
-  become: 'false'
+  become: 'true'
+  gather_facts: 'false'
   tasks:
     - name: Update all packages on the system
-      become: 'true'
       openbsd_pkg:
         name: '*'
         state: latest
@@ -27,6 +27,7 @@
           - 'sqlite3--'
           - 'tidyp--'
           - 'unzip--iconv'
+          - tree
           - p5-YAML-XS
           - p5-Net-SSLeay
           - p5-Moo
@@ -54,7 +55,23 @@
           - p5-Getopt-Long-Descriptive
           - p5-Archive-Zip
           - p5-Filesys-Df
-    - name: Create a directory if it does not exist
+    - name: Add the user to run the smoker
+      block:
+        - name: Add user group
+          ansible.builtin.group:
+            name: '{{ cpan_user }}'
+            state: present
+        - name: Add user
+          user:
+            name: '{{ cpan_user }}'
+            comment: The user that runs the CPAN-Reporter-Smoker
+            create_home: 'true'
+            home: '/home/{{ cpan_user }}'
+            state: present
+            group: '{{ cpan_user }}'
+            groups:
+              - testers
+    - name: Create the cpan client directory
       file:
         path: '/home/{{ cpan_user }}/.cpan/CPAN'
         state: directory
