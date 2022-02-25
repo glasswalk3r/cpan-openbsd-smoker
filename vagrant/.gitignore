@@ -1,1 +1,4 @@
 ISO
+metabase_id.json
+*.checksum
+.python-version
