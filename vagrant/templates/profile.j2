@@ -1,22 +1,13 @@
 # local::lib
-
-PATH="/home/vagrant/perl5/bin${PATH:+:${PATH}}"; export PATH;
-PERL5LIB="/home/vagrant/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
-PERL_LOCAL_LIB_ROOT="/home/vagrant/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
-PERL_MB_OPT="--install_base \"/home/vagrant/perl5\""; export PERL_MB_OPT;
-PERL_MM_OPT="INSTALL_BASE=/home/vagrant/perl5"; export PERL_MM_OPT;
+PATH="/home/{{ cpan_user }}/perl5/bin${PATH:+:${PATH}}"; export PATH;
+PERL5LIB="/home/{{ cpan_user }}/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
+PERL_LOCAL_LIB_ROOT="/home/{{ cpan_user }}/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
+PERL_MB_OPT="--install_base \"/home/{{ cpan_user }}/perl5\""; export PERL_MB_OPT;
+PERL_MM_OPT="INSTALL_BASE=/home/{{ cpan_user }}/perl5"; export PERL_MM_OPT;
 
 # CPAN with SQLite database
 CPAN_SQLITE_NO_LOG_FILES=1; export CPAN_SQLITE_NO_LOG_FILES
 CPAN_SQLITE_LOG_FILES_CLEANUP=1; export CPAN_SQLITE_LOG_FILES_CLEANUP
-
-# DBD::MySQL extended testing
-DBD_MYSQL_TESTDB=test; export DBD_MYSQL_TESTDB
-DBD_MYSQL_TESTHOST=localhost; export DBD_MYSQL_TESTHOST
-DBD_MYSQL_TESTPASSWORD=;export DBD_MYSQL_TESTPASSWORD
-DBD_MYSQL_TESTPORT=3306; export DBD_MYSQL_TESTPORT
-DBD_MYSQL_TESTUSER=${USER}; export DBD_MYSQL_TESTUSER
-EXTENDED_TESTING=1; export EXTENDED_TESTING
 
 # CPAN:Reporter::Smoker
 AUTOMATED_TESTING=1; export AUTOMATED_TESTING
