@@ -62,7 +62,7 @@
             name: '{{ cpan_user }}'
             state: present
         - name: Add user
-          user:
+          ansible.builtin.user:
             name: '{{ cpan_user }}'
             comment: The user that runs the CPAN-Reporter-Smoker
             create_home: 'true'
@@ -71,6 +71,11 @@
             group: '{{ cpan_user }}'
             groups:
               - testers
+        - name: Configure access through SSH
+          ansible.posix.authorized_key:
+            user: '{{ cpan_user }}'
+            state: present
+            key: "{{ lookup('file', cpan_user_pub_key) }}"
     - name: Create the cpan client directory
       file:
         path: '/home/{{ cpan_user }}/.cpan/CPAN'

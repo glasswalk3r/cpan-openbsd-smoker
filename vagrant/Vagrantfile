@@ -12,7 +12,14 @@
 # Before running, remember to copy a "metabase_id.json" file to the
 # subdirectory "metabase" where this Vagrantfile is located
 ################################################################
+
+# The username to associate with the user that will run the CPAN smoker.
+# This is required to avoid giving too much privileges with sudo.
 cpan_user = 'goku'
+
+# The public SSH key to add to the authorized_key cpan_user SSH configuration.
+# Defaults to an SSH key point to your current user OpenSSH standard directory.
+cpan_user_pub_key = "#{ENV['HOME']}/.ssh/vagrant.pub"
 
 # setup the OpenBSD closest mirror you want to use. Use just the base URL,
 # like "http://openbsd.c3sl.ufpr.br". The rest will be guessed by the related
@@ -97,7 +104,8 @@ Vagrant.configure('2') do |config|
         'cpan_user' => cpan_user,
         'cpan_mirror' => cpan_mirror,
         'cpan_build_dir' => cpan_build_dir,
-        'reports_from' => reports_from
+        'reports_from' => reports_from,
+        'cpan_user_pub_key' => cpan_user_pub_key,
       }
     }
   end
