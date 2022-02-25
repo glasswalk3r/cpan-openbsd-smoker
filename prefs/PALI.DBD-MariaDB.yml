@@ -5,11 +5,10 @@ match:
   distribution: ^PALI/DBD-MariaDB
   perlconfig:
     osname: openbsd
-test:
-  env:
-    DBD_MYSQL_TESTDB: test
-    DBD_MYSQL_TESTHOST: localhost
-    DBD_MYSQL_TESTPASSWORD: null
-    DBD_MYSQL_TESTPORT: 3306
-    DBD_MYSQL_TESTUSER: vagrant
-    EXTENDED_TESTING: 1
+pl:
+  args:
+    - '--testuser=vagrant'
+    - '--testhost=localhost'
+    - '--testport=3306'
+    - '--testdb=test'
+
