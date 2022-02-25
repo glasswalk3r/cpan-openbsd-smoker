@@ -39,6 +39,11 @@
       "destination": "/tmp/mariadb"
     },
     {
+      "type": "file",
+      "source": "packer/mariadb-user.sql",
+      "destination": "/tmp/mariadb-user.sql"
+    },
+    {
       "type": "shell",
       "inline": [
         "mv /tmp/adduser.conf /etc/adduser.conf",
@@ -66,6 +71,7 @@
         "sed -i -f /tmp/mysql-perf.txt /etc/my.cnf",
         "/usr/sbin/rcctl restart mysqld",
         "/usr/local/bin/expect -f /tmp/mariadb",
+        "/usr/local/bin/mysql -u root < /tmp/mariadb-user.sql",
         "echo 'vagrant ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers",
         "groupadd testers",
         "usermod -G wheel,testers vagrant",
