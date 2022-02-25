@@ -1,0 +1,13 @@
+---
+comment: Set the required environment variables for extended testing
+disabled: 0
+match:
+  distribution: ^PALI/DBD-MariaDB
+  perlconfig:
+    osname: openbsd
+pl:
+  args:
+    - '--testuser=vagrant'
+    - '--testhost=localhost'
+    - '--testdb=test'
+

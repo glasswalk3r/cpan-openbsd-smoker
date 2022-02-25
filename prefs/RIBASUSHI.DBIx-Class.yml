@@ -1,0 +1,11 @@
+---
+comment: Enable extended testing
+disabled: 0
+match:
+  distribution: '^RIBASUSHI/DBIx-Class'
+test:
+  env:
+    DBICTEST_MYSQL_DSN: 'DBI:mysql:database=test;host=localhost'
+    DBICTEST_MYSQL_USER: 'vagrant'
+    DBICTEST_MYSQL_PASS: undef
+
