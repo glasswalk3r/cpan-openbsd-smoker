@@ -9,6 +9,5 @@ pl:
   args:
     - '--testuser=vagrant'
     - '--testhost=localhost'
-    - '--testport=3306'
     - '--testdb=test'
 
