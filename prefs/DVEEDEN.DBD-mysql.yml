@@ -1,0 +1,15 @@
+---
+comment: Set the required environment variables for extended testing
+disabled: 0
+match:
+  distribution: ^DVEEDEN/DBD-mysql
+  perlconfig:
+    osname: openbsd
+pl:
+  env:
+    DBD_MYSQL_TESTDB: test
+    DBD_MYSQL_TESTHOST: localhost
+    DBD_MYSQL_TESTPASSWORD: null
+    DBD_MYSQL_TESTPORT: 3306
+    DBD_MYSQL_TESTUSER: vagrant
+    EXTENDED_TESTING: 1
