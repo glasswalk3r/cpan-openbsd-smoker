@@ -1,0 +1,9 @@
+---
+comment: Takes hours to compile, uses two much disk space
+disabled: 1
+match:
+  distribution: ^PLICEASE/Alien-cmake3
+  perlconfig:
+    archname: i386-openbsd
+    osname: openbsd
+    useithreads: ~
