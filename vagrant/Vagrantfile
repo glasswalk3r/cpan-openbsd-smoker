@@ -1,8 +1,25 @@
 # frozen_string_literal: true
 
+# This software is copyright (c) 2017 of Alceu Rodrigues de Freitas Junior,
+# arfreitas@cpan.org
+#
+# This file is part of CPAN OpenBSD Smoker.
+#
+# CPAN OpenBSD Smoker is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# CPAN OpenBSD Smoker is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with CPAN OpenBSD Smoker.  If not, see http://www.gnu.org/licenses.
+
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-
 
 ################################################################
 # CONFIGURABLE STEPS
@@ -34,7 +51,7 @@ timezone = 'America/Sao_Paulo'
 # This is a "real" external mirror:
 # cpan_mirror="http://mirror.nbtelecom.com.br/CPAN"
 # Below is a local one
-cpan_mirror = 'http://192.168.1.123:8090'
+cpan_mirror = 'http://192.168.1.124:8090'
 # set to "true" (as a Ruby string) below if you want to have a minicpan
 # mirror inside the VM since it takes a considerable time to build one, it is
 # set to "false" by default. If you already have a mirror in your local
@@ -114,14 +131,6 @@ Vagrant.configure('2') do |config|
   config.vm.provision 'shell', name: 'Setting timezone', inline: "/usr/sbin/zic -l #{timezone}"
   config.vm.provision 'shell', name: 'Fine tunning file system', path: 'scripts/fix_fstab.pl', args: ['-b', cpan_build_dir, '-s', '512']
   config.vm.provision 'shell', name: 'Remounting all partitions', inline: 'mount -a'
-  # config.vm.provision 'shell', name: 'Upgrading CPAN', path: '/usr/bin/cpan', args: ['CPAN'], privileged: false
-  # config.vm.provision 'file', source: 'modules/required.txt', destination: '/tmp/required.txt'
-  # config.vm.provision 'shell', name: 'Installing required Perl modules', inline: 'cat /tmp/required.txt | xargs cpan -T', privileged: false
-  # config.vm.provision 'shell', name: 'Enabling CPAN::SQLite', inline: "echo 'o conf use_sqlite 1\no conf commit' | cpan", privileged: false
-  # config.vm.provision 'file', source: 'modules/extended_tests.txt', destination: '/tmp/extended.txt'
-  # config.vm.provision 'shell', name: 'Installing extended Perl modules', inline: 'cat /tmp/extended.txt | xargs cpan -T', privileged: false
-  # config.vm.provision 'shell', name: 'Enabling CPAN::Reporter', inline: "echo 'o conf test_report 1\no conf commit' | cpan", privileged: false
-  # config.vm.provision 'shell', name: 'Testing extended Perl modules', inline: 'cat /tmp/extended.txt | xargs cpan -t', privileged: false
 
   config.vm.post_up_message = <<MESSAGE
   Remember to execute the following manual steps after provisioning is finished:
