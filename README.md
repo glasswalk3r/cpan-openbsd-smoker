@@ -215,6 +215,10 @@ your preferred web server with the `CPAN::Mini` mirror in order to achieve that.
 
 # Maintenance
 
+```
+pkg_info -Q p5-Test- | sed -E 's/ \(installed\)//' | sed -E "s/^(p5-.*[a-zA-Z0-9])-.*/- \1/
+```
+
 A list of the Perl modules that needs to be installed through `cpan` are
 available at the `modules` directory that includes:
 
@@ -237,9 +241,8 @@ care of automating most of it.
 
 #### Does this works with any "basic" OpenBSD VM?
 
-No. The VM specified in the `Vagrantfile` contains customizations as documented
-in [here](http://wiki.cpantesters.org/wiki/SmokerOnOpenBSD). Besides, this box
-already has required software installed, which reduces the provisioning time
+No. The VM specified in the `Vagrantfile` contains customizations. Besides, this
+box already has required software installed, which reduces the provisioning time
 substantially.
 
 #### I'm a CPAN developer, can I use it for testing my own modules?
