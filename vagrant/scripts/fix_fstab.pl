@@ -1,10 +1,28 @@
 #!/usr/bin/env perl
+
+# This software is copyright (c) 2017 of Alceu Rodrigues de Freitas Junior,
+# arfreitas@cpan.org
+#
+# This file is part of CPAN OpenBSD Smoker.
+#
+# CPAN OpenBSD Smoker is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# CPAN OpenBSD Smoker is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with CPAN OpenBSD Smoker.  If not, see http://www.gnu.org/licenses.
+
 use warnings;
 use strict;
 use Getopt::Std;
 
 # see also vagrant/packer.json for the creation of the $opts{b} directory
-
 our %opts;
 getopts('b:s:', \%opts);
 
