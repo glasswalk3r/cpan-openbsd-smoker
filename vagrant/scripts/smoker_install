@@ -1,0 +1,59 @@
+#!/usr/local/bin/bash
+
+# This software is copyright (c) 2017 of Alceu Rodrigues de Freitas Junior,
+# arfreitas@cpan.org
+#
+# This file is part of CPAN OpenBSD Smoker.
+#
+# CPAN OpenBSD Smoker is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# CPAN OpenBSD Smoker is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with CPAN OpenBSD Smoker.  If not, see http://www.gnu.org/licenses.
+set -euo pipefail
+
+echo 'Upgrading CPAN client'
+cpan -T CPAN
+
+echo 'Installing CPAN::SQLite'
+cpan -T CPAN::SQLite
+
+echo 'Enabling CPAN::SQLite usage'
+echo -e 'o conf use_sqlite 1\no conf commit' | cpan
+
+echo 'Installing minimum for testing reports'
+cpan -T Task::CPAN::Reporter
+echo -e 'o conf test_report 1\no conf commit' | cpan
+echo 'Now testing it'
+
+set +e
+cpan -t CPAN::SQLite Task::CPAN::Reporter
+
+declare -a required
+required[0]='Module::Version'
+required[1]='Bundle::CPAN'
+required[2]='Bundle::CPAN::Reporter::Smoker::Tests'
+required[3]='CPAN::Reporter::Smoker'
+required[4]='Test::Reporter::Transport::Socket'
+required[5]='CPAN::Reporter::Smoker::OpenBSD'
+required[6]='POE::Component::Metabase::Client::Submit'
+required[7]='POE::Component::Metabase::Relay::Server'
+required[8]='List::BinarySearch'
+required[9]='MooseX::Types::JSON'
+required[10]='Class::DBI::Plugin::DeepAbstractSearch'
+
+echo 'Installing required modules for the smoker'
+for module in "${required[@]}"
+do
+  echo "Installing ${module}"
+  cpan "${module}"
+done
+
+echo 'Now the smoker is ready! Hit "start_smoker" to start it.'
