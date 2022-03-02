@@ -36,18 +36,20 @@ echo 'Now testing it'
 set +e
 cpan -t CPAN::SQLite Task::CPAN::Reporter
 
+# tests hangs
+cpan -T CPAN::Reporter::Smoker
+
 declare -a required
 required[0]='Module::Version'
 required[1]='Bundle::CPAN'
 required[2]='Bundle::CPAN::Reporter::Smoker::Tests'
-required[3]='CPAN::Reporter::Smoker'
-required[4]='Test::Reporter::Transport::Socket'
-required[5]='CPAN::Reporter::Smoker::OpenBSD'
-required[6]='POE::Component::Metabase::Client::Submit'
-required[7]='POE::Component::Metabase::Relay::Server'
-required[8]='List::BinarySearch'
-required[9]='MooseX::Types::JSON'
-required[10]='Class::DBI::Plugin::DeepAbstractSearch'
+required[3]='Test::Reporter::Transport::Socket'
+required[4]='CPAN::Reporter::Smoker::OpenBSD'
+required[5]='POE::Component::Metabase::Client::Submit'
+required[6]='POE::Component::Metabase::Relay::Server'
+required[7]='List::BinarySearch'
+required[8]='MooseX::Types::JSON'
+required[9]='Class::DBI::Plugin::DeepAbstractSearch'
 
 echo 'Installing required modules for the smoker'
 for module in "${required[@]}"
@@ -57,3 +59,4 @@ do
 done
 
 echo 'Now the smoker is ready! Hit "start_smoker" to start it.'
+
