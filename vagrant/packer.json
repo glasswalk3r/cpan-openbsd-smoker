@@ -53,6 +53,11 @@
       ]
     },
     {
+      "type": "file",
+      "source": "packer/packages.txt",
+      "destination": "/tmp/packages.txt"
+    },
+    {
       "type": "shell",
       "environment_vars": [
         "LOCAL_MIRROR={{user `local_mirror`}}",
@@ -63,7 +68,7 @@
         "echo 'PKG_PATH={{user `pkg_path`}}; export PKG_PATH' >> /root/.profile",
         "sed -i -e \"s#libpth => '/usr/lib /usr/lib'#libpth => '/usr/lib /usr/local/lib'#\" /usr/libdata/perl5/amd64-openbsd/Config.pm",
         "sed -i -e \"s#libpth='/usr/lib /usr/lib'#libpth='/usr/lib /usr/local/lib'#\" /usr/libdata/perl5/amd64-openbsd/Config_heavy.pl",
-        "/usr/sbin/pkg_add 'mariadb-server--' 'wget--' 'sudo--' expect python-3.9.7",
+        "/usr/sbin/pkg_add -l /tmp/packages.txt",
         "/usr/local/bin/mysql_install_db",
         "/usr/sbin/rcctl enable mysqld",
         "sed -i -E 's/^(log-bin=)/#\\1/' /etc/my.cnf",
@@ -95,9 +100,9 @@
         "cat <<EOF >> openbsd.disklabel<enter>",
         "/ 250M<enter>",
         "swap 1548M<enter>",
-        "/home 40G<enter>",
+        "/home 35G<enter>",
         "/minicpan 5G<enter>",
-        "/usr 5G<enter>",
+        "/usr 10G<enter>",
         "/var 500M<enter>",
         "/tmp 1G-*<enter>",
         "EOF<enter>",
