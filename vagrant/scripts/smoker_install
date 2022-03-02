@@ -35,6 +35,7 @@ echo 'Now testing it'
 
 set +e
 cpan -t CPAN::SQLite Task::CPAN::Reporter
+set -e
 
 # tests hangs
 cpan -T CPAN::Reporter::Smoker
@@ -57,6 +58,9 @@ do
   echo "Installing ${module}"
   cpan "${module}"
 done
+
+echo 'Cloning the project for distroprefs...'
+git clone https://github.com/glasswalk3r/cpan-openbsd-smoker.git
 
 echo 'Now the smoker is ready! Hit "start_smoker" to start it.'
 

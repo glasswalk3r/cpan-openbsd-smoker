@@ -16,6 +16,7 @@ PERL_EXTUTILS_AUTOINSTALL=1; export PERL_EXTUTILS_AUTOINSTALL
 
 function start_smoker {
     echo 'Cleaning up previous executions...'
-    rm -rf {{ cpan_build_dir }}/* $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
+    rm -rf $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
+    if [ -d /home/{{ cpan_user }}/cpan-openbsd-smoker ]; then echo 'Refreshing distroprefs...'; git pull; fi
     perl -MCPAN::Reporter::Smoker -e 'start(clean_cache_after => 50, install => 1)'
 }
