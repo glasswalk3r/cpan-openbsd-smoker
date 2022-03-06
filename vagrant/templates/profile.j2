@@ -14,10 +14,15 @@ AUTOMATED_TESTING=1; export AUTOMATED_TESTING
 PERL_MM_USE_DEFAULT=1; export PERL_MM_USE_DEFAULT
 PERL_EXTUTILS_AUTOINSTALL=1; export PERL_EXTUTILS_AUTOINSTALL
 
+PREFS_DIR="${HOME}/cpan-openbsd-smoker"
+
 function start_smoker {
     echo 'Cleaning up previous executions...'
-    rm -rf $HOME/.cpan/sources/authors/id $HOME/.cpan/FTPstats.yml*
-    if [ -d /home/{{ cpan_user }}/cpan-openbsd-smoker ]; then echo 'Refreshing distroprefs...'; git pull; fi
+    cp /mnt/cpan_build_dir/${USER}/*-0.yml /home/goku/.cpan/build/
+    rm -rf ${HOME}/.cpan/sources/authors/id ${HOME}/.cpan/FTPstats.yml*
+    rm -rf /mnt/cpan_build_dir/${USER}/*
+    cp /home/goku/.cpan/build/*.yml /mnt/cpan_build_dir/goku/
+    if [ -d "${PREFS_DIR}" ]; then echo 'Refreshing distroprefs...'; cd ${PREFS_DIR}; git pull; cd ..; fi
     perl -MCPAN::Reporter::Smoker -e 'start(clean_cache_after => 50, install => 1)'
 }
 
