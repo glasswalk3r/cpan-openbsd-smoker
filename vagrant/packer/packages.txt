@@ -20,11 +20,13 @@ tidyp--
 unzip--iconv
 tree
 p5-YAML-XS
+perltidy
 p5-Net-SSLeay
 p5-Moo
 p5-Moose
 p5-IO-Socket-SSL
 p5-Log-Log4perl
+p5-Term-ReadLine-Perl
 p5-Proc-ProcessTable
 p5-MooseX-Types
 p5-MooseX-Types-LoadableClass
