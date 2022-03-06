@@ -59,6 +59,10 @@ cpan_mirror = 'http://192.168.1.124:8090'
 use_local_mirror = 'false'
 
 vim_backup_dir = 'backup'
+cpus = 2
+# Customize the amount of memory on the VM
+memory = 2048
+
 # reports_from is from which person CPAN reports are being sent, see
 # CPAN::Reporter for details on that.
 reports_from = '"Alceu Rodrigues de Freitas Junior" <arfreitas@cpan.org>'
@@ -99,8 +103,8 @@ Vagrant.configure('2') do |config|
     # Display the VirtualBox GUI when booting the machine
     # Useful for troubleshooting when true
     vb.gui = false
-    # Customize the amount of memory on the VM:
-    vb.memory = '2048'
+    vb.memory = memory
+    vb.cpus = cpus
     vb.name = 'OpenBSD CPAN Smoker'
     # You may want to hide your network name given by the internal DHCP server.
     vb.customize ['modifyvm', :id, '--natdnspassdomain1', 'off']
@@ -124,7 +128,8 @@ Vagrant.configure('2') do |config|
         'cpan_build_dir' => cpan_build_dir,
         'reports_from' => reports_from,
         'cpan_user_pub_key' => cpan_user_pub_key,
-        'vim_backup_dir' => vim_backup_dir
+        'vim_backup_dir' => vim_backup_dir,
+        'make_jobs' => cpus
       }
     }
   end
