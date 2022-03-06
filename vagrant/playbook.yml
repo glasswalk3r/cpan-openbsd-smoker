@@ -60,6 +60,13 @@
         owner: '{{ cpan_user }}'
         group: '{{ cpan_user }}'
         mode: '0755'
+    - name: Create the vim directory
+      file:
+        path: '/home/{{ cpan_user }}/.vim/{{ vim_backup_dir }}'
+        state: directory
+        owner: '{{ cpan_user }}'
+        group: '{{ cpan_user }}'
+        mode: '0755'
     - name: Configure the cpan client
       template:
         src: MyConfig.pm.j2

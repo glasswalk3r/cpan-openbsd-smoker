@@ -20,3 +20,5 @@ function start_smoker {
     if [ -d /home/{{ cpan_user }}/cpan-openbsd-smoker ]; then echo 'Refreshing distroprefs...'; git pull; fi
     perl -MCPAN::Reporter::Smoker -e 'start(clean_cache_after => 50, install => 1)'
 }
+
+alias vi='vim'
