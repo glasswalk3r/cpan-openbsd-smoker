@@ -20,12 +20,15 @@
 set -euo pipefail
 
 echo 'Cloning the project for distroprefs...'
-git clone https://github.com/glasswalk3r/cpan-openbsd-smoker.git
+if ! [ -d "${HOME}/cpan-openbsd-smoker" ]
+then
+    git clone https://github.com/glasswalk3r/cpan-openbsd-smoker.git
+fi
 
-echo 'Upgrading CPAN client'
+echo 'Upgrading CPAN client without testing'
 cpan -T CPAN
 
-echo 'Installing CPAN::SQLite'
+echo 'Installing CPAN::SQLite without testing'
 cpan -T CPAN::SQLite
 
 echo 'Enabling CPAN::SQLite usage'
@@ -36,8 +39,8 @@ cpan -T Task::CPAN::Reporter
 echo -e 'o conf test_report 1\no conf commit' | cpan
 echo 'Now testing it'
 
-echo 'Alien::Build is broken on OpenBSD'
-cpan -T Alien::Build
+echo 'These modules are required but their respective tests are broken on OpenBSD'
+cpan -T Alien::Build POE::Component::SSLify
 
 set +e
 cpan -t CPAN::SQLite Task::CPAN::Reporter
@@ -68,4 +71,4 @@ done
 echo 'Enabling CPAN build_dir_reuse'
 echo -e 'o conf build_dir_reuse 1\no conf commit' | cpan
 
-echo 'Now the smoker is ready! Hit "start_smoker" to start it.'
+echo -e '\n\nNow the smoker is ready! Hit "start_smoker" to start it.'
