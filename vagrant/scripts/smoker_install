@@ -19,6 +19,9 @@
 # along with CPAN OpenBSD Smoker.  If not, see http://www.gnu.org/licenses.
 set -euo pipefail
 
+echo 'Cloning the project for distroprefs...'
+git clone https://github.com/glasswalk3r/cpan-openbsd-smoker.git
+
 echo 'Upgrading CPAN client'
 cpan -T CPAN
 
@@ -32,6 +35,9 @@ echo 'Installing minimum for testing reports'
 cpan -T Task::CPAN::Reporter
 echo -e 'o conf test_report 1\no conf commit' | cpan
 echo 'Now testing it'
+
+echo 'Alien::Build is broken on OpenBSD'
+cpan -T Alien::Build
 
 set +e
 cpan -t CPAN::SQLite Task::CPAN::Reporter
@@ -59,8 +65,7 @@ do
   cpan "${module}"
 done
 
-echo 'Cloning the project for distroprefs...'
-git clone https://github.com/glasswalk3r/cpan-openbsd-smoker.git
+echo 'Enabling CPAN build_dir_reuse'
+echo -e 'o conf build_dir_reuse 1\no conf commit' | cpan
 
 echo 'Now the smoker is ready! Hit "start_smoker" to start it.'
-
