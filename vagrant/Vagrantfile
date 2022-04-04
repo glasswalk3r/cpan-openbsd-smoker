@@ -103,6 +103,7 @@ Vagrant.configure('2') do |config|
     # Display the VirtualBox GUI when booting the machine
     # Useful for troubleshooting when true
     vb.gui = false
+    vb.check_guest_additions = false
     vb.memory = memory
     vb.cpus = cpus
     vb.name = 'OpenBSD CPAN Smoker'
@@ -142,15 +143,17 @@ Vagrant.configure('2') do |config|
   config.vm.post_up_message = <<MESSAGE
   Remember to execute the following manual steps after provisioning is finished:
     1 - Configure passwords for the new users with 'passwd'. Change the default
-    password of vagrant user, same thing for root.
-    2 - Spend some time validating tests results. Tests will not be submitted
+    password of your defined user, vagrant user and root.
+    2 - Run the program /usr/local/bin/smoker_install with the chosen user to
+    install the smoker for that user. This setup will already generate testing
+    reports that will be stored at the $HOME/ready_reports directory.
+    3 - Spend some time validating tests results. Tests will not be submitted
     automatically, but saved to a local directory before submission. This will
-    give you a chance to validate the smoker configuration first.
-    3 - Submit reports with the script 'send_reports'. Check out it's
-    documentation with 'perldoc send_reports'.
-    Skip reports with "unknown" grade until you're sure the errors weren't
-    caused by the smoker itself.
-    4 - If some distribution halts the smoker, block it with 'dblock'. Check out
+    give you a chance to validate the smoker configuration before submission.
+    4 - Submit reports with the script 'send_reports'. Check out it's
+    documentation with 'perldoc send_reports'. Skip reports with "unknown" grade
+    until you're sure the errors weren't caused by the smoker itself.
+    5 - If some distribution halts the smoker, block it with 'dblock'. Check out
     it's documentation with 'perldoc dblock'.
 MESSAGE
 end
