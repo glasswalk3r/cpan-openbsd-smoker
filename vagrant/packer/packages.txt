@@ -1,12 +1,15 @@
 bash--
 bzip2--
+clamav
 curl--
 expect
 gd--
 git--
 gmp--
+gtar--
 libxml--
 libxslt--
+libmpc
 mariadb-server--
 mpfr--
 ntp--
