@@ -6,4 +6,3 @@ match:
   perlconfig:
     archname: i386-openbsd
     osname: openbsd
-    useithreads: ~

@@ -1,0 +1,7 @@
+---
+comment: Testing takes too long to finish
+disabled: 1
+match:
+  distribution: ^ABIGAIL/Regexp-Common
+  perlconfig:
+    osname: openbsd

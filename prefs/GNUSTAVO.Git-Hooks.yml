@@ -4,6 +4,4 @@ disabled: 1
 match:
   distribution: ^GNUSTAVO/Git-Hooks
   perlconfig:
-    archname: i386-openbsd
     osname: openbsd
-    useithreads: ~

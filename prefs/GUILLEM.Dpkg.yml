@@ -1,0 +1,7 @@
+---
+comment: pollutes filesystem
+disabled: 1
+match:
+  distribution: ^GUILLEM/Dpkg
+  perlconfig:
+    osname: openbsd
