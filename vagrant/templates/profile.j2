@@ -25,3 +25,6 @@ function start_smoker {
 }
 
 alias vi='vim'
+{%- if use_local_mirror %}
+alias minicpan='minicpan -c CPAN::Mini::LatestDistVersion'
+{%- endif %}

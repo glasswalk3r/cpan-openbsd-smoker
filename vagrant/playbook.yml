@@ -18,6 +18,9 @@
 # along with CPAN OpenBSD Smoker.  If not, see http://www.gnu.org/licenses.
 
 - hosts: all
+  vars:
+    smoker_group: testers
+    minicpan_dir: /var/minicpan
   become: 'true'
   gather_facts: 'false'
   tasks:
@@ -25,12 +28,16 @@
       openbsd_pkg:
         name: '*'
         state: latest
+    - name: Add testers group
+      ansible.builtin.group:
+        name: '{{ smoker_group }}'
+        state: present
     - name: Copy smoker_install script
       ansible.builtin.copy:
         src: scripts/smoker_install
         dest: /usr/local/bin/smoker_install
         owner: root
-        group: testers
+        group: '{{ smoker_group }}'
         mode: '0555'
     - name: Add the user to run the smoker
       block:
@@ -47,7 +54,7 @@
             state: present
             group: '{{ cpan_user }}'
             groups:
-              - testers
+              - '{{ smoker_group }}'
         - name: Configure access through SSH
           ansible.posix.authorized_key:
             user: '{{ cpan_user }}'
@@ -120,3 +127,21 @@
             owner: '{{ cpan_user }}'
             group: '{{ cpan_user }}'
             mode: '0755'
+    - name: Configure local mirror
+      block:
+        - name: CPAN::Mini configuration file
+          when: use_local_mirror
+          template:
+            src: minicpanrc.j2
+            dest: '/home/{{ cpan_user }}/.minicpanrc'
+            owner: '{{ cpan_user }}'
+            mode: '0644'
+            group: '{{ cpan_user }}'
+        - name: Location for local mirror files
+          when: use_local_mirror
+          file:
+            path: '{{ minicpan_dir }}'
+            state: directory
+            owner: 'root'
+            group: '{{ smoker_group }}'
+            mode: '0775'

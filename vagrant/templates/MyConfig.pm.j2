@@ -68,7 +68,11 @@ $CPAN::Config = {
   'test_report' => q[0],
   'trust_test_report_history' => q[1],
   'unzip' => q[],
+{%- if use_local_mirror %}
+  'urllist' => [q[file://{{ minicpan_dir }}], q[{{ cpan_mirror }}], q[http://www.cpan.org/]],
+{%- else %}
   'urllist' => [q[{{ cpan_mirror }}], q[http://www.cpan.org/]],
+{%- endif %}
   'use_prompt_default' => q[0],
   'use_sqlite' => q[0],
   'version_timeout' => q[15],

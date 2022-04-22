@@ -46,19 +46,34 @@ openbsd_mirror = 'openbsd.c3sl.ufpr.br'
 # setups the expected time zone the VM will be running
 timezone = 'America/Sao_Paulo'
 
-# Perl CPAN configurations
+# configures Vim backup dir, to avoid leaving temporary files everywhere
+vim_backup_dir = 'backup'
+
+# the number of CPU's the VM will have, this also defines the number of parallel
+# tasks to be executed with Make
+cpus = 2
+
+# Customize the amount of memory on the VM
+memory = 2048
+
+# keyboard encoding, see wsconsctl manpage for details
+keyboard = 'br'
+
+# Perl CPAN section
 
 # cpan_mirror: setup the CPAN closest mirror you want to use. It can be even a
 # one on your local network built with CPAN::Mini and Nginx.
 # This is a "real" external mirror:
 # cpan_mirror="http://mirror.nbtelecom.com.br/CPAN"
-# Below is a local one
+# Below is one in the local network, or even the VM host itself
 cpan_mirror = 'http://192.168.1.124:8090'
-# set to "true" (as a Ruby string) below if you want to have a minicpan
-# mirror inside the VM since it takes a considerable time to build one, it is
-# set to "false" by default. If you already have a mirror in your local
-# network, you probably leave this as is.
-use_local_mirror = 'false'
+# set to true below if you want to have a minicpan mirror inside the VM since
+# it takes a considerable time to configure one, it is set to false by default.
+# If you already have a mirror (in the VM host or your local network) you
+# probably will want to leave this as is.
+# If set to true, this will configure a local directory to hold the mirrored
+# files, configure the cpan client, CPAN::Mini and create a "minicpan" alias
+use_local_mirror = false
 # See https://metacpan.org/pod/CPAN::Reporter::Smoker#USAGE for details of the
 # following options
 clean_cache_after = 100
@@ -78,26 +93,8 @@ cpan_build_dir = '/mnt/cpan_build_dir'
 # The path is relative to the user home directory
 prefs_dir = 'cpan-openbsd-smoker/prefs'
 
-# PREFS_DIR="${HOME}/cpan-openbsd-smoker"
-#
-# function start_smoker {
-#     echo 'Cleaning up previous executions...'
-#     rm -rf ${HOME}/.cpan/sources/authors/id ${HOME}/.cpan/FTPstats.yml*
-#     rm -rf /mnt/cpan_build_dir/${USER}/
-#     mkdir -p /mnt/cpan_build_dir/${USER}
-#     if [ -d "${PREFS_DIR}" ]; then echo 'Refreshing distroprefs...'; cd ${PREFS_DIR}; git pull; cd ..; fi
-#     perl -MCPAN::Reporter::Smoker -e 'start(clean_cache_after => 50, install => 1, restart_delay => 604800)'
-# }
-vim_backup_dir = 'backup'
-cpus = 2
-# Customize the amount of memory on the VM
-memory = 2048
-
-# keyboard encoding, see wsconsctl manpage for details
-keyboard = 'br'
-
 ################################################################
-# END OF CONFIGURABLE STEPS
+# END OF USER CONFIGURATIONS
 ################################################################
 
 Vagrant.configure('2') do |config|
@@ -149,13 +146,15 @@ Vagrant.configure('2') do |config|
         'prefs_dir' => prefs_dir,
         'clean_cache_after' => clean_cache_after,
         'restart_delay' => restart_delay,
-        'openbsd_mirror' => openbsd_mirror
+        'openbsd_mirror' => openbsd_mirror,
+        'use_local_mirror' => use_local_mirror
       }
     }
   end
 
   config.vm.provision 'shell', name: 'Setting keyboard', inline: "/sbin/wsconsctl keyboard.encoding=#{keyboard}"
   config.vm.provision 'shell', name: 'Setting timezone', inline: "/usr/sbin/zic -l #{timezone}"
+  # TODO: try to replace next line with https://docs.ansible.com/ansible/latest/collections/ansible/posix/mount_module.html
   config.vm.provision 'shell', name: 'Fine tunning file system', path: 'scripts/fix_fstab.pl', args: ['-b', cpan_build_dir, '-s', '512']
   config.vm.provision 'shell', name: 'Remounting all partitions', inline: 'mount -a'
 
