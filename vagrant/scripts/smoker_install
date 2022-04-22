@@ -34,19 +34,19 @@ cpan -T CPAN::SQLite
 echo 'Enabling CPAN::SQLite usage'
 echo -e 'o conf use_sqlite 1\no conf commit' | cpan
 
+echo 'This module is required but the tests are broken on OpenBSD'
+cpan -T Alien::Build POE::Component::SSLify
+
 echo 'Installing minimum for testing reports'
 cpan -T Task::CPAN::Reporter
 echo -e 'o conf test_report 1\no conf commit' | cpan
 echo 'Now testing it'
 
-echo 'These modules are required but their respective tests are broken on OpenBSD'
-cpan -T Alien::Build POE::Component::SSLify
-
 set +e
 cpan -t CPAN::SQLite Task::CPAN::Reporter
 set -e
 
-# tests hangs
+echo 'This distribution tests hangs, so installing without testing'
 cpan -T CPAN::Reporter::Smoker
 
 declare -a required
@@ -60,6 +60,9 @@ required[6]='POE::Component::Metabase::Relay::Server'
 required[7]='List::BinarySearch'
 required[8]='MooseX::Types::JSON'
 required[9]='Class::DBI::Plugin::DeepAbstractSearch'
+# installing anyway, even if it won't be used
+required[10]='CPAN::Mini'
+required[11]='CPAN::Mini::LatestDistVersion'
 
 echo 'Installing required modules for the smoker'
 for module in "${required[@]}"
@@ -67,8 +70,5 @@ do
   echo "Installing ${module}"
   cpan "${module}"
 done
-
-echo 'Enabling CPAN build_dir_reuse'
-echo -e 'o conf build_dir_reuse 1\no conf commit' | cpan
 
 echo -e '\n\nNow the smoker is ready! Hit "start_smoker" to start it.'
