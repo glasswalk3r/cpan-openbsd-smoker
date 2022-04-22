@@ -18,4 +18,4 @@ case "$-" in
 	;;
 esac
 
-PKG_PATH=https://{{ openbsd_mirror }}/pub/OpenBSD/7.0/packages/amd64/; export PKG_PATH
+PKG_PATH=https://{{ openbsd_mirror }}/pub/OpenBSD/$(uname -r)/packages/$(arch -s)/; export PKG_PATH
