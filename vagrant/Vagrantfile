@@ -63,20 +63,21 @@ keyboard = 'br'
 
 # cpan_mirror: setup the CPAN closest mirror you want to use. It can be even a
 # one on your local network built with CPAN::Mini and Nginx.
-# This is a "real" external mirror:
-# cpan_mirror="http://mirror.nbtelecom.com.br/CPAN"
-# Below is one in the local network, or even the VM host itself
+# See http://mirrors.cpan.org/ for a "real" mirror.
+# You can also use one on the local network or even the VM host itself
 cpan_mirror = 'http://192.168.1.124:8090'
-# set to true below if you want to have a minicpan mirror inside the VM since
+# Set to true below if you want to have a minicpan mirror inside the VM since
 # it takes a considerable time to configure one, it is set to false by default.
 # If you already have a mirror (in the VM host or your local network) you
 # probably will want to leave this as is.
 # If set to true, this will configure a local directory to hold the mirrored
 # files, configure the cpan client, CPAN::Mini and create a "minicpan" alias
 use_local_mirror = false
+
 # See https://metacpan.org/pod/CPAN::Reporter::Smoker#USAGE for details of the
 # following options
 clean_cache_after = 100
+
 # in seconds
 restart_delay = 604_800
 
