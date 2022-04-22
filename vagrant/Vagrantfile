@@ -39,12 +39,14 @@ cpan_user = 'goku'
 cpan_user_pub_key = "#{ENV['HOME']}/.ssh/vagrant.pub"
 
 # setup the OpenBSD closest mirror you want to use. Use just the base URL,
-# like "http://openbsd.c3sl.ufpr.br". The rest will be guessed by the related
+# like "openbsd.c3sl.ufpr.br". The rest will be guessed by the related
 # script.
-openbsd_mirror = 'http://openbsd.c3sl.ufpr.br'
+openbsd_mirror = 'openbsd.c3sl.ufpr.br'
 
 # setups the expected time zone the VM will be running
 timezone = 'America/Sao_Paulo'
+
+# Perl CPAN configurations
 
 # cpan_mirror: setup the CPAN closest mirror you want to use. It can be even a
 # one on your local network built with CPAN::Mini and Nginx.
@@ -57,11 +59,11 @@ cpan_mirror = 'http://192.168.1.124:8090'
 # set to "false" by default. If you already have a mirror in your local
 # network, you probably leave this as is.
 use_local_mirror = 'false'
-
-vim_backup_dir = 'backup'
-cpus = 2
-# Customize the amount of memory on the VM
-memory = 2048
+# See https://metacpan.org/pod/CPAN::Reporter::Smoker#USAGE for details of the
+# following options
+clean_cache_after = 100
+# in seconds
+restart_delay = 604_800
 
 # reports_from is from which person CPAN reports are being sent, see
 # CPAN::Reporter for details on that.
@@ -73,10 +75,23 @@ reports_from = '"Alceu Rodrigues de Freitas Junior" <arfreitas@cpan.org>'
 cpan_build_dir = '/mnt/cpan_build_dir'
 
 # prefs_dir is the same configuration option available to the cpan client
-# Users are going to use the same directory since preference files should be
-# shared between them (you don't want neither smokers halted due bad designed
-# distributions).
-prefs_dir = '/home/goku/cpan-openbsd-smoker/prefs'
+# The path is relative to the user home directory
+prefs_dir = 'cpan-openbsd-smoker/prefs'
+
+# PREFS_DIR="${HOME}/cpan-openbsd-smoker"
+#
+# function start_smoker {
+#     echo 'Cleaning up previous executions...'
+#     rm -rf ${HOME}/.cpan/sources/authors/id ${HOME}/.cpan/FTPstats.yml*
+#     rm -rf /mnt/cpan_build_dir/${USER}/
+#     mkdir -p /mnt/cpan_build_dir/${USER}
+#     if [ -d "${PREFS_DIR}" ]; then echo 'Refreshing distroprefs...'; cd ${PREFS_DIR}; git pull; cd ..; fi
+#     perl -MCPAN::Reporter::Smoker -e 'start(clean_cache_after => 50, install => 1, restart_delay => 604800)'
+# }
+vim_backup_dir = 'backup'
+cpus = 2
+# Customize the amount of memory on the VM
+memory = 2048
 
 # keyboard encoding, see wsconsctl manpage for details
 keyboard = 'br'
@@ -121,7 +136,7 @@ Vagrant.configure('2') do |config|
 
   config.vm.provision 'ansible' do |ansible|
     ansible.playbook = 'playbook.yml'
-    compatibility_mode = '2.0'
+    ansible.compatibility_mode = '2.0'
     ansible.host_vars = {
       'single' => {
         'cpan_user' => cpan_user,
@@ -130,7 +145,11 @@ Vagrant.configure('2') do |config|
         'reports_from' => reports_from,
         'cpan_user_pub_key' => cpan_user_pub_key,
         'vim_backup_dir' => vim_backup_dir,
-        'make_jobs' => cpus
+        'make_jobs' => cpus,
+        'prefs_dir' => prefs_dir,
+        'clean_cache_after' => clean_cache_after,
+        'restart_delay' => restart_delay,
+        'openbsd_mirror' => openbsd_mirror
       }
     }
   end
