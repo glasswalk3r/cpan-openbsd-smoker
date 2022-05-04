@@ -66,7 +66,7 @@ a distribution name (for example, "JOHNDOE/Some-Distro-Name").
 
 =item 2.
 
-The perl interpreter which is in execution, for example, "perl-5.24.3".
+The perl interpreter (which is in execution) configuration.
 
 =item 3.
 
