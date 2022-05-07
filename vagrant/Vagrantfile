@@ -53,8 +53,12 @@ vim_backup_dir = 'backup'
 # tasks to be executed with Make
 cpus = 2
 
-# Customize the amount of memory on the VM
+# Customize the amount of memory on the VM. Consider that video RAM is 1MB by
+# default.
 memory = 2048
+
+# build_dir MFS size, taken from memory, in MB
+mfs_size = 512
 
 # keyboard encoding, see wsconsctl manpage for details
 keyboard = 'br'
@@ -148,15 +152,14 @@ Vagrant.configure('2') do |config|
         'clean_cache_after' => clean_cache_after,
         'restart_delay' => restart_delay,
         'openbsd_mirror' => openbsd_mirror,
-        'use_local_mirror' => use_local_mirror
+        'use_local_mirror' => use_local_mirror,
+        'mfs_size' => mfs_size
       }
     }
   end
 
   config.vm.provision 'shell', name: 'Setting keyboard', inline: "/sbin/wsconsctl keyboard.encoding=#{keyboard}"
   config.vm.provision 'shell', name: 'Setting timezone', inline: "/usr/sbin/zic -l #{timezone}"
-  # TODO: try to replace next line with https://docs.ansible.com/ansible/latest/collections/ansible/posix/mount_module.html
-  config.vm.provision 'shell', name: 'Fine tunning file system', path: 'scripts/fix_fstab.pl', args: ['-b', cpan_build_dir, '-s', '512']
   config.vm.provision 'shell', name: 'Remounting all partitions', inline: 'mount -a'
 
   config.vm.post_up_message = <<MESSAGE

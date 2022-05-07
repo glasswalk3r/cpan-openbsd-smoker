@@ -22,7 +22,7 @@
     smoker_group: testers
     minicpan_dir: /var/minicpan
   become: 'true'
-  gather_facts: 'false'
+  gather_facts: 'true'
   tasks:
     - name: Update all packages on the system
       openbsd_pkg:
@@ -146,3 +146,20 @@
             owner: 'root'
             group: '{{ smoker_group }}'
             mode: '0775'
+    - name: Create MFS
+      ansible.posix.mount:
+        path: /mnt/cpan_build_dir
+        src: swap
+        fstype: mfs
+        opts: 'rw,async,nodev,nosuid,-s={{ mfs_size }}m'
+        state: mounted
+    - name: Improve performance on specific partitions
+      loop: '{{ ansible_mounts }}'
+      when: 'item.mount in ["/home", "/tmp", "/minicpan"]'
+      ansible.posix.mount:
+        fstype: ffs
+        opts: rw,nodev,nosuid,softdep,noatime
+        state: present
+        path: '{{ item.mount }}'
+        src: '{{ item.device }}'
+
