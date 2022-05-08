@@ -4,6 +4,4 @@ disabled: 1
 match:
   distribution: ^NLNETLABS/Net-DNS
   perlconfig:
-    archname: x86_64-linux-thread-multi
-    osname: linux
-    useithreads: define
+    osname: openbsd
