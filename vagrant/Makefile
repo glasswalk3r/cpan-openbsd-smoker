@@ -18,7 +18,7 @@ base:
 	-var 'iso_sha=${ISO_SHA}' -var 'box=${BOX}' \
 	-var 'openbsd_version=${OPENBSD_VERSION}' packer.json
 add:
-	vagrant box list ${NAMED_BOX} > /dev/null && vagrant box remove ${NAMED_BOX}
+	#vagrant box list ${NAMED_BOX} > /dev/null && vagrant box remove ${NAMED_BOX}
 	vagrant box add --name ${NAMED_BOX} ${BOX}
 clean:
 	@rm -f ${BOX} packer_virtualbox-iso_virtualbox-iso_sha256.checksum
