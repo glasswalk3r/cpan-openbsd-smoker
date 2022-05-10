@@ -104,7 +104,8 @@ prefs_dir = 'cpan-openbsd-smoker/prefs'
 
 Vagrant.configure('2') do |config|
   config.ssh.shell = 'ksh -l'
-  config.vm.box = 'arfreitas/openbsd-7.0-cpan-smoker-amd64'
+  # config.vm.box = 'arfreitas/openbsd-7.0-cpan-smoker-amd64'
+  config.vm.box = 'arfreitas/openbsd-7.0-cpan-smoker-i386'
   config.vm.box_check_update = false
   config.vm.hostname = 'cpan-smoker-openbsd'
   config.vm.synced_folder '/tmp', '/vagrant', disabled: true

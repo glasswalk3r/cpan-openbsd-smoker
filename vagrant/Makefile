@@ -9,7 +9,7 @@ ISO_I386_SHA:=$(shell curl -s ${OPENBSD_MIRROR}/openbsd/${OPENBSD_VERSION}/i386/
 BOX:=openbsd-${OPENBSD_VERSION}-cpan-smoker.box
 NAMED_BOX:=arfreitas/openbsd-${OPENBSD_VERSION}-cpan-smoker
 
-i386: clean-iso
+i386:
 	cd ISO && wget -c https://${OPENBSD_MIRROR}/pub/OpenBSD/${OPENBSD_VERSION}/$@/${ISO_IMAGE}
 	packer build -var 'local_mirror=${CPAN_MIRROR}' \
 		-var 'openbsd_mirror=${OPENBSD_MIRROR}' \
