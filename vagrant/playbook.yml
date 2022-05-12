@@ -131,7 +131,7 @@
       # See also MyConfig.pm.j2 file
       block:
         - name: CPAN::Mini configuration file
-          when: use_local_mirror
+          when: use_local_mirror | bool
           template:
             src: minicpanrc.j2
             dest: '/home/{{ cpan_user }}/.minicpanrc'
@@ -139,7 +139,7 @@
             mode: '0644'
             group: '{{ cpan_user }}'
         - name: Location for local mirror files
-          when: use_local_mirror
+          when: use_local_mirror | bool
           file:
             path: '{{ minicpan_dir }}'
             state: directory
