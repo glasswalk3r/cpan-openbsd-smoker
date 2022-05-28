@@ -1,4 +1,5 @@
 # cpan-openbsd-smoker
+
 Configuration files and scripts to maintain a CPAN Smoker on OpenBSD
 
 This project includes the following:
@@ -12,6 +13,7 @@ This project includes the following:
   Vagrant Cloud).
   * A Packer configuration file, used to create the base image that goes with
   Vagrant.
+  * Most of the configuration with Vagrant is carried out with Ansible.
 
 ## The Vagrant provisioned VM
 
@@ -20,19 +22,13 @@ The associated VMs (see Vagranfile) with this project are based on Vagrant
 Many aspects of the VM can be customized during the provisioning phase, like:
 
   * Mirrors to be used (OpenBSD and CPAN).
-  * Which perl to compile and use for the smoker. This project uses
-  [perlbrew](https://perlbrew.pl) to download perl source code and compiles a
-  interpreter. Currently, all compile options supported by perlbrew can be used.
   * Tests submitter identification.
-  * Number of processors in the VM: this correlate directly to the number of
-  users/smokers you want to run in parallel.
-  * Keyboard selection.
-  * An arbitrary number of users with low privileges to execute the
+  * Number of processors in the VM
+  * Generic OS customizations like keyboard, time zone, etc.
+  * A customable user with low privileges to execute the
   `CPAN::Reporter::Smoker` application.
   * Using a CPAN mirror: you can declare one already available on your local
-  network, configure one inside the VM or do both! Well, not much useful
-  configuration unless you just want to pre-initialize your VM local CPAN
-  mirror first, then latter change the configuration.
+  network, configure one inside the VM or do both!
   * The OpenBSD version you want to use (see `config.vm.box` available values).
 
 The VM will have pre-installed and pre-configured:
@@ -97,7 +93,7 @@ After initial provisioning, you will want to start your smoker with
 ```
 vagrant up --provision
 ```
-This project Vangrafile is prepared to implement idempotent operations, so only
+This project Vangratfile is prepared to implement idempotent operations, so only
 the operations below will be repeated:
 
   * Updates OpenBSD packages.
@@ -111,81 +107,6 @@ the operations below will be repeated:
 
 You might broke something meanwhile using. It might be easier to look for what
 is wrong than just kill your VM and start from scratch.
-
-There is some automated tests available for the `vagrant` user configuration.
-You can use it by logging in with `vagrant ssh` (or using SSH client directly)
-and go into the directory `~/cpan-openbsd-smoker/vagrant/scripts`. From there
-you can type `prove -l -vm -m` and checkout the results:
-
-```
-[vagrant@openbsd6:~/cpan-openbsd-smoker/vagrant/scripts]$ prove -v -m
-t/provisioning.t ..
-# Exit code is 0, output 'hw.ncpufound=2' and errors ''
-ok 1 - the number of CPUs is 2 or more
-# Exit code is 0, output 'hw.physmem=1606352896' and errors ''
-ok 2 - available RAM is at least 1.5GB
-ok 3 - /mnt/cpan_build_dir has the expected size
-ok 4 - /tmp has the expected size
-ok 5 - /usr has the expected size
-ok 6 - /var has the expected size
-ok 7 - /home has the expected size
-ok 8 - / has the expected size
-ok 9 - /minicpan has the expected size
-ok 10 - vagrant user is part of wheel group
-ok 11 - the group testers is available
-ok 12 - vagrant user is part of testers group
-ok 13 - the MFS partition has the correct directory permissions
-# Exit code is 0, output '6.5' and errors ''
-# Exit code of pkg_info is 0, errors ''
-ok 14 - package bzip2 is installed
-# binary search failed with unzip
-ok 15 - package unzip is installed
-ok 16 - package wget is installed
-ok 17 - package curl is installed
-ok 18 - package bash is installed
-ok 19 - package ntp is installed
-ok 20 - package tidyp is installed
-ok 21 - package libxml is installed
-ok 22 - package gmp is installed
-ok 23 - package libxslt is installed
-ok 24 - package mpfr is installed
-ok 25 - package gd is installed
-ok 26 - package pkg_mgr is installed
-ok 27 - package mariadb-server is installed
-ok 28 - package mariadb-client is installed
-ok 29 - package sqlite3 is installed
-ok 30 - Module::Version is installed
-ok 31 - Bundle::CPAN is installed
-ok 32 - Log::Log4perl is installed
-ok 33 - Module::Pluggable is installed
-ok 34 - POE::Component::Metabase::Client::Submit is installed
-ok 35 - POE::Component::Metabase::Relay::Server is installed
-ok 36 - metabase::relayd is installed
-ok 37 - CPAN::Reporter::Smoker::OpenBSD is installed
-# Specific for modules that are installed without passing the tests
-ok 38 - POE::Component::SSLify is installed even though fail the tests
-# Exit code of pkg_info is 0, errors ''
-ok 39 - mariadb server is running
-ok 40 - performance_schema directive is available in /etc/my.cnf
-ok 41 - directive performance_schema is enabled on /etc/my.cnf
-ok 42 - performance-schema-instrument directive is available in /etc/my.cnf
-ok 43 - directive performance-schema-instrument is enabled on /etc/my.cnf
-ok 44 - performance-schema-consumer-events-stages-current directive is available in /etc/my.cnf
-ok 45 - directive performance-schema-consumer-events-stages-current is enabled on /etc/my.cnf
-ok 46 - performance-schema-consumer-events-stages-history directive is available in /etc/my.cnf
-ok 47 - directive performance-schema-consumer-events-stages-history is enabled on /etc/my.cnf
-ok 48 - performance-schema-consumer-events-stages-history-long directive is available in /etc/my.cnf
-ok 49 - directive performance-schema-consumer-events-stages-history-long is enabled on /etc/my.cnf
-ok 50 - sshd config PermitRootLogin is disabled
-1..50
-ok
-All tests successful.
-Files=1, Tests=50,  1 wallclock secs ( 0.04 usr  0.01 sys +  0.34 cusr  0.21 csys =  0.60 CPU)
-Result: PASS
-```
-
-Those tests don't cover everything, but might help you do some troubleshooting,
-and will be executed right after the provisioning executed by `packer`.
 
 ### Packer
 
