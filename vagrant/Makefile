@@ -1,7 +1,6 @@
 CPAN_MIRROR:=$(shell echo 'o conf urllist' | cpan | awk '/0 \[/ {print $$2}' | tr -d '[]')
 OPENBSD_MIRROR:=openbsd.c3sl.ufpr.br
 OPENBSD_VERSION:=7.1
-OPENBSD_ARCHITETURE:=amd64
 TIMEZONE:=America/Sao_Paulo
 ISO_DIR:=ISO
 ISO_IMAGE:=install$(subst .,,${OPENBSD_VERSION}).iso
@@ -39,11 +38,5 @@ clean:
 init:
 	vagrant plugin install vagrant-vbguest
 	pip install -U pip wheel setuptools && pip install -U ansible
-<<<<<<< HEAD
-init-openbsd:
-	@rm -rf ${ISO_DIR} && mkdir -p ${ISO_DIR} && rm -rf packer_cache/
-	cd ISO && wget -c https://${OPENBSD_MIRROR}/pub/OpenBSD/${OPENBSD_VERSION}/${OPENBSD_ARCHITETURE}/${ISO_IMAGE}
-=======
 clean-iso:
 	@rm -rf ${ISO_DIR} && mkdir -p ${ISO_DIR} && rm -rf packer_cache/
->>>>>>> ansible
