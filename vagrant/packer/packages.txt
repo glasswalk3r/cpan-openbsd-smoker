@@ -136,6 +136,7 @@ p5-Text-CSV_XS
 p5-Time-Piece-MySQL
 p5-YAML-XS
 perltidy
+python-3.9.12
 quirks--
 sqlite3--
 sudo--
