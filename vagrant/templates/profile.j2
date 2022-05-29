@@ -20,7 +20,7 @@ function start_smoker {
     echo 'Cleaning up previous executions...'
     rm -rf ${HOME}/.cpan/sources/authors/id ${HOME}/.cpan/FTPstats.yml*
     rm -rf /mnt/cpan_build_dir/${USER}/*
-    if [ -d "${PREFS_DIR}" ]; then echo 'Refreshing distroprefs...'; cd ${PREFS_DIR}; git pull; cd ..; fi
+    if [ -d "${PREFS_DIR}" ]; then echo 'Refreshing distroprefs...'; cd ${PREFS_DIR}; git pull; cd; fi
     perl -MCPAN::Reporter::Smoker -e 'start(clean_cache_after => {{ clean_cache_after }}, install => 1, restart_delay => {{ restart_delay }})'
 }
 
