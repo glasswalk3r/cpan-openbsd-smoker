@@ -35,7 +35,7 @@ $CPAN::Config = {
   'lynx' => q[],
   'make' => q[/usr/bin/make],
   'make_arg' => q[-j{{ make_jobs }}],
-  'make_install_arg' => q[],
+  'make_install_arg' => q[-j{{ make_jobs }}],
   'make_install_make_command' => q[/usr/bin/make],
   'makepl_arg' => q[],
   'mbuild_arg' => q[],
@@ -68,11 +68,11 @@ $CPAN::Config = {
   'test_report' => q[0],
   'trust_test_report_history' => q[1],
   'unzip' => q[],
-{%- if use_local_mirror %}
+{% if use_local_mirror == 'true' %}
   'urllist' => [q[file://{{ minicpan_dir }}], q[{{ cpan_mirror }}], q[https://www.cpan.org/]],
-{%- else %}
+{% else %}
   'urllist' => [q[{{ cpan_mirror }}], q[https://www.cpan.org/]],
-{%- endif %}
+{% endif %}
   'use_prompt_default' => q[0],
   'use_sqlite' => q[0],
   'version_timeout' => q[15],

@@ -63,6 +63,9 @@ mfs_size = 512
 # keyboard encoding, see wsconsctl manpage for details
 keyboard = 'br'
 
+# OpenBSD version: acceptable values are: 7.0 and 7.1
+openbsd_version = '7.1'
+
 # Perl CPAN section
 
 # cpan_mirror: setup the CPAN closest mirror you want to use. It can be even a
@@ -104,7 +107,7 @@ prefs_dir = 'cpan-openbsd-smoker/prefs'
 
 Vagrant.configure('2') do |config|
   config.ssh.shell = 'ksh -l'
-  config.vm.box = 'arfreitas/openbsd-7.1-cpan-smoker'
+  config.vm.box = "arfreitas/openbsd-#{openbsd_version}-cpan-smoker"
   config.vm.box_check_update = false
   config.vm.hostname = 'cpan-smoker-openbsd'
   config.vm.synced_folder '/tmp', '/vagrant', disabled: true
@@ -152,7 +155,7 @@ Vagrant.configure('2') do |config|
         'clean_cache_after' => clean_cache_after,
         'restart_delay' => restart_delay,
         'openbsd_mirror' => openbsd_mirror,
-        'use_local_mirror' => use_local_mirror,
+        'use_local_mirror' => use_local_mirror.to_s,  # Ansible will receive an string anyway
         'mfs_size' => mfs_size
       }
     }
