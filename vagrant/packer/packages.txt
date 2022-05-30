@@ -15,6 +15,7 @@ mpfr--
 ntp--
 p5-Archive-Zip
 p5-Class-DBI
+p5-Compress-Bzip2
 p5-DateTime
 p5-DateTime-Format-MySQL
 p5-DateTime-Format-SQLite
@@ -133,6 +134,7 @@ p5-Test-YAML
 p5-Test-YAML-Valid
 p5-Text-CSV
 p5-Text-CSV_XS
+p5-Text-LevenshteinXS
 p5-Time-Piece-MySQL
 p5-YAML-XS
 perltidy
