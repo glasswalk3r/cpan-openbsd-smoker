@@ -6,8 +6,9 @@ ISO_DIR:=ISO
 ISO_IMAGE:=install$(subst .,,${OPENBSD_VERSION}).iso
 ISO_AMD64_SHA:=$(shell curl -s ${OPENBSD_MIRROR}/openbsd/${OPENBSD_VERSION}/amd64/SHA256 | awk '/${ISO_IMAGE}/ {print $$4}')
 ISO_I386_SHA:=$(shell curl -s ${OPENBSD_MIRROR}/openbsd/${OPENBSD_VERSION}/i386/SHA256 | awk '/${ISO_IMAGE}/ {print $$4}')
-BOX:=openbsd-${OPENBSD_VERSION}-cpan-smoker.box
-NAMED_BOX:=arfreitas/openbsd-${OPENBSD_VERSION}-cpan-smoker
+I386_BOX:=openbsd-${OPENBSD_VERSION}-cpan-smoker-i386
+AMD64_BOX:=openbsd-${OPENBSD_VERSION}-cpan-smoker-amd64
+VAGRANT_BOX_USER:=arfreitas
 
 i386:
 	cd ISO && wget -c https://${OPENBSD_MIRROR}/pub/OpenBSD/${OPENBSD_VERSION}/$@/${ISO_IMAGE}
@@ -16,7 +17,7 @@ i386:
 		-var 'openbsd_architecture=$@' \
 		-var 'timezone=${TIMEZONE}' \
 		-var 'iso_path=${PWD}/${ISO_DIR}/${ISO_IMAGE}' \
-		-var 'iso_sha=${ISO_I386_SHA}' -var 'box=${BOX}' \
+		-var 'iso_sha=${ISO_I386_SHA}' -var 'box=${I386_BOX}.box' \
 		-var 'guest_os_type=OpenBSD' \
 		-var 'openbsd_version=${OPENBSD_VERSION}' packer.json
 amd64:
@@ -26,14 +27,17 @@ amd64:
 		-var 'openbsd_architecture=$@' \
 		-var 'timezone=${TIMEZONE}' \
 		-var 'iso_path=${PWD}/${ISO_DIR}/${ISO_IMAGE}' \
-		-var 'iso_sha=${ISO_AMD64_SHA}' -var 'box=${BOX}' \
+		-var 'iso_sha=${ISO_AMD64_SHA}' -var 'box=${AMD64_BOX}.box' \
 		-var 'guest_os_type=OpenBSD_64' \
 		-var 'openbsd_version=${OPENBSD_VERSION}' packer.json
-add:
-	#vagrant box list ${NAMED_BOX} > /dev/null && vagrant box remove ${NAMED_BOX}
-	vagrant box add --name ${NAMED_BOX} ${BOX}
-clean:
-	@rm -f ${BOX} packer_virtualbox-iso_virtualbox-iso_sha256.checksum
+add-i386:
+	vagrant box list ${NAMED_BOX} > /dev/null && vagrant box remove ${NAMED_BOX}
+	vagrant box add --name ${VAGRANT_BOX_USER}/${I386_BOX} ${I386_BOX}.box
+add-amd64:
+	@if vagrant box list | grep ${VAGRANT_BOX_USER}/${AMD64_BOX}; then vagrant box remove ${VAGRANT_BOX_USER}/${AMD64_BOX}; fi
+	vagrant box add --name ${VAGRANT_BOX_USER}/${AMD64_BOX} ${AMD64_BOX}.box
+clean: clean-iso
+	@rm -f *.box packer_virtualbox-iso_virtualbox-iso_sha256.checksum
 	@rm -rf packer_cache
 init:
 	vagrant plugin install vagrant-vbguest
