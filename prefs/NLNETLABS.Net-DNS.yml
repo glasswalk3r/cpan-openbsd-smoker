@@ -1,0 +1,7 @@
+---
+comment: Generates warnings on all network ops
+disabled: 1
+match:
+  distribution: ^NLNETLABS/Net-DNS
+  perlconfig:
+    osname: openbsd
