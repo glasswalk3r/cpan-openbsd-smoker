@@ -1,0 +1,10 @@
+---
+comment: Testing uses 1.5Gb of storage space
+disabled: 1
+match:
+  distribution: ^NHORNE/Geo-Coder-Free
+  perlconfig:
+    archname: amd64-openbsd
+    no_useithreads: define
+    osname: openbsd
+
