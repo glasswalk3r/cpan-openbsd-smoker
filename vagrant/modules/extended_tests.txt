@@ -1,2 +1,0 @@
-MooseX::Types::JSON
-Class::DBI::Plugin::DeepAbstractSearch
