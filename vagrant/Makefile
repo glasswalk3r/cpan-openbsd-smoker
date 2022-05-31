@@ -8,27 +8,28 @@ ISO_AMD64_SHA:=$(shell curl -s ${OPENBSD_MIRROR}/openbsd/${OPENBSD_VERSION}/amd6
 ISO_I386_SHA:=$(shell curl -s ${OPENBSD_MIRROR}/openbsd/${OPENBSD_VERSION}/i386/SHA256 | awk '/${ISO_IMAGE}/ {print $$4}')
 BOX:=openbsd-${OPENBSD_VERSION}-cpan-smoker.box
 NAMED_BOX:=arfreitas/openbsd-${OPENBSD_VERSION}-cpan-smoker
+PACKER_CFG:=packer.pkr.hcl
 
 i386:
 	cd ISO && wget -c https://${OPENBSD_MIRROR}/pub/OpenBSD/${OPENBSD_VERSION}/$@/${ISO_IMAGE}
-	packer build -var 'local_mirror=${CPAN_MIRROR}' \
+	packer build -var 'cpan_mirror=${CPAN_MIRROR}' \
 		-var 'openbsd_mirror=${OPENBSD_MIRROR}' \
 		-var 'openbsd_architecture=$@' \
 		-var 'timezone=${TIMEZONE}' \
 		-var 'iso_path=${PWD}/${ISO_DIR}/${ISO_IMAGE}' \
 		-var 'iso_sha=${ISO_I386_SHA}' -var 'box=${BOX}' \
 		-var 'guest_os_type=OpenBSD' \
-		-var 'openbsd_version=${OPENBSD_VERSION}' packer.json
+		-var 'openbsd_version=${OPENBSD_VERSION}' ${PACKER_CFG}
 amd64:
 	cd ISO && wget -c https://${OPENBSD_MIRROR}/pub/OpenBSD/${OPENBSD_VERSION}/$@/${ISO_IMAGE}
-	packer build -var 'local_mirror=${CPAN_MIRROR}' \
+	packer build -var 'cpan_mirror=${CPAN_MIRROR}' \
 		-var 'openbsd_mirror=${OPENBSD_MIRROR}' \
 		-var 'openbsd_architecture=$@' \
 		-var 'timezone=${TIMEZONE}' \
 		-var 'iso_path=${PWD}/${ISO_DIR}/${ISO_IMAGE}' \
 		-var 'iso_sha=${ISO_AMD64_SHA}' -var 'box=${BOX}' \
 		-var 'guest_os_type=OpenBSD_64' \
-		-var 'openbsd_version=${OPENBSD_VERSION}' packer.json
+		-var 'openbsd_version=${OPENBSD_VERSION}' ${PACKER_CFG}
 add:
 	vagrant box list ${NAMED_BOX} > /dev/null && vagrant box remove ${NAMED_BOX}
 	vagrant box add --name ${NAMED_BOX} ${BOX}
@@ -40,4 +41,3 @@ init:
 	pip install -U pip wheel setuptools && pip install -U ansible
 clean-iso:
 	@rm -rf ${ISO_DIR} && mkdir -p ${ISO_DIR} && rm -rf packer_cache/
-
