@@ -32,7 +32,7 @@ amd64:
 		-var 'guest_os_type=OpenBSD_64' \
 		-var 'openbsd_version=${OPENBSD_VERSION}' ${PACKER_CFG}
 add-i386:
-	vagrant box list ${NAMED_BOX} > /dev/null && vagrant box remove ${NAMED_BOX}
+	@if vagrant box list | grep ${VAGRANT_BOX_USER}/${I386_BOX}; then vagrant box remove ${VAGRANT_BOX_USER}/${I386_BOX}; fi
 	vagrant box add --name ${VAGRANT_BOX_USER}/${I386_BOX} ${I386_BOX}.box
 add-amd64:
 	@if vagrant box list | grep ${VAGRANT_BOX_USER}/${AMD64_BOX}; then vagrant box remove ${VAGRANT_BOX_USER}/${AMD64_BOX}; fi
