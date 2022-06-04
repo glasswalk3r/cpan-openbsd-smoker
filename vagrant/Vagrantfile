@@ -66,7 +66,7 @@ keyboard = 'br'
 # OpenBSD version: acceptable values are 7.0 and 7.1
 openbsd_version = '7.1'
 # OpenBSD architecture: acceptable values are i386 and amd64
-openbsd_arch = 'amd64'
+openbsd_arch = 'i386'
 
 # Perl CPAN section
 
@@ -154,7 +154,7 @@ Vagrant.configure('2') do |config|
         'clean_cache_after' => clean_cache_after,
         'restart_delay' => restart_delay,
         'openbsd_mirror' => openbsd_mirror,
-        'use_local_mirror' => use_local_mirror.to_s,  # Ansible will receive an string anyway
+        'use_local_mirror' => use_local_mirror.to_s,  # Ansible will receive a string anyway
         'mfs_size' => mfs_size
       }
     }
