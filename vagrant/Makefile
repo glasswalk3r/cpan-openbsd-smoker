@@ -42,7 +42,6 @@ clean: clean-iso
 	@rm -f packer_openbsd_virtualbox-iso_sha256.checksum
 	@rm -rf packer_cache
 init:
-	vagrant plugin install vagrant-vbguest
 	pip install -U pip wheel setuptools && pip install -U ansible
 clean-iso:
 	@rm -rf ${ISO_DIR} && mkdir -p ${ISO_DIR} && rm -rf packer_cache/
