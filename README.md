@@ -1,90 +1,151 @@
 # cpan-openbsd-smoker
 
-Configuration files and scripts to maintain a CPAN Smoker on OpenBSD
+Configuration files and scripts to maintain a CPAN Smoker on OpenBSD.
+
+## Description
 
 This project includes the following:
 
-  * The CPAN-Reporter-Smoker-OpenBSD Perl distribution.
-  * A set of CPAN "distroprefs" files to disable distributions that causes the
-  smoker on OpenBSD to halt.
-  * A Vagrant configuration file (`Vagrantfile`) and corresponding shell
-  scripts for provisioning.
-  * A VirtualBox image of OpenBSD, optimized to run a CPAN Smoker (available at
-  Vagrant Cloud).
-  * A Packer configuration file, used to create the base image that goes with
-  Vagrant.
-  * Most of the configuration with Vagrant is carried out with Ansible.
+* A VirtualBox image of OpenBSD, optimized to run as CPAN Smoker (also available
+at
+[Vagrant Cloud](https://app.vagrantup.com/boxes/search?order=desc&page=1&provider=virtualbox&q=arfreitas%2Fopenbsd&sort=updated&utf8=%E2%9C%93)
+).
+* A Packer configuration file, used to create the mentioned VirtualBox Vagrant
+box.
+* A Vagrant configuration file (`Vagrantfile`), Ansible playbook and a shell
+scripts for provisioning
+* The CPAN-Reporter-Smoker-OpenBSD Perl distribution.
+* A set of CPAN
+[distroprefs](https://metacpan.org/pod/CPAN#Configuration-for-individual-distributions-(Distroprefs))
+files to disable distributions that causes the smoker to halt execution and also
+to allow custom behavior configuration.
 
 ## The Vagrant provisioned VM
 
-The associated VMs (see Vagranfile) with this project are based on Vagrant
+The associated VMs (see `Vagranfile`) with this project are based on Vagrant
 (and Virtualbox as the provider) with the Smoker pre-configured on OpenBSD.
 Many aspects of the VM can be customized during the provisioning phase, like:
 
-  * Mirrors to be used (OpenBSD and CPAN).
-  * Tests submitter identification.
-  * Number of processors in the VM
-  * Generic OS customizations like keyboard, time zone, etc.
-  * A customable user with low privileges to execute the
-  `CPAN::Reporter::Smoker` application.
-  * Using a CPAN mirror: you can declare one already available on your local
-  network, configure one inside the VM or do both!
-  * The OpenBSD version you want to use (see `config.vm.box` available values).
+* Mirrors to be used (OpenBSD and CPAN).
+* Tests submitter identification.
+* Number of processors in the VM
+* Generic OS customizations like keyboard, time zone, etc.
+* A customable user with low privileges to execute the
+`CPAN::Reporter::Smoker` application.
+* Using a CPAN mirror: you can declare one already available on your local
+network, configure one inside the VM or do both!
+* The OpenBSD version you want to use.
 
 The VM will have pre-installed and pre-configured:
 
-  * the metabase-relayd to be executed under vagrant user.
-  * a optional local CPAN mirror (implemented with
-  [minicpan](http://search.cpan.org/search?query=minicpan&mode=all)).
-  * related packages installed (like Git, compilers, etc).
-  * a running Mysql server, configured to run extended tests of
-  [DBD::mysql](http://search.cpan.org/search?query=DBD%3A%3Amysql&mode=dist)
-  automatically.
-  * shared "distroprefs" files for configuring (e.g. blocking) how
-  distributions should be tested under the smoker.
-  * several tools and libraries most used for modules that uses XS.
-  * automatic updates for OpenBSD packages and the
-  CPAN-Reporter-Smoker-OpenBSD distribution by running the provisioning again
-  (idempotent controls are in place to execute only the necessary).
-  * the command line utilities provided by CPAN-Reporter-Smoker-OpenBSD
-  distribution.
+* an optional local CPAN mirror (implemented with
+[minicpan](http://search.cpan.org/search?query=minicpan&mode=all)).
+* related OpenBSD packages installed (like Git, compilers, libraries and Perl
+modules).
+* a running MariaDB server, configured to run extended tests of
+[DBD::mysql](https://metacpan.org/pod/DBD::mysql) and
+[DBD::MariaDB](https://metacpan.org/dist/DBD-MariaDB/view/lib/DBD/MariaDB.pod)
+automatically.
+* "distroprefs" files for configuring (e.g. blocking) how distributions should
+be tested under the smoker.
+* several tools and libraries most used for modules that uses XS.
+* automatic updates for OpenBSD packages and the
+CPAN-Reporter-Smoker-OpenBSD distribution by running the provisioning again
+(idempotent controls are in place to execute only the necessary).
+* the command line utilities provided by CPAN-Reporter-Smoker-OpenBSD
+distribution.
 
-Most of the process is documented at
-[here](http://wiki.cpantesters.org/wiki/SmokerOnOpenBSD).
+### Older Vagrant boxes support
 
-### Quick start
+Since OpenBSD 7.0, the boxes are implemented with Ansible replacing a lot of
+shell scripts to implement a complex configuration process that was becoming
+harder and harder to maintain.
+
+Besides Ansible, the provisioning itself was changed and currently is much more
+simple (although with less features).
+
+Previous versions of OpenBSD that were implemented in the original fashion can
+still be used by using the branch XXXX of this repository.
+
+## Requirements
+
+- Virtualbox version 6.1 or higher
+- Packer 1.7.4 or higher
+- Vagrant 2.2.19 or higher
+- GNU Make
+
+### CPAN mirror
+
+It is expected to have a local CPAN mirror (see CPAN::Mini module for that). It
+is just too much data required from your nearest mirror, so be sure to use one.
+
+You can combine your preferred web server with the `CPAN::Mini` module in order
+to achieve that. You can use the `nginx-minicpan` at `utils` directory to
+configure the Nginx web server for that. Or you can search for Docker base
+solutions like [this one](https://github.com/colinnewell/CPAN-Mirror-Docker).
+
+## Quick start
 
 First clone this repository. Then go to the `vagrant` directory. You should
 see the following structure:
 
 ```
-.
-├── metabase
-│   └── copy your metabase.json here
-├── scripts
-│   ├── basic_setup.sh
-│   ├── config_smoker.sh
-│   ├── config_user.sh
-│   └── vagrant_user.sh
+vagrant/
+├── ansible.cfg
+├── /config
+├── Makefile
+├── /packer
+├── packer.pkr.hcl
+├── playbook.yml
+├── /scripts
+├── /templates
 └── Vagrantfile
-
 ```
 
-Once there, you will find the `Vagrantfile`, where the definitions of the
-`CPAN::Reporter::Smoker` VM.
+Once there, you will find the `Vagrantfile`, where the main definitions of the
+`CPAN::Reporter::Smoker` VM are located.
 
-You will want to look up for the section named "CONFIGURABLE STEPS". Some
+You will want to look up for the section named `CONFIGURABLE STEPS`. Some
 options are required, others not. Make sure to read the comments, they are
 currently the only documentation available.
 
-Besides editing the Vagrantfile, you need to copy your `metabase_id.json` to
-the `metabase` directory (there is even a tip over there ;-) ).
-
-Finally, make sure you are in the same directory where the `Vagranfile` is
+Finally, make sure you are in the same directory where the `Vagrantfile` is
 located and hit `vagrant up`.
 
 After provisioning, all users including (including vagrant and root) have the
 password setup to "vagrant". You might want to change that latter.
+
+## Submitting the reports
+
+The smoker is initially configured to save the testing reports to the local
+home directory of the chosen user (`$HOME/ready_reports`). This is to allow you
+to review reports before really sending them, just in case some tests failed
+because of configuration mistakes with the smoker.
+
+Later, you can setup [CPAN::Reporter](https://metacpan.org/pod/CPAN::Reporter)
+to send those reports directory, but the best option would be using
+[metabase-relayd](https://metacpan.org/dist/metabase-relayd/view/bin/metabase-relayd)
+for that, because the reports will be dispatched much faster, relieving the
+smoker to go back testing as soon as possible. See also the
+[Docker image](https://hub.docker.com/r/alceu/metabase-relayd) available for it
+too.
+
+A third option would be using `send_reports` CLI from
+`CPAN-Reporter-Smoker-OpenBSD` distribution:
+
+```mermaid
+sequenceDiagram
+    participant send_reports
+    participant ready_reports
+    participant metabase_relayd
+    participant metabase
+    send_reports->>ready_reports: retrieve report
+    send_reports->>metabase_relayd: submit report
+    send_reports->>ready_reports: remove report
+    metabase_relayd->>metabase: submit report
+```
+
+See `send_reports --help` for the online help.
 
 ### On going usage
 
@@ -93,15 +154,15 @@ After initial provisioning, you will want to start your smoker with
 ```
 vagrant up --provision
 ```
-This project Vangratfile is prepared to implement idempotent operations, so only
-the operations below will be repeated:
+This project `Vagrantfile` is prepared to implement idempotent operations, so
+only the operations below will be repeated:
 
-  * Updates OpenBSD packages.
-  * Update your local CPAN mirror
-  * Updates CPAN-Reporter-Smoker-OpenBSD distribution (available also at CPAN)
-  for the vagrant and other users.
-  * Updates the keyboard configuration based on the `Vagrantfile` respective
-  option.
+* Updates OpenBSD packages.
+* Update your local CPAN mirror
+* Updates `CPAN-Reporter-Smoker-OpenBSD` distribution (available also at CPAN)
+for the provisioned user.
+* Updates the keyboard configuration based on the `Vagrantfile` respective
+option.
 
 #### Troubleshooting
 
@@ -113,47 +174,21 @@ is wrong than just kill your VM and start from scratch.
 This project uses [Packer](https://www.packer.io/) to build the base image for
 Vagrant. Packer allows the setup of the VM and install of OpenBSD automatically.
 
-Unfortunately the format of the configuration file for Packer is JSON, which
-doesn't allow for comments, so documentation is still to be developed.
-
 Sections that you probably want to tweak with are:
 
 * variables
 * builders
 
 After `git clone`ning the project, move to `cpan-openbsd-smoker/vagrant`, where
-the `packer.json` is located and type:
+the `packer.pkr.hcl` is located and type:
 
 ```
-$ packer build packer.json
+packer build packer.pkr.hcl
 ```
 
-#### Requirements
+See also the available targets in the `Makefile`.
 
-It is expected to have a local CPAN mirror (see `CPAN::Mini` module for that)
-running in your local network/host at http://minicpan:8090. You can combine
-your preferred web server with the `CPAN::Mini` mirror in order to achieve that.
-
-# Maintenance
-
-```
-pkg_info -Q p5-Test- | sed -E 's/ \(installed\)//' | sed -E "s/^(p5-.*[a-zA-Z0-9])-.*/- \1/
-```
-
-A list of the Perl modules that needs to be installed through `cpan` are
-available at the `modules` directory that includes:
-
-- `required.txt`: the modules that are **required** for the Smoker to work. To
-quickly enable the smoker, those modules should be installed without testing
-first, then tested in order to have the structure to send reports.
-- `extended_tests.txt`: the modules that enables more tests of the
-distributions available, i.e., they are commonly included for testing only.
-
-In both cases, only the Perl modules that **are not** included in the OpenBSD
-package repository should be include, since those packages were already
-validated and are installed much faster than using `cpan`.
-
-### FAQ
+### Possible questions that nobody asked so far
 
 #### Why a project for that?
 
@@ -171,3 +206,7 @@ substantially.
 For sure you can. Any user added to the OpenBSD VM will be fully able to use
 the CPAN client to test your code. There is also any tool you would require to
 download, build and test your distributions.
+
+## See also
+
+- [CPAN Testes Reports](http://cpantesters.org/)
