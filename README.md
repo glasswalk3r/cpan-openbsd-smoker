@@ -65,7 +65,9 @@ Besides Ansible, the provisioning itself was changed and currently is much more
 simple (although with less features).
 
 Previous versions of OpenBSD that were implemented in the original fashion can
-still be used by using the branch XXXX of this repository.
+still be used by using the branch
+[deprecated_provisioning](https://github.com/glasswalk3r/cpan-openbsd-smoker/tree/deprecated_provisioning)
+of this repository.
 
 ## Requirements
 
