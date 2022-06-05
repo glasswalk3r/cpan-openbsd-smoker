@@ -75,6 +75,7 @@ of this repository.
 - Packer 1.7.4 or higher
 - Vagrant 2.2.19 or higher
 - GNU Make
+- Ansible version 2.12.2 or higher
 
 ### CPAN mirror
 
