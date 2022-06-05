@@ -38,7 +38,8 @@ add-amd64:
 	@if vagrant box list | grep ${VAGRANT_BOX_USER}/${AMD64_BOX}; then vagrant box remove ${VAGRANT_BOX_USER}/${AMD64_BOX}; fi
 	vagrant box add --name ${VAGRANT_BOX_USER}/${AMD64_BOX} ${AMD64_BOX}.box
 clean: clean-iso
-	@rm -f *.box packer_virtualbox-iso_virtualbox-iso_sha256.checksum
+	@rm -f *.box
+	@rm -f packer_openbsd_virtualbox-iso_sha256.checksum
 	@rm -rf packer_cache
 init:
 	vagrant plugin install vagrant-vbguest
