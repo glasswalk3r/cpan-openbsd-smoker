@@ -10,4 +10,5 @@ pl:
     - '--testuser=vagrant'
     - '--testhost=localhost'
     - '--testdb=test'
+    - '--testpassword=vagrant'
 
