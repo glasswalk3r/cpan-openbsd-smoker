@@ -11,4 +11,7 @@ pl:
     - '--testhost=localhost'
     - '--testdb=test'
     - '--testpassword=vagrant'
+test:
+  env:
+    EXTENDED_TESTING: 1
 

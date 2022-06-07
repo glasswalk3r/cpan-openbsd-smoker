@@ -9,7 +9,7 @@ test:
   env:
     DBD_MYSQL_TESTDB: test
     DBD_MYSQL_TESTHOST: localhost
-    DBD_MYSQL_TESTPASSWORD: null
+    DBD_MYSQL_TESTPASSWORD: vagrant
     DBD_MYSQL_TESTPORT: 3306
     DBD_MYSQL_TESTUSER: vagrant
     EXTENDED_TESTING: 1
