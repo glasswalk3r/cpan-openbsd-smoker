@@ -1,0 +1,8 @@
+---
+comment: replaces standard CLI programs
+disabled: 1
+match:
+  distribution: ^BDFOY/PerlPowerTools
+  perlconfig:
+    osname: openbsd
+
