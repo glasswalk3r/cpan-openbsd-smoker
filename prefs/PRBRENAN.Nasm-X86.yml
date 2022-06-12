@@ -1,0 +1,10 @@
+---
+comment: Tests hang smoker
+disabled: 1
+match:
+  distribution: ^PRBRENAN/Nasm-X86
+  perlconfig:
+    archname: i386-openbsd
+    useithreads: null
+    osname: openbsd
+
