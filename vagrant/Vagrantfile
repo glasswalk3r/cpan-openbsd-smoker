@@ -58,7 +58,7 @@ cpus = 2
 memory = 2048
 
 # build_dir MFS size, taken from memory, in MB
-mfs_size = 512
+mfs_size = memory/2
 
 # keyboard encoding, see wsconsctl manpage for details
 keyboard = 'br'
