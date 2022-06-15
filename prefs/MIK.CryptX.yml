@@ -1,0 +1,10 @@
+---
+comment: Tests take hours to finish
+disabled: 1
+match:
+  distribution: ^MIK/CryptX
+  perlconfig:
+    archname: i386-openbsd
+    useithreads: '^$'
+    osname: openbsd
+
