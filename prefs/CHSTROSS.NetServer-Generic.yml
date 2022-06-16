@@ -5,4 +5,4 @@ match:
   distribution: ^CHSTROSS/NetServer-Generic
   perlconfig:
     osname: openbsd
-    not_useithreads: define
+    useithreads: '^$'

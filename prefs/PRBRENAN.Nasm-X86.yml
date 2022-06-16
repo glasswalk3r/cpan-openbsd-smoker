@@ -5,6 +5,6 @@ match:
   distribution: ^PRBRENAN/Nasm-X86
   perlconfig:
     archname: i386-openbsd
-    useithreads: null
+    useithreads: '^$'
     osname: openbsd
 
