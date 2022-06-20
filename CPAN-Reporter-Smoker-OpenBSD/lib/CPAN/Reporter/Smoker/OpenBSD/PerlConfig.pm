@@ -74,8 +74,7 @@ sub dump {
         $attribs{$attrib_name} = 'define';
     }
     else {
-        delete( $attribs{$attrib_name} );
-        $attribs{"no_$attrib_name"} = 'define';
+        $attribs{$attrib_name} = '^$';
     }
 
     return \%attribs;
