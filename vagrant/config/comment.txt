@@ -1,0 +1,4 @@
+If you would like to try to reproduce this report results or even to work with
+the same environment for a bug fix, please refer to
+https://github.com/glasswalk3r/cpan-openbsd-smoker to see how to use the
+prebuilt virtual machines available.

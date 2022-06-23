@@ -127,6 +127,13 @@
             owner: '{{ cpan_user }}'
             group: '{{ cpan_user }}'
             mode: '0755'
+        - name: Aditional custom message on reports
+          ansible.builtin.copy:
+            src: config/comment.txt
+            dest: '/home/{{ cpan_user }}/.cpanreporter/comment.txt'
+            owner: '{{ cpan_user }}'
+            group: '{{ cpan_user }}'
+            mode: '0644'
     - name: Configure local mirror
       # See also MyConfig.pm.j2 file
       block:
