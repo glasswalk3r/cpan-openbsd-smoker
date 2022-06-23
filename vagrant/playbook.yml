@@ -89,7 +89,7 @@
             dest: '/home/{{ cpan_user }}/.vimrc'
             owner: '{{ cpan_user }}'
             group: '{{ cpan_user }}'
-            mode: '0755'
+            mode: '0644'
     - name: Configure the cpan client
       template:
         src: MyConfig.pm.j2
