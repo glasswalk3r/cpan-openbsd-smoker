@@ -24,16 +24,30 @@ to allow custom behavior configuration.
 
 The associated VMs (see `Vagranfile`) with this project are based on Vagrant
 (and Virtualbox as the provider) with the Smoker pre-configured on OpenBSD.
+
+Currently, the VMs will use the **default perl interpreter** provided by the
+Perl maintainers in the OpenBSD project. This **is not** the same perl you can
+download from [perl.org](https://www.perl.org/), being the main differences:
+
+- there are specific OpenBSD patches applied for it.
+- ithreads are disabled by default.
+- some common Perl distributions are also patched/different from other UNIX-like
+OSes. A good example are distributions that depends on SSL (TLS), since OpenBSD
+uses by defayult LibreSSL instead of OpenSSL.
+
+All configuration is done with [local::lib](https://metacpan.org/pod/local::lib)
+to allow the distributions to be installed without giving root access to the
+user running the smoker.
+
 Many aspects of the VM can be customized during the provisioning phase, like:
 
 * Mirrors to be used (OpenBSD and CPAN).
-* Tests submitter identification.
 * Number of processors in the VM
 * Generic OS customizations like keyboard, time zone, etc.
 * A customable user with low privileges to execute the
 `CPAN::Reporter::Smoker` application.
 * Using a CPAN mirror: you can declare one already available on your local
-network, configure one inside the VM or do both!
+network, configure it inside the VM or do both!
 * The OpenBSD version you want to use.
 
 The VM will have pre-installed and pre-configured:
@@ -52,14 +66,16 @@ be tested under the smoker.
 * automatic updates for OpenBSD packages and the
 CPAN-Reporter-Smoker-OpenBSD distribution by running the provisioning again
 (idempotent controls are in place to execute only the necessary).
-* the command line utilities provided by CPAN-Reporter-Smoker-OpenBSD
+* the command line programs provided by the
+[CPAN-Reporter-Smoker-OpenBSD](https://metacpan.org/pod/CPAN::Reporter::Smoker::OpenBSD)
 distribution.
 
 ### Older Vagrant boxes support
 
-Since OpenBSD 7.0, the boxes are implemented with Ansible replacing a lot of
-shell scripts to implement a complex configuration process that was becoming
-harder and harder to maintain.
+Since OpenBSD version 7.0, the boxes are implemented with
+[Ansible](https://www.ansible.com/) replacing a lot of shell scripts to
+implement a complex configuration process that was becoming harder and harder
+to maintain.
 
 Besides Ansible, the provisioning itself was changed and currently is much more
 simple (although with less features).
@@ -72,20 +88,21 @@ of this repository.
 ## Requirements
 
 - Virtualbox version 6.1 or higher
-- Packer 1.7.4 or higher
 - Vagrant 2.2.19 or higher
 - GNU Make
 - Ansible version 2.12.2 or higher
+- Packer 1.7.4 or higher, but only if you want to build base images
 
 ### CPAN mirror
 
-It is expected to have a local CPAN mirror (see CPAN::Mini module for that). It
+It is expected to have a local CPAN mirror (see
+[CPAN::Mini](https://metacpan.org/pod/CPAN::Mini) module for that). It
 is just too much data required from your nearest mirror, so be sure to use one.
 
 You can combine your preferred web server with the `CPAN::Mini` module in order
-to achieve that. You can use the `nginx-minicpan` at `utils` directory to
-configure the Nginx web server for that. Or you can search for Docker base
-solutions like [this one](https://github.com/colinnewell/CPAN-Mirror-Docker).
+to achieve that. As an example, there is the `nginx-minicpan` at `utils`
+directory to configure Nginx. Or you can search for Docker base solutions like
+[this one](https://github.com/colinnewell/CPAN-Mirror-Docker).
 
 ## Quick start
 
@@ -172,9 +189,9 @@ option.
 You might broke something meanwhile using. It might be easier to look for what
 is wrong than just kill your VM and start from scratch.
 
-### Packer
+### Base images building
 
-This project uses [Packer](https://www.packer.io/) to build the base image for
+This project uses [Packer](https://www.packer.io/) to build the base images for
 Vagrant. Packer allows the setup of the VM and install of OpenBSD automatically.
 
 Sections that you probably want to tweak with are:
@@ -213,3 +230,4 @@ download, build and test your distributions.
 ## See also
 
 - [CPAN Testes Reports](http://cpantesters.org/)
+- [OpenBSD's patches for Perl](https://github.com/afresh1/OpenBSD-perl)
