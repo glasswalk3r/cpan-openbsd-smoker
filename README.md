@@ -39,6 +39,13 @@ All configuration is done with [local::lib](https://metacpan.org/pod/local::lib)
 to allow the distributions to be installed without giving root access to the
 user running the smoker.
 
+The VM is optimized in the following ways:
+- modules that passes a test are always installed: this basically exchanges
+storage space to get more speed to handle dependencies of the distribution being
+tested
+- use of a MFS mount for the CPAN `build_dir` location, to speed up the build
+process.
+
 Many aspects of the VM can be customized during the provisioning phase, like:
 
 * Mirrors to be used (OpenBSD and CPAN).
