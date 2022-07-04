@@ -7,9 +7,10 @@ gd--
 git--
 gmp--
 gtar--
+libinotify-20211018
+libmpc
 libxml--
 libxslt--
-libmpc
 mariadb-server--
 mpfr--
 ntp--
