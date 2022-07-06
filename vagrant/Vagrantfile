@@ -58,7 +58,7 @@ cpus = 2
 memory = 2048
 
 # build_dir MFS size, taken from memory, in MB
-mfs_size = memory/2
+mfs_size = memory / 2
 
 # keyboard encoding, see wsconsctl manpage for details
 keyboard = 'br'
@@ -103,6 +103,9 @@ cpan_build_dir = '/mnt/cpan_build_dir'
 # The path is relative to the user home directory
 prefs_dir = 'cpan-openbsd-smoker/prefs'
 
+# Prometheus node-exporter port
+node_exp_port = 9100
+
 ################################################################
 # END OF USER CONFIGURATIONS
 ################################################################
@@ -113,6 +116,7 @@ Vagrant.configure('2') do |config|
   config.vm.box_check_update = false
   config.vm.hostname = 'cpan-smoker-openbsd'
   config.vm.synced_folder '/tmp', '/vagrant', disabled: true
+  config.vm.network 'forwarded_port', guest: node_exp_port, host: node_exp_port
   # If you're using https://github.com/dotless-de/vagrant-vbguest, uncomment
   # the line below to avoid receiving warnings (OpenBSD doesn't support
   # VirtualBox Guest additions)
@@ -133,7 +137,7 @@ Vagrant.configure('2') do |config|
     vb.customize ['modifyvm', :id, '--uartmode1', 'disconnected']
     vb.customize ['modifyvm', :id, '--nic1', 'nat', '--nictype1', '82540EM']
     vb.customize ['modifyvm', :id, '--vrde', 'off']
-    vb.customize ['modifyvm', :id, '--vram', 1]
+    vb.customize ['modifyvm', :id, '--vram', 9]
   end
 
   config.vm.define 'single'
@@ -154,7 +158,7 @@ Vagrant.configure('2') do |config|
         'clean_cache_after' => clean_cache_after,
         'restart_delay' => restart_delay,
         'openbsd_mirror' => openbsd_mirror,
-        'use_local_mirror' => use_local_mirror.to_s,  # Ansible will receive a string anyway
+        'use_local_mirror' => use_local_mirror.to_s,  # Ansible will receive as string anyway
         'mfs_size' => mfs_size
       }
     }
