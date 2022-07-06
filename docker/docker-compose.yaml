@@ -1,0 +1,41 @@
+---
+version: '3.9'
+services:
+  metabase-relayd:
+    networks:
+      - smoker
+    image: alceu/metabase-relayd:0.0.5
+    ports:
+      - '9091:8080'
+    volumes:
+      - "$HOME/metabase:/home/runner/.metabase"
+    container_name: metabase-relayd
+    environment:
+      TZ: UTC
+  prometheus:
+    image: prom/prometheus:v2.36.2
+    container_name: prometheus
+    extra_hosts:
+      - 'cpan-smoker:192.168.1.124'
+    networks:
+      - smoker
+    ports:
+      - '9090:9090'
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+      # default, but available here to help matching the volume
+      - '--storage.tsdb.path=/prometheus'
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
+      - type: volume
+        source: prometheus
+        target: /prometheus
+        read_only: false
+        volume:
+          nocopy: true
+volumes:
+  prometheus: {}
+networks:
+  smoker:
+    name: cpan_smoker
+    driver: bridge

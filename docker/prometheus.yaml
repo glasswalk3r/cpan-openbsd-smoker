@@ -1,0 +1,16 @@
+---
+global:
+  scrape_interval: 15s
+  evaluation_interval: 30s
+  # scrape_timeout is set to the global default (10s).
+scrape_configs:
+  - job_name: prometheus
+    honor_labels: true
+    static_configs:
+      - targets:
+          # localhost because the CPAN smoker is running in a NAT network
+          # see node_exp_port variable at vagrant/Vagrantfile for the port
+          # number
+          - cpan-smoker:9100
+        labels:
+          host: cpan_smoker
