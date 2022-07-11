@@ -1,5 +1,10 @@
 edit_report=default:ask/no pass/na:no
 email_from={{ reports_from }}
 send_report=default:ask/yes pass/na:yes
++; After you're sure, you can change to other transport by uncommenting the
++; line below. See https://metacpan.org/pod/CPAN::Reporter::Config for more
++; details.
++;transport=Metabase
 transport=File /home/{{ cpan_user }}/ready_reports
 command_timeout=1000
+

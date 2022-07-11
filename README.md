@@ -238,3 +238,7 @@ download, build and test your distributions.
 
 - [CPAN Testes Reports](http://cpantesters.org/)
 - [OpenBSD's patches for Perl](https://github.com/afresh1/OpenBSD-perl)
+- [CPAN Testers Statistics](http://stats.cpantesters.org/)
+- [CPAN::Reporter::Config](https://metacpan.org/pod/CPAN::Reporter::Config)
+- [CPAN Testers 2.0 and the metabase-relayd](http://blogs.perl.org/users/bingos/2010/07/cpan-testers-20-and-the-metabase-relayd.html)
+
