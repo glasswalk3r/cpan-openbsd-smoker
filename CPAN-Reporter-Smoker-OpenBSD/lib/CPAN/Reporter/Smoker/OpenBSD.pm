@@ -16,6 +16,13 @@ our @EXPORT_OK = qw(is_distro_ok block_distro);
 CPAN::Reporter::Smoker::OpenBSD - set of scripts to manage a
 L<CPAN::Reporter::Smoker> on OpenBSD
 
+=head1 DEPRECATION WARNING
+
+This distribution was replaced by L<CPAN::Smoker::Utils> distribution and this
+is the latest release that will be maintained at CPAN.
+
+You're advised to start using L<CPAN::Smoker::Utils> as soon as possible.
+
 =head1 DESCRIPTION
 
 This module exports some functions used to manage a smoker testing machine based L<CPAN::Reporter>.

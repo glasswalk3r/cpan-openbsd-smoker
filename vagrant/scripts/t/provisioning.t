@@ -61,7 +61,7 @@ for my $package (@wanted) {
     'POE::Component::Metabase::Client::Submit',
     'POE::Component::Metabase::Relay::Server',
     'metabase::relayd',
-    'CPAN::Reporter::Smoker::OpenBSD',
+    'CPAN::Smoker::Utils',
 );
 
 my $all_modules_ref = list_modules();

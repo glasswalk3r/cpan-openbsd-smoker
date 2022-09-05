@@ -54,7 +54,7 @@ required[0]='Module::Version'
 required[1]='Bundle::CPAN'
 required[2]='Bundle::CPAN::Reporter::Smoker::Tests'
 required[3]='Test::Reporter::Transport::Socket'
-required[4]='CPAN::Reporter::Smoker::OpenBSD'
+required[4]='CPAN::Smoker::Utils'
 required[5]='POE::Component::Metabase::Client::Submit'
 required[6]='POE::Component::Metabase::Relay::Server'
 required[7]='List::BinarySearch'
@@ -72,3 +72,4 @@ do
 done
 
 echo -e '\n\nNow the smoker is ready! Hit "start_smoker" to start it.'
+

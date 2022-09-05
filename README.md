@@ -74,7 +74,7 @@ be tested under the smoker.
 CPAN-Reporter-Smoker-OpenBSD distribution by running the provisioning again
 (idempotent controls are in place to execute only the necessary).
 * the command line programs provided by the
-[CPAN-Reporter-Smoker-OpenBSD](https://metacpan.org/pod/CPAN::Reporter::Smoker::OpenBSD)
+[CPAN-Smoker-Utils](https://metacpan.org/pod/CPAN::Smoker::Utils)
 distribution.
 
 ### Older Vagrant boxes support
