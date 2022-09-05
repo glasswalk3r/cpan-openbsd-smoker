@@ -40,6 +40,7 @@ cpan -T Alien::Build POE::Component::SSLify
 echo 'Installing minimum for testing reports'
 cpan -T Task::CPAN::Reporter
 echo -e 'o conf test_report 1\no conf commit' | cpan
+echo -e 'o conf pushy_https 0\no conf commit' | cpan
 echo 'Now testing it'
 
 set +e
@@ -63,6 +64,8 @@ required[9]='Class::DBI::Plugin::DeepAbstractSearch'
 # installing anyway, even if it won't be used
 required[10]='CPAN::Mini'
 required[11]='CPAN::Mini::LatestDistVersion'
+required[12]='Log::Log4perl'
+required[13]='metabase::relayd'
 
 echo 'Installing required modules for the smoker'
 for module in "${required[@]}"
