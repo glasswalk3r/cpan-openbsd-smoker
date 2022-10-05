@@ -6,6 +6,7 @@ expect
 gd--
 git--
 gmp--
+groff
 gtar--
 libinotify-20211018
 libmpc
@@ -139,6 +140,7 @@ p5-Text-LevenshteinXS
 p5-Time-Piece-MySQL
 p5-YAML-XS
 perltidy
+pkglocatedb
 quirks--
 sqlite3--
 sudo--
