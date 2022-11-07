@@ -58,13 +58,14 @@ cpus = 2
 memory = 2048
 
 # build_dir MFS size, taken from memory, in MB
-mfs_size = memory/2
+mfs_size = memory / 2
 
 # keyboard encoding, see wsconsctl manpage for details
 keyboard = 'br'
 
-# OpenBSD version: acceptable values are 7.0 and 7.1
-openbsd_version = '7.1'
+# OpenBSD version: acceptable values are 7.0, 7.1 and 7.2
+openbsd_version = '7.2'
+
 # OpenBSD architecture: acceptable values are i386 and amd64
 openbsd_arch = 'i386'
 

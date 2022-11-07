@@ -70,7 +70,8 @@ locals {
   pkg_path = "https://${var.openbsd_mirror}/pub/OpenBSD/${var.openbsd_version}/packages/${var.openbsd_architecture}/"
   version_to_python_pkg = {
     "7.0" = "python-3.9.7",
-    "7.1" = "python-3.9.12"
+    "7.1" = "python-3.9.12",
+    "7.2" = "python-3.9.14"
   }
   python_pkg = local.version_to_python_pkg[var.openbsd_version]
 }
