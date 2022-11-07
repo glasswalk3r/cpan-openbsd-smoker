@@ -1,28 +1,33 @@
 CPAN_MIRROR:=$(shell echo 'o conf urllist' | cpan | awk '/0 \[/ {print $$2}' | tr -d '[]')
 OPENBSD_MIRROR:=openbsd.c3sl.ufpr.br
-OPENBSD_VERSION:=7.1
+OPENBSD_VERSION:=7.2
+OPENBSD_STRIPPED_VERSION:=$(subst .,,${OPENBSD_VERSION})
 TIMEZONE:=America/Sao_Paulo
 ISO_DIR:=ISO
-ISO_IMAGE:=install$(subst .,,${OPENBSD_VERSION}).iso
-ISO_AMD64_SHA:=$(shell curl -s ${OPENBSD_MIRROR}/openbsd/${OPENBSD_VERSION}/amd64/SHA256 | awk '/${ISO_IMAGE}/ {print $$4}')
-ISO_I386_SHA:=$(shell curl -s ${OPENBSD_MIRROR}/openbsd/${OPENBSD_VERSION}/i386/SHA256 | awk '/${ISO_IMAGE}/ {print $$4}')
-I386_BOX:=openbsd-${OPENBSD_VERSION}-cpan-smoker-i386
-AMD64_BOX:=openbsd-${OPENBSD_VERSION}-cpan-smoker-amd64
+ISO_IMAGE:=install${OPENBSD_STRIPPED_VERSION}.iso
+BASE_BOX:=openbsd-${OPENBSD_VERSION}-cpan-smoker
+I386_BOX:=${BASE_BOX}-i386
+AMD64_BOX:=${BASE_BOX}-amd64
 VAGRANT_BOX_USER:=arfreitas
 PACKER_CFG:=packer.pkr.hcl
+MIRROR_BASE_URL:=https://${OPENBSD_MIRROR}/pub/OpenBSD/${OPENBSD_VERSION}
 
-i386:
-	cd ISO && wget -c https://${OPENBSD_MIRROR}/pub/OpenBSD/${OPENBSD_VERSION}/$@/${ISO_IMAGE}
+get_pub_key:
+	cd ISO && wget -c https://ftp.openbsd.org/pub/OpenBSD/${OPENBSD_VERSION}/openbsd-${OPENBSD_STRIPPED_VERSION}-base.pub
+i386: get_pub_key
+	cd ISO && wget -c ${MIRROR_BASE_URL}/$@/${ISO_IMAGE} && wget -c ${MIRROR_BASE_URL}/$@/SHA256 && wget -c ${MIRROR_BASE_URL}/$@/SHA256.sig
+	cd ISO && signify-openbsd -Cp openbsd-72-base.pub -x SHA256.sig install72.iso
 	packer build -var 'cpan_mirror=${CPAN_MIRROR}' \
 		-var 'openbsd_mirror=${OPENBSD_MIRROR}' \
 		-var 'openbsd_architecture=$@' \
 		-var 'timezone=${TIMEZONE}' \
 		-var 'iso_path=${PWD}/${ISO_DIR}/${ISO_IMAGE}' \
-		-var 'iso_sha=${ISO_I386_SHA}' -var 'box=${I386_BOX}.box' \
+		-var "iso_sha=$(shell cat ISO/SHA256 | awk '/${ISO_IMAGE}/ {print $$4}')" -var 'box=${I386_BOX}.box' \
 		-var 'guest_os_type=OpenBSD' \
 		-var 'openbsd_version=${OPENBSD_VERSION}' ${PACKER_CFG}
-amd64:
-	cd ISO && wget -c https://${OPENBSD_MIRROR}/pub/OpenBSD/${OPENBSD_VERSION}/$@/${ISO_IMAGE}
+amd64: get_pub_key
+	cd ISO && wget -c ${MIRROR_BASE_URL}/$@/${ISO_IMAGE} && wget -c ${MIRROR_BASE_URL}/$@/SHA256 && wget -c ${MIRROR_BASE_URL}/$@/SHA256.sig
+	cd ISO && signify-openbsd -Cp openbsd-72-base.pub -x SHA256.sig install72.iso
 	packer build -var 'cpan_mirror=${CPAN_MIRROR}' \
 		-var 'openbsd_mirror=${OPENBSD_MIRROR}' \
 		-var 'openbsd_architecture=$@' \
@@ -44,4 +49,5 @@ clean: clean-iso
 init:
 	pip install -U pip wheel setuptools && pip install -U ansible
 clean-iso:
-	@rm -rf ${ISO_DIR} && mkdir -p ${ISO_DIR} && rm -rf packer_cache/
+	@rm -f ${ISO_DIR}/*.iso
+	@rm -f ${ISO_DIR}/SHA256*
