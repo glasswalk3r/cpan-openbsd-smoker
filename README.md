@@ -26,14 +26,14 @@ The associated VMs (see `Vagranfile`) with this project are based on Vagrant
 (and Virtualbox as the provider) with the Smoker pre-configured on OpenBSD.
 
 Currently, the VMs will use the **default perl interpreter** provided by the
-Perl maintainers in the OpenBSD project. This **is not** the same perl you can
+Perl maintainers in the OpenBSD project. This **is not** the same `perl` you can
 download from [perl.org](https://www.perl.org/), being the main differences:
 
 - there are specific OpenBSD patches applied for it.
 - ithreads are disabled by default.
 - some common Perl distributions are also patched/different from other UNIX-like
 OSes. A good example are distributions that depends on SSL (TLS), since OpenBSD
-uses by defayult LibreSSL instead of OpenSSL.
+uses by default LibreSSL instead of OpenSSL.
 
 All configuration is done with [local::lib](https://metacpan.org/pod/local::lib)
 to allow the distributions to be installed without giving root access to the
@@ -42,7 +42,7 @@ user running the smoker.
 The VM is optimized in the following ways:
 - modules that passes a test are always installed: this basically exchanges
 storage space to get more speed to handle dependencies of the distribution being
-tested
+tested.
 - use of a MFS mount for the CPAN `build_dir` location, to speed up the build
 process.
 
