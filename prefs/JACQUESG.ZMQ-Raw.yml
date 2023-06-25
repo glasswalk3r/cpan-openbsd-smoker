@@ -4,6 +4,5 @@ disabled: 1
 match:
   distribution: ^JACQUESG/ZMQ-Raw
   perlconfig:
-    archname: OpenBSD.amd64-openbsd-thread-multi
     osname: openbsd
     useithreads: define

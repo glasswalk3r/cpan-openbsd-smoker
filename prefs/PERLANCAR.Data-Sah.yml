@@ -1,0 +1,9 @@
+---
+comment: Tests hang smoker
+disabled: 1
+match:
+  distribution: ^PERLANCAR/Data-Sah
+  perlconfig:
+    archname: amd64-openbsd
+    osname: openbsd
+    useithreads: ^$

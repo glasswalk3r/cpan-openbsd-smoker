@@ -7,4 +7,3 @@ test:
     DBICTEST_MYSQL_DSN: 'DBI:mysql:database=test;host=localhost'
     DBICTEST_MYSQL_USER: vagrant
     DBICTEST_MYSQL_PASS: vagrant
-

@@ -7,4 +7,3 @@ match:
     archname: i386-openbsd
     useithreads: '^$'
     osname: openbsd
-

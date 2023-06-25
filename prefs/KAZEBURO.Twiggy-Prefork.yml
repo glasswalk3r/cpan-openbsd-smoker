@@ -4,5 +4,4 @@ disabled: 1
 match:
   distribution: ^KAZEBURO/Twiggy-Prefork
   perlconfig:
-    archname: OpenBSD.amd64-openbsd
     osname: openbsd

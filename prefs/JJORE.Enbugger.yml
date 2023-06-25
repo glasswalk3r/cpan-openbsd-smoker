@@ -1,0 +1,9 @@
+---
+comment: Tests hang smoker
+disabled: 1
+match:
+  distribution: ^JJORE/Enbugger
+  perlconfig:
+    archname: amd64-openbsd
+    osname: openbsd
+    useithreads: ^$

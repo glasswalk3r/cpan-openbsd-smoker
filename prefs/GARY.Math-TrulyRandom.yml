@@ -4,5 +4,4 @@ disabled: 1
 match:
   perlconfig:
     osname: openbsd
-    archname: OpenBSD.amd64-openbsd
   distribution: ^GARY/Math-TrulyRandom

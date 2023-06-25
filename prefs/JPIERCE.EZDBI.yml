@@ -4,5 +4,4 @@ match:
   distribution: ^JPIERCE/EZDBI
   perlconfig:
     osname: openbsd
-    archname: OpenBSD.amd64-openbsd
 disabled: 1

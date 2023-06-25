@@ -4,5 +4,4 @@ disabled: 1
 match:
   distribution: ^DAPATRICK/Net-XMPP
   perlconfig:
-    archname: OpenBSD.amd64-openbsd-multi
     osname: openbsd

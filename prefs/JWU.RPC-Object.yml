@@ -4,7 +4,6 @@ disabled: 1
 match:
   distribution: ^JWU/RPC-Object
   perlconfig:
-    archname: OpenBSD.amd64-openbsd-thread-multi-ld
     osname: openbsd
     use64bitall: define
     use64bitint: define

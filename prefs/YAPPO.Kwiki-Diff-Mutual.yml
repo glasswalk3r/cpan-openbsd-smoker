@@ -1,0 +1,8 @@
+---
+comment: Tests hang smoker
+disabled: 1
+match:
+  distribution: ^YAPPO/Kwiki-Diff-Mutual
+  perlconfig:
+    osname: openbsd
+    useithreads: ^$
