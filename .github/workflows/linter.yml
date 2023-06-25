@@ -17,4 +17,3 @@ jobs:
         env:
           VALIDATE_YAML: true
           VALIDATE_ALL_CODEBASE: true
-          FILTER_REGEX_INCLUDE: './prefs/*.yml'
