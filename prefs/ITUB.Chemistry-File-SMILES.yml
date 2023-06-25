@@ -1,0 +1,9 @@
+---
+comment: circular dependency with MERKYS/Chemistry-Ring
+disabled: 1
+match:
+  distribution: ^ITUB/Chemistry-File-SMILES
+  perlconfig:
+    archname: amd64-openbsd
+    osname: openbsd
+    useithreads: ^$
