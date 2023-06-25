@@ -17,3 +17,4 @@ jobs:
         env:
           VALIDATE_YAML: true
           VALIDATE_ALL_CODEBASE: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
