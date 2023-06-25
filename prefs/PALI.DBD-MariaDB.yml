@@ -14,4 +14,3 @@ pl:
 test:
   env:
     EXTENDED_TESTING: 1
-

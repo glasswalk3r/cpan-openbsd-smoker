@@ -5,7 +5,6 @@ match:
   distribution: ^EVALETO/Parallel-Workers
   perlconfig:
     osname: openbsd
-    archname: OpenBSD.amd64-openbsd-thread-multi
     useithreads: define
     usemultiplicity: define
     use64bitint: define

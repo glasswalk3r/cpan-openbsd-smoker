@@ -1,5 +1,5 @@
 ---
-comment: Brokes the CPAN client 
+comment: Brokes the CPAN client
 disabled: 1
 match:
   distribution: ^STRO/CPAN-SQLite-0.213

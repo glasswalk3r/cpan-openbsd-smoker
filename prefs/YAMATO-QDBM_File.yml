@@ -3,7 +3,6 @@ match:
   distribution: ^YAMATO/QDBM-File
   perlconfig:
     osname: openbsd
-    archname: OpenBSD.amd64-openbsd
 pl:
   expect:
     - "libqdbm link type: [1]"

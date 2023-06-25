@@ -1,8 +1,7 @@
 ---
-comment: Tests consume too much build_dir storage 
+comment: Tests consume too much build_dir storage
 disabled: 1
 match:
   perlconfig:
     osname: openbsd
-    archname: OpenBSD.amd64-openbsd
   distribution: ^ISHIGAKI/Parse-PMFile

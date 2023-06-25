@@ -5,4 +5,3 @@ match:
   distribution: ^JRED/Event-RPC
   perlconfig:
     osname: openbsd
-    archname: OpenBSD.amd64-openbsd
