@@ -7,7 +7,6 @@ variable "vagrant_pub_ssh" {
 variable "openbsd_version" {
   type = string
   description = "The OpenBSD version to be used for setup"
-  default = "7.0"
 }
 
 variable "openbsd_mirror" {
@@ -50,16 +49,6 @@ variable "iso_sha" {
   default = ""
 }
 
-variable "guest_os_type" {
-  type = string
-  description = "The Virtualbox Guest OS Type property to setup"
-  default = "OpenBSD_64"
-  validation {
-    condition = var.guest_os_type == "OpenBSD" || var.guest_os_type == "OpenBSD_64"
-    error_message = "OpenBSD and OpenBSD_64 are the only supported values for Virtualbox Guest OS Type!"
-  }
-}
-
 variable "box" {
   type = string
   description = "The name of the Vagrant box to generate at the end of installing the OS"
@@ -76,7 +65,7 @@ locals {
   python_pkg = local.version_to_python_pkg[var.openbsd_version]
 }
 
-source "virtualbox-iso" "openbsd" {
+source "hyperv-iso" "openbsd" {
   boot_command = [
     "S<enter>",
     "cat <<EOF >> openbsd.disklabel<enter>",
@@ -108,7 +97,6 @@ source "virtualbox-iso" "openbsd" {
   boot_wait            = "30s"
   disk_size            = 55000
   guest_additions_mode = "disable"
-  guest_os_type        = "${var.guest_os_type}"
   iso_checksum         = "sha256:${var.iso_sha}"
   iso_url              = "file://${var.iso_path}"
   output_directory     = ""
@@ -116,21 +104,12 @@ source "virtualbox-iso" "openbsd" {
   ssh_password         = "vagrant"
   ssh_username         = "root"
   ssh_wait_timeout     = "10000s"
-  vboxmanage           = [
-    ["modifyvm", "{{ .Name }}", "--memory", "2048"],
-    ["modifyvm", "{{ .Name }}", "--cpus", "2"],
-    ["modifyvm", "{{ .Name }}", "--natdnspassdomain1", "off"],
-    ["modifyvm", "{{ .Name }}", "--natdnshostresolver1", "on"],
-    ["modifyvm", "{{ .Name }}", "--uartmode1", "disconnected"],
-    ["modifyvm", "{{ .Name }}", "--nic1", "nat", "--nictype1", "82540EM"],
-    ["modifyvm", "{{ .Name }}", "--vrde", "off"]
-  ]
   vm_name              = "openbsd${var.openbsd_version}-base"
 }
 
 build {
   sources = [
-    "source.virtualbox-iso.openbsd"
+    "source.hyperv-iso.openbsd"
   ]
 
   provisioner "file" {
@@ -165,6 +144,10 @@ build {
     source = "packer/packages.txt"
     destination = "/tmp/packages.txt"
   }
+
+
+  // "sed -i -f /tmp/mysql-perf.txt /etc/my.cnf",
+  // sed: 3: /tmp/mysql-perf.txt: extra characters at the end of p command
 
   provisioner "shell" {
     environment_vars = [

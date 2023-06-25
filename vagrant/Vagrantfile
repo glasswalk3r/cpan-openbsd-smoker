@@ -36,7 +36,8 @@ cpan_user = 'goku'
 
 # The public SSH key to add to the authorized_key cpan_user SSH configuration.
 # Defaults to an SSH key point to your current user OpenSSH standard directory.
-cpan_user_pub_key = "#{ENV['HOME']}/.ssh/vagrant.pub"
+pub_key_filename = 'vagrant.pub'
+cpan_user_pub_key = File.join(ENV.fetch('HOME'),'ssh', pub_key_filename)
 
 # setup the OpenBSD closest mirror you want to use. Use just the base URL,
 # like "openbsd.c3sl.ufpr.br". The rest will be guessed by the related
@@ -67,7 +68,7 @@ keyboard = 'br'
 openbsd_version = '7.2'
 
 # OpenBSD architecture: acceptable values are i386 and amd64
-openbsd_arch = 'i386'
+openbsd_arch = 'amd64'
 
 # Perl CPAN section
 
@@ -82,7 +83,7 @@ cpan_mirror = 'http://192.168.1.124:8090'
 # probably will want to leave this as is.
 # If set to true, this will configure a local directory to hold the mirrored
 # files, configure the cpan client, CPAN::Mini and create a "minicpan" alias
-use_local_mirror = false
+use_local_mirror = true
 
 # See https://metacpan.org/pod/CPAN::Reporter::Smoker#USAGE for details of the
 # following options
@@ -108,47 +109,38 @@ prefs_dir = 'cpan-openbsd-smoker/prefs'
 # END OF USER CONFIGURATIONS
 ################################################################
 
+require 'fileutils'
+
 Vagrant.configure('2') do |config|
   config.ssh.shell = 'ksh -l'
   config.vm.box = "arfreitas/openbsd-#{openbsd_version}-cpan-smoker-#{openbsd_arch}"
   config.vm.box_check_update = false
   config.vm.hostname = 'cpan-smoker-openbsd'
-  config.vm.synced_folder '/tmp', '/vagrant', disabled: true
-  # If you're using https://github.com/dotless-de/vagrant-vbguest, uncomment
-  # the line below to avoid receiving warnings (OpenBSD doesn't support
-  # VirtualBox Guest additions)
-  config.vbguest.auto_update = false
+  config.vm.synced_folder '.', '/vagrant', disabled: false, type: 'rsync'
 
-  config.vm.provider 'virtualbox' do |vb|
-    # Display the VirtualBox GUI when booting the machine
-    # Useful for troubleshooting when true
-    vb.gui = false
-    vb.check_guest_additions = false
-    vb.memory = memory
-    vb.cpus = cpus
-    vb.name = 'OpenBSD CPAN Smoker'
-    # You may want to hide your network name given by the internal DHCP server.
-    vb.customize ['modifyvm', :id, '--natdnspassdomain1', 'off']
-    # Using the host resolver
-    vb.customize ['modifyvm', :id, '--natdnshostresolver1', 'on']
-    vb.customize ['modifyvm', :id, '--uartmode1', 'disconnected']
-    vb.customize ['modifyvm', :id, '--nic1', 'nat', '--nictype1', '82540EM']
-    vb.customize ['modifyvm', :id, '--vrde', 'off']
-    vb.customize ['modifyvm', :id, '--vram', 1]
+  config.vm.provider 'hyperv' do |vm|
+    vm.memory = memory
+    vm.cpus = cpus
+    vm.vmname = 'OpenBSD CPAN Smoker'
   end
+
+  ssh_pub_key = 'vagrant.pub'
+  FileUtils.cp(cpan_user_pub_key, File.join(Dir.pwd, pub_key_filename))
+  config.vm.provision 'shell', inline: 'pkg_add ansible-6.4.0'
 
   config.vm.define 'single'
 
-  config.vm.provision 'ansible' do |ansible|
+  config.vm.provision 'ansible_local' do |ansible|
     ansible.playbook = 'playbook.yml'
     ansible.compatibility_mode = '2.0'
+    install = false
     ansible.host_vars = {
       'single' => {
         'cpan_user' => cpan_user,
         'cpan_mirror' => cpan_mirror,
         'cpan_build_dir' => cpan_build_dir,
         'reports_from' => reports_from,
-        'cpan_user_pub_key' => cpan_user_pub_key,
+        'cpan_user_pub_key' => "/vagrant/#{pub_key_filename}",
         'vim_backup_dir' => vim_backup_dir,
         'make_jobs' => cpus,
         'prefs_dir' => prefs_dir,
