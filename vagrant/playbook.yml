@@ -169,4 +169,3 @@
         state: present
         path: '{{ item.mount }}'
         src: '{{ item.device }}'
-
