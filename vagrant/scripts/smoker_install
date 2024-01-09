@@ -19,6 +19,127 @@
 # along with CPAN OpenBSD Smoker.  If not, see http://www.gnu.org/licenses.
 set -euo pipefail
 
+function test_mfs() {
+    local build_dir
+    build_dir=$(mount | perl -e 'if (/^mfs:.*\son\s([\w\/]+)/){print $1}' -n)
+
+    if [[ ! -w $build_dir ]]
+    then
+        echo "Missing write permission on ${build_dir}, cannot continue" 1>&2
+        exit 1
+    fi
+}
+
+function check_installed() {
+    local module="$1"
+    local check
+    check=$(cpan -D "$module" | grep -F 'Installed: not installed' -c)
+
+    if [[ $check -gt 0 ]]
+    then
+        echo 'Module is already installed, nothing to do'
+        return 1
+    fi
+
+    return 0
+}
+
+function force_install() {
+    local module="$1"
+    local check
+    check_installed "$module"
+    check=$?
+
+    if [[ $check -ne 1 ]]
+    then
+        echo "Installing $module without testing"
+        cpan -T "$module"
+    fi
+}
+
+function check_reports() {
+    local cpan_reporter="${HOME}/.cpanreporter"
+    local reports_db="${cpan_reporter}/reports-sent.db"
+    local reports_dir="${HOME}/ready_reports"
+    local answer
+
+    if [[ -d $cpan_reporter && -f $reports_db ]]
+    then
+        echo -n "Found an existing database of reports sent at ${reports_db}. Should erase it? [y/n]: "
+        read -r answer
+
+        if [[ $answer == 'y' ]]
+        then
+            rm -fv "$reports_db"
+        else
+            echo "Cannot reinstall with previous reports database, errors could occur"
+            exit 1
+        fi
+    fi
+
+    answer=''
+
+    if [[ -d "$reports_dir" ]]
+    then
+        local total
+        readarray -t total <<< "$(ls "$reports_dir")"
+        echo -n "Found a total of ${#total[@]} unsent reports inside ${reports_dir}. Do you want to remove them? [y/n] "
+        read -r answer
+
+        if [[ ${answer,,} == 'y' ]]
+        then
+            rm -rf "$reports_dir"
+            echo "Removed"
+        else
+            echo "Installation won't progress before removing the unsent reports"
+            echo 1
+        fi
+    fi
+}
+
+function install_something() {
+    local question="$1"
+    local no_feedback="$2"
+    local modules="$3"
+    local answer
+    local check
+
+    echo -n "$question [y/n]: "
+    read -r answer
+
+    if [[ ${answer,,} == 'y' ]]
+    then
+        for module in $modules
+        do
+            check_installed "$module"
+            check=$?
+
+            if [[ $check -eq 1 ]]
+            then
+                cpan "$module"
+            fi
+        done
+    else
+        echo "$no_feedback"
+    fi
+}
+
+function install_mini() {
+    local question='Install a local CPAN repository within the VM with CPAN::Mini?'
+    local no_answer='Make sure to provide another, external, local mirror for running the smoker'
+    local modules='CPAN::Mini CPAN::Mini::LatestDistVersion'
+    install_something "$question" "$no_answer" "$modules"
+}
+
+function install_relay() {
+    local question='Install the metabase-relayd daemon in the VM?'
+    local no_answer='Make sure to provide another, external, metabase-relayd to send the reports from this smoker'
+    local modules='POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd'
+    install_something "$question" "$no_answer" "$modules"
+}
+
+check_reports
+
 echo 'Cloning the project for distroprefs...'
 if ! [ -d "${HOME}/cpan-openbsd-smoker" ]
 then
@@ -28,17 +149,16 @@ fi
 echo 'Upgrading CPAN client without testing'
 cpan -T CPAN
 
-echo 'Installing CPAN::SQLite without testing'
-cpan -T CPAN::SQLite
-
+force_install CPAN::SQLite
 echo 'Enabling CPAN::SQLite usage'
 echo -e 'o conf use_sqlite 1\no conf commit' | cpan
 
-echo 'This module is required but the tests are broken on OpenBSD'
-cpan -T Alien::Build POE::Component::SSLify
+echo 'The following modules are required but the tests are broken on OpenBSD'
+force_install Alien::Build
+force_install POE::Component::SSLify
 
 echo 'Installing minimum for testing reports'
-cpan -T Task::CPAN::Reporter
+force_install Task::CPAN::Reporter
 echo -e 'o conf test_report 1\no conf commit' | cpan
 echo -e 'o conf pushy_https 0\no conf commit' | cpan
 echo 'Now testing it'
@@ -48,24 +168,17 @@ cpan -t CPAN::SQLite Task::CPAN::Reporter
 set -e
 
 echo 'This distribution tests hangs, so installing without testing'
-cpan -T CPAN::Reporter::Smoker
+force_install CPAN::Reporter::Smoker
 
 declare -a required
-required[0]='Module::Version'
-required[1]='Bundle::CPAN'
-required[2]='Bundle::CPAN::Reporter::Smoker::Tests'
-required[3]='Test::Reporter::Transport::Socket'
-required[4]='CPAN::Smoker::Utils'
-required[5]='POE::Component::Metabase::Client::Submit'
-required[6]='POE::Component::Metabase::Relay::Server'
-required[7]='List::BinarySearch'
-required[8]='MooseX::Types::JSON'
-required[9]='Class::DBI::Plugin::DeepAbstractSearch'
-# installing anyway, even if it won't be used
-required[10]='CPAN::Mini'
-required[11]='CPAN::Mini::LatestDistVersion'
-required[12]='Log::Log4perl'
-required[13]='metabase::relayd'
+required+=('Module::Version')
+required+=('Bundle::CPAN')
+required+=('Bundle::CPAN::Reporter::Smoker::Tests')
+required+=('CPAN::Smoker::Utils')
+required+=('List::BinarySearch')
+required+=('MooseX::Types::JSON')
+required+=('Class::DBI::Plugin::DeepAbstractSearch')
+required+=('Log::Log4perl')
 
 echo 'Installing required modules for the smoker'
 for module in "${required[@]}"
@@ -73,6 +186,9 @@ do
   echo "Installing ${module}"
   cpan "${module}"
 done
+
+install_mini
+install_relay
 
 echo -e '\n\nNow the smoker is ready! Hit "start_smoker" to start it.'
 
