@@ -55,7 +55,7 @@ cpus = 2
 
 # Customize the amount of memory on the VM. Consider that video RAM is 1MB by
 # default.
-memory = 2048
+memory = 2560
 
 # build_dir MFS size, taken from memory, in MB
 mfs_size = memory / 2
@@ -63,11 +63,11 @@ mfs_size = memory / 2
 # keyboard encoding, see wsconsctl manpage for details
 keyboard = 'br'
 
-# OpenBSD version: acceptable values are 7.0, 7.1 and 7.2
-openbsd_version = '7.2'
+# OpenBSD version: acceptable values are 7.0, 7.1, 7.2 and 7.3
+openbsd_version = '7.3'
 
 # OpenBSD architecture: acceptable values are i386 and amd64
-openbsd_arch = 'i386'
+openbsd_arch = 'amd64'
 
 # Perl CPAN section
 
@@ -134,7 +134,8 @@ Vagrant.configure('2') do |config|
     vb.customize ['modifyvm', :id, '--uartmode1', 'disconnected']
     vb.customize ['modifyvm', :id, '--nic1', 'nat', '--nictype1', '82540EM']
     vb.customize ['modifyvm', :id, '--vrde', 'off']
-    vb.customize ['modifyvm', :id, '--vram', 1]
+    vb.customize ['modifyvm', :id, '--vram', 6]
+    vb.customize ['modifyvm', :id, '--graphicscontroller', 'vmsvga']
   end
 
   config.vm.define 'single'
