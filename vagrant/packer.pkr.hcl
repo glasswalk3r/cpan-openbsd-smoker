@@ -1,69 +1,82 @@
+packer {
+  required_plugins {
+    vagrant = {
+      version = ">= 1.1.0"
+      source  = "github.com/hashicorp/vagrant"
+    }
+    virtualbox = {
+      version = "~> 1"
+      source  = "github.com/hashicorp/virtualbox"
+    }
+  }
+}
+
 variable "vagrant_pub_ssh" {
-  type = string
-  default = "https://raw.githubusercontent.com/hashicorp/vagrant/master/keys/vagrant.pub"
+  type        = string
+  default     = "https://raw.githubusercontent.com/hashicorp/vagrant/master/keys/vagrant.pub"
   description = "An HTTP URL to Vagrant default SSH public key"
 }
 
 variable "openbsd_version" {
-  type = string
+  type        = string
   description = "The OpenBSD version to be used for setup"
-  default = "7.0"
+  default     = "7.0"
 }
 
 variable "openbsd_mirror" {
-  type = string
+  type        = string
   description = "An URL of a OpenBSD HTTP mirror of the official repository"
-  default = ""
+  default     = ""
 }
 
 variable "openbsd_architecture" {
-  type = string
+  type        = string
   description = "The OpenBSD processor architecture to use for setup"
-  default = "amd64"
+  default     = "amd64"
   validation {
-    condition = var.openbsd_architecture == "amd64" || var.openbsd_architecture == "i386"
+    condition     = var.openbsd_architecture == "amd64" || var.openbsd_architecture == "i386"
     error_message = "The openbsd_architecture must be amd64 or i386!"
   }
 }
 
 variable "timezone" {
-  type = string
+  type        = string
   description = "The timezone to setup when creating the image"
-  default = ""
+  default     = ""
 }
 
 variable "cpan_mirror" {
-  type = string
+  type        = string
   description = "An URL of a Perl CPAN HTTP mirror"
-  default = ""
+  default     = ""
 }
 
 variable "iso_path" {
-  type = string
+  type        = string
   description = "The complete path to the ISO image to use for install"
-  default = ""
+  default     = ""
 }
 
 variable "iso_sha" {
-  type = string
+  type        = string
   description = "The ISO image SHA 256 checksum used for validating the ISO image"
-  default = ""
+  default     = ""
 }
 
 variable "guest_os_type" {
-  type = string
+  type        = string
   description = "The Virtualbox Guest OS Type property to setup"
-  default = "OpenBSD_64"
+  default     = "OpenBSD_64"
   validation {
-    condition = var.guest_os_type == "OpenBSD" || var.guest_os_type == "OpenBSD_64"
+    condition     = var.guest_os_type == "OpenBSD" || var.guest_os_type == "OpenBSD_64"
     error_message = "OpenBSD and OpenBSD_64 are the only supported values for Virtualbox Guest OS Type!"
   }
 }
 
 variable "box" {
-  type = string
+  type        = string
   description = "The name of the Vagrant box to generate at the end of installing the OS"
-  default = ""
+  default     = ""
 }
 
 locals {
@@ -71,7 +84,8 @@ locals {
   version_to_python_pkg = {
     "7.0" = "python-3.9.7",
     "7.1" = "python-3.9.12",
-    "7.2" = "python-3.9.14"
+    "7.2" = "python-3.9.14",
+    "7.3" = "python-3.11.2"
   }
   python_pkg = local.version_to_python_pkg[var.openbsd_version]
 }
@@ -116,7 +130,7 @@ source "virtualbox-iso" "openbsd" {
   ssh_password         = "vagrant"
   ssh_username         = "root"
   ssh_wait_timeout     = "10000s"
-  vboxmanage           = [
+  vboxmanage = [
     ["modifyvm", "{{ .Name }}", "--memory", "2048"],
     ["modifyvm", "{{ .Name }}", "--cpus", "2"],
     ["modifyvm", "{{ .Name }}", "--natdnspassdomain1", "off"],
@@ -125,7 +139,7 @@ source "virtualbox-iso" "openbsd" {
     ["modifyvm", "{{ .Name }}", "--nic1", "nat", "--nictype1", "82540EM"],
     ["modifyvm", "{{ .Name }}", "--vrde", "off"]
   ]
-  vm_name              = "openbsd${var.openbsd_version}-base"
+  vm_name = "openbsd${var.openbsd_version}-base"
 }
 
 build {
@@ -134,22 +148,22 @@ build {
   ]
 
   provisioner "file" {
-    source = "packer/adduser.conf"
+    source      = "packer/adduser.conf"
     destination = "/tmp/adduser.conf"
   }
 
   provisioner "file" {
-    source = "packer/mysql-perf.txt"
+    source      = "packer/mysql-perf.txt"
     destination = "/tmp/mysql-perf.txt"
   }
 
   provisioner "file" {
-    source = "packer/mariadb"
+    source      = "packer/mariadb"
     destination = "/tmp/mariadb"
   }
 
   provisioner "file" {
-    source = "packer/mariadb-user.sql"
+    source      = "packer/mariadb-user.sql"
     destination = "/tmp/mariadb-user.sql"
   }
 
@@ -162,7 +176,7 @@ build {
   }
 
   provisioner "file" {
-    source = "packer/packages.txt"
+    source      = "packer/packages.txt"
     destination = "/tmp/packages.txt"
   }
 
