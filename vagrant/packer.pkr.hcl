@@ -137,7 +137,9 @@ source "virtualbox-iso" "openbsd" {
     ["modifyvm", "{{ .Name }}", "--natdnshostresolver1", "on"],
     ["modifyvm", "{{ .Name }}", "--uartmode1", "disconnected"],
     ["modifyvm", "{{ .Name }}", "--nic1", "nat", "--nictype1", "82540EM"],
-    ["modifyvm", "{{ .Name }}", "--vrde", "off"]
+    ["modifyvm", "{{ .Name }}", "--vrde", "off"],
+    ["modifyvm", "{{ .Name }}", "--firmware", "bios"],
+    ["modifyvm", "{{ .Name }}", "--ioapic", "off"]
   ]
   vm_name = "openbsd${var.openbsd_version}-base"
 }
