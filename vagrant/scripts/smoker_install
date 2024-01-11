@@ -33,25 +33,27 @@ function test_mfs() {
 function check_installed() {
     local module="$1"
     local check
+
     check=$(cpan -D "$module" | grep -F 'Installed: not installed' -c)
 
     if [[ $check -gt 0 ]]
     then
-        echo 'Module is already installed, nothing to do'
-        return 1
+        echo 1
     fi
 
-    return 0
+    echo 0
 }
 
 function force_install() {
     local module="$1"
     local check
-    check_installed "$module"
-    check=$?
 
-    if [[ $check -ne 1 ]]
+    check=$(check_installed "$module")
+
+    if [[ $check -gt 0 ]]
     then
+        echo "$module is already installed"
+    else
         echo "Installing $module without testing"
         cpan -T "$module"
     fi
@@ -82,22 +84,40 @@ function check_reports() {
     if [[ -d "$reports_dir" ]]
     then
         local total
-        readarray -t total <<< "$(ls "$reports_dir")"
-        echo -n "Found a total of ${#total[@]} unsent reports inside ${reports_dir}. Do you want to remove them? [y/n] "
-        read -r answer
+        total=$(perl -E "\$c=0;opendir(DIR, q{$reports_dir});@d=readdir(DIR);close(DIR);\$r=qr/\./;for(@d){\$c++ unless \$_=~\$r};say \$counter")
 
-        if [[ ${answer,,} == 'y' ]]
+        if [[ $total -gt 1 ]]
         then
-            rm -rf "$reports_dir"
-            echo "Removed"
-        else
-            echo "Installation won't progress before removing the unsent reports"
-            echo 1
+            echo -n "Found a total of ${total} unsent reports inside ${reports_dir}. Do you want to remove them? [y/n] "
+            read -r answer
+
+            if [[ ${answer,,} == 'y' ]]
+            then
+                rm -rf "$reports_dir"
+                echo "Removed"
+            else
+                echo "Installation won't progress before removing the unsent reports"
+                exit 1
+            fi
         fi
     fi
 }
 
-function install_something() {
+function install_module() {
+    local module="$1"
+    local check
+
+    check=$(check_installed "$module")
+
+    if [[ $check -gt 0 ]]
+    then
+        echo "${module} is already installed, nothing to do"
+    else
+        cpan "$module"
+    fi
+}
+
+function install_optional() {
     local question="$1"
     local no_feedback="$2"
     local modules="$3"
@@ -111,13 +131,7 @@ function install_something() {
     then
         for module in $modules
         do
-            check_installed "$module"
-            check=$?
-
-            if [[ $check -eq 1 ]]
-            then
-                cpan "$module"
-            fi
+            install_module "$module"
         done
     else
         echo "$no_feedback"
@@ -128,14 +142,14 @@ function install_mini() {
     local question='Install a local CPAN repository within the VM with CPAN::Mini?'
     local no_answer='Make sure to provide another, external, local mirror for running the smoker'
     local modules='CPAN::Mini CPAN::Mini::LatestDistVersion'
-    install_something "$question" "$no_answer" "$modules"
+    install_optional "$question" "$no_answer" "$modules"
 }
 
 function install_relay() {
     local question='Install the metabase-relayd daemon in the VM?'
     local no_answer='Make sure to provide another, external, metabase-relayd to send the reports from this smoker'
     local modules='POE::Component::Metabase::Client::Submit POE::Component::Metabase::Relay::Server metabase::relayd'
-    install_something "$question" "$no_answer" "$modules"
+    install_optional "$question" "$no_answer" "$modules"
 }
 
 check_reports
@@ -147,7 +161,7 @@ then
 fi
 
 echo 'Upgrading CPAN client without testing'
-cpan -T CPAN
+force_install CPAN
 
 force_install CPAN::SQLite
 echo 'Enabling CPAN::SQLite usage'
@@ -183,8 +197,7 @@ required+=('Log::Log4perl')
 echo 'Installing required modules for the smoker'
 for module in "${required[@]}"
 do
-  echo "Installing ${module}"
-  cpan "${module}"
+  install_module "${module}"
 done
 
 install_mini
