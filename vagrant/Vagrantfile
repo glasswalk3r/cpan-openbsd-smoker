@@ -75,7 +75,7 @@ openbsd_arch = 'amd64'
 # one on your local network built with CPAN::Mini and Nginx.
 # See http://mirrors.cpan.org/ for a "real" mirror.
 # You can also use one on the local network or even the VM host itself
-cpan_mirror = 'http://192.168.1.124:8090'
+cpan_mirror = 'http://192.168.1.122:8090'
 # Set to true below if you want to have a minicpan mirror inside the VM since
 # it takes a considerable time to configure one, it is set to false by default.
 # If you already have a mirror (in the VM host or your local network) you

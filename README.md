@@ -136,6 +136,12 @@ You will want to look up for the section named `CONFIGURABLE STEPS`. Some
 options are required, others not. Make sure to read the comments, they are
 currently the only documentation available.
 
+Make sure to generate a SSH key to connect to the VM with ssh:
+
+```
+ssh-keygen -C 'CPAN Smoker user' -f $HOME/.ssh/vagrant
+```
+
 Finally, make sure you are in the same directory where the `Vagrantfile` is
 located and hit `vagrant up`.
 
