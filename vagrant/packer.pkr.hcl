@@ -45,12 +45,6 @@ variable "timezone" {
   default     = ""
 }
 
-variable "cpan_mirror" {
-  type        = string
-  description = "An URL of a Perl CPAN HTTP mirror"
-  default     = ""
-}
-
 variable "iso_path" {
   type        = string
   description = "The complete path to the ISO image to use for install"
@@ -85,7 +79,8 @@ locals {
     "7.0" = "python-3.9.7",
     "7.1" = "python-3.9.12",
     "7.2" = "python-3.9.14",
-    "7.3" = "python-3.11.2"
+    "7.3" = "python-3.11.2",
+    "7.4" = "python-3.11.5"
   }
   python_pkg = local.version_to_python_pkg[var.openbsd_version]
 }
@@ -184,7 +179,6 @@ build {
 
   provisioner "shell" {
     environment_vars = [
-      "LOCAL_MIRROR=${var.cpan_mirror}",
       "PKG_PATH=${local.pkg_path}"
     ]
     inline = [
