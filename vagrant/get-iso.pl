@@ -15,6 +15,8 @@ use DateTime::TimeZone;
     use warnings;
     use strict;
     use Carp qw(confess);
+    use Cwd;
+    use File::Spec;
 
     # TODO: detect OS and configure the path accordingly
     use constant WGET => '/usr/bin/wget';
@@ -77,15 +79,38 @@ use DateTime::TimeZone;
         my $self = shift;
         my $url  = join( '/',
             ( $self->{base_url}, $self->{architecture}, $self->{iso_image} ) );
-        my @args = ( WGET, '--quiet', '--continue', $url );
-        system(@args) or confess "execution failed: $?";
+        my @args = ( WGET, '--continue', $url );
+        system(@args) == 0 or confess "execution failed: $?";
     }
 
     sub _get_public_key {
         my $self = shift;
         my $url  = join( '/', ( $self->{base_url}, $self->{public_key} ) );
-        my @args = ( WGET, '--quiet', '--continue', $url );
-        system(@args) or confess "@args execution failed: $?";
+        my @args = ( WGET, '--continue', $url );
+        system(@args) == 0 or confess "@args execution failed: $?";
+    }
+
+    sub _find_sha_256 {
+        my ( $self, $sha_file ) = @_;
+        open( my $in, '<', $sha_file ) or confess "Cannot read $sha_file: $!";
+
+        my $iso_filename = 'install' . $self->{stripped_version};
+        my $regex        = qr/^SHA256\s\($iso_filename\.iso\)\s\=\s(\w+)/;
+        my $sha_sum;
+        my $line;
+
+        while ( $line = <$in> ) {
+            chomp($line);
+            $sha_sum = $1 if ( $line =~ $regex );
+        }
+
+        close($in);
+
+        confess
+          "Could not find the SHASUM based on the regular expression \"$regex\""
+          unless ($sha_sum);
+
+        $self->{iso_sha} = $sha_sum;
     }
 
     sub _get_sha {
@@ -95,20 +120,98 @@ use DateTime::TimeZone;
         for my $file (@files) {
             my $url =
               join( '/', ( $self->{base_url}, $self->{architecture}, $file ) );
-            my @args = ( WGET, '--quiet', '--continue', $url );
-            system(@args) or confess "@args execution failed: $?";
+            my @args = ( WGET, '--continue', $url );
+            system(@args) == 0 or confess "@args execution failed: $?";
         }
+
+        $self->_find_sha_256( $files[0] );
+    }
+
+    sub _dirs_tree {
+        my $self     = shift;
+        my @sequence = ( 'ISO', $self->{version}, $self->{architecture} );
+        my @path     = ( getcwd() );
+        my $real_path;
+
+        for my $wanted (@sequence) {
+            push( @path, $wanted );
+            $real_path = File::Spec->catfile(@path);
+            mkdir($real_path) unless ( -d $real_path );
+        }
+
+        $self->{location} = $path[0];
+        chdir($real_path) or confess "Couldn't change to $real_path: $!";
+        $self->{files} = $real_path;
     }
 
     sub _validate {
         my $self = shift;
+        my @args = (
+            $self->{signify}, '-Cp', $self->{public_key}, '-x',
+            SHA_SIG_FILENAME, $self->{iso_image}
+        );
+
+        system(@args) == 0 or confess "@args execution failed: $?";
+    }
+
+    sub _guest_os_type {
+        my $self = shift;
+        my $guest_os_type;
+
+        if ( $self->{architecture} eq 'amd64' ) {
+            $guest_os_type = 'OpenBSD_64';
+        }
+        else {
+            $guest_os_type = 'OpenBSD';
+        }
+
+        return $guest_os_type;
+    }
+
+    sub _packer_box {
+        my $self  = shift;
+        my @items = (
+            'openbsd',     $self->{version},
+            'cpan-smoker', $self->{architecture}
+        );
+        return ( join( '-', @items ) . '.box' );
+    }
+
+    sub _packer_vars {
+        my $self          = shift;
+        my $guest_os_type = $self->_guest_os_type();
+        my $iso_path =
+          File::Spec->catfile( $self->{files}, $self->{iso_image} );
+        my $packer_box = $self->_packer_box();
+        my $content    = << "EOT";
+openbsd_mirror = "$self->{mirror}"
+timezone = "$self->{timezone}"
+openbsd_architecture = "$self->{architecture}"
+iso_path = "$iso_path"
+iso_sha = "$self->{iso_sha}"
+box = "$packer_box"
+guest_os_type = "$guest_os_type"
+openbsd_version = "$self->{version}"
+EOT
+
+        my $vars_file = 'basic.pkrvars.hcl';
+        open( my $out, '>', $vars_file )
+          or confess "Could not create $vars_file: $!";
+
+        print $out $content, "\n";
+        close($out);
     }
 
     sub download {
         my ( $self, $root_path ) = @_;
-        self->_get_iso();
-        self->_get_public_key();
-        self->_get_sha();
+        $self->_dirs_tree();
+        $self->_get_iso();
+        $self->_get_public_key();
+        $self->_get_sha();
+        $self->_validate();
+        chdir( $self->{location} )
+          or confess( 'Failed to go back to ' . $self->{location} . ": $!" );
+        $self->_packer_vars();
     }
 }
 
@@ -134,7 +237,17 @@ pod2usage( -exitval => 0, -verbose => 2 ) if $man;
 pod2usage(1) unless ($arch);
 pod2usage(1) unless ($openbsd_version);
 
-$mirror   = 'https://cdn.openbsd.org/' unless ($mirror);
+if ( $arch ne 'i386' and $arch ne 'amd64' ) {
+    warn "-arch must use i386 or amd64, not \"$arch\"";
+    pod2usage(1);
+}
+
+unless ( $openbsd_version =~ /\d\.\d/ ) {
+    warn "version must be MAJOR.MINOR numbers, not \"$openbsd_version\"";
+    pod2usage(1);
+}
+
+$mirror   = 'cdn.openbsd.org' unless ($mirror);
 $timezone = DateTime::TimeZone->new( name => 'local' )->name()
   unless ($timezone);
 
@@ -146,6 +259,10 @@ my $downloader = OpenBSD::ISO->new(
         timezone     => $timezone
     }
 );
+
+$downloader->download();
+
+print "\nDownload is complete and Packer ready to run!\n";
 
 __END__
 
@@ -208,13 +325,11 @@ like the one shown below:
         ├── amd64
         │   ├── install74.iso
         │   ├── openbsd-74-base.pub
-        │   ├── SHA
         │   ├── SHA256
         │   └── SHA256.sig
         └── i386
             ├── install74.iso
             ├── openbsd-74-base.pub
-            ├── SHA
             ├── SHA256
             └── SHA256.sig
 
