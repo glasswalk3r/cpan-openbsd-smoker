@@ -272,11 +272,11 @@ __END__
 
 =head1 NAME
 
-get_iso.pl - A CLI to download OpenBSD ISO images
+get-iso.pl - A CLI to download OpenBSD ISO images
 
 =head1 SYNOPSIS
 
-get_iso.pl --arch=i386 --version=7.3 --timezone=America/Sao_Paulo
+get-iso.pl -arch=i386 -version=7.3 -timezone=America/Sao_Paulo
 
 =head1 OPTIONS
 
