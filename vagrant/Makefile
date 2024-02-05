@@ -6,9 +6,12 @@ AMD64_BOX:=${BASE_BOX}-amd64
 VAGRANT_BOX_USER:=arfreitas
 PACKER_CFG:=packer.pkr.hcl
 
-amd64:
+warning:
+	@echo 'Make sure to adjust the version!'
+
+amd64: warning
 	@echo get-iso.pl -arch=$@ -version=${OPENBSD_VERSION} -mirror ${OPENBSD_MIRROR}
-i386:
+i386: warning
 	@echo get-iso.pl -arch=$@ -version=${OPENBSD_VERSION} -mirror ${OPENBSD_MIRROR}
 packer:
 	packer init packer.pkr.hcl
