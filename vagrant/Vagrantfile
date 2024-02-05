@@ -55,16 +55,18 @@ cpus = 2
 
 # Customize the amount of memory on the VM. Consider that video RAM is 1MB by
 # default.
-memory = 2048
+memory = 2560
 
 # build_dir MFS size, taken from memory, in MB
-mfs_size = memory / 2
+# Be careful to the amount because the system might not mount give the free available
+# memory during boot
+mfs_size = 1000
 
 # keyboard encoding, see wsconsctl manpage for details
 keyboard = 'br'
 
-# OpenBSD version: acceptable values are 7.0, 7.1 and 7.2
-openbsd_version = '7.2'
+# OpenBSD version: acceptable values are 7.0, 7.1, 7.2, 7.3 and 7.4
+openbsd_version = '7.4'
 
 # OpenBSD architecture: acceptable values are i386 and amd64
 openbsd_arch = 'i386'
@@ -75,7 +77,7 @@ openbsd_arch = 'i386'
 # one on your local network built with CPAN::Mini and Nginx.
 # See http://mirrors.cpan.org/ for a "real" mirror.
 # You can also use one on the local network or even the VM host itself
-cpan_mirror = 'http://192.168.1.124:8090'
+cpan_mirror = 'http://192.168.1.122:8090'
 # Set to true below if you want to have a minicpan mirror inside the VM since
 # it takes a considerable time to configure one, it is set to false by default.
 # If you already have a mirror (in the VM host or your local network) you
@@ -134,7 +136,10 @@ Vagrant.configure('2') do |config|
     vb.customize ['modifyvm', :id, '--uartmode1', 'disconnected']
     vb.customize ['modifyvm', :id, '--nic1', 'nat', '--nictype1', '82540EM']
     vb.customize ['modifyvm', :id, '--vrde', 'off']
-    vb.customize ['modifyvm', :id, '--vram', 1]
+    vb.customize ['modifyvm', :id, '--vram', 6]
+    vb.customize ['modifyvm', :id, '--graphicscontroller', 'vmsvga']
+    vb.customize ['modifyvm', :id, '--firmware', 'bios']
+    vb.customize ['modifyvm', :id, '--ioapic', 'off']
   end
 
   config.vm.define 'single'

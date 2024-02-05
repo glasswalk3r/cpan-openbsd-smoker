@@ -136,6 +136,12 @@ You will want to look up for the section named `CONFIGURABLE STEPS`. Some
 options are required, others not. Make sure to read the comments, they are
 currently the only documentation available.
 
+Make sure to generate a SSH key to connect to the VM with ssh:
+
+```
+ssh-keygen -C 'CPAN Smoker user' -f $HOME/.ssh/vagrant
+```
+
 Finally, make sure you are in the same directory where the `Vagrantfile` is
 located and hit `vagrant up`.
 
@@ -181,11 +187,12 @@ After initial provisioning, you will want to start your smoker with
 ```
 vagrant up --provision
 ```
+
 This project `Vagrantfile` is prepared to implement idempotent operations, so
 only the operations below will be repeated:
 
 * Updates OpenBSD packages.
-* Update your local CPAN mirror
+* Update your local CPAN mirror (if installed).
 * Updates `CPAN-Reporter-Smoker-OpenBSD` distribution (available also at CPAN)
 for the provisioned user.
 * Updates the keyboard configuration based on the `Vagrantfile` respective
@@ -201,19 +208,20 @@ is wrong than just kill your VM and start from scratch.
 This project uses [Packer](https://www.packer.io/) to build the base images for
 Vagrant. Packer allows the setup of the VM and install of OpenBSD automatically.
 
+In order to build a Vagrant box, make sure to download the respective image by
+running the `get-iso.pl` script. There is a only help for learning how to use it:
+
+```
+./get-iso.pl -help
+```
+
 Sections that you probably want to tweak with are:
 
 * variables
 * builders
 
 After `git clone`ning the project, move to `cpan-openbsd-smoker/vagrant`, where
-the `packer.pkr.hcl` is located and type:
-
-```
-packer build packer.pkr.hcl
-```
-
-See also the available targets in the `Makefile`.
+the `packer.pkr.hcl` is located and check the available targets in the `Makefile`.
 
 ### Possible questions that nobody asked so far
 

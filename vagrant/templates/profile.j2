@@ -15,13 +15,36 @@ PERL_MM_USE_DEFAULT=1; export PERL_MM_USE_DEFAULT
 PERL_EXTUTILS_AUTOINSTALL=1; export PERL_EXTUTILS_AUTOINSTALL
 
 PREFS_DIR="${HOME}/{{ prefs_dir }}"
+REPORTS_DIR="${HOME}/ready_reports"
 
+# TODO: replace with Perl code
 function start_smoker {
+    mounted=$(mount | perl -E 'if (/mfs/){chomp;@a=split(/\s/,$_);say $a[2]}' -n)
+
+    if [[ -z $mounted || $mounted == '' ]]
+    then
+        echo 'Not possible to start smoker with MFS based build_dir' >&2
+        exit 1
+    fi
+
+    if [[ ! -d $REPORTS_DIR ]]
+    then
+        mkdir -v "$REPORTS_DIR"
+    fi
+
     echo 'Cleaning up previous executions...'
     rm -rf ${HOME}/.cpan/sources/authors/id ${HOME}/.cpan/FTPstats.yml*
     rm -rf /mnt/cpan_build_dir/${USER}/*
-    if [ -d "${PREFS_DIR}" ]; then echo 'Refreshing distroprefs...'; cd ${PREFS_DIR}; git pull; cd; fi
-    perl -MCPAN::Reporter::Smoker -e 'start(clean_cache_after => {{ clean_cache_after }}, install => 1, restart_delay => {{ restart_delay }})'
+
+    if [ -d "${PREFS_DIR}" ]
+    then
+        echo 'Refreshing distroprefs...'
+        cd ${PREFS_DIR}
+        git pull
+        cd
+    fi
+
+    exec perl -MCPAN::Reporter::Smoker -e 'start(clean_cache_after => {{ clean_cache_after }}, install => 1, restart_delay => {{ restart_delay }})'
 }
 
 alias vi='vim'

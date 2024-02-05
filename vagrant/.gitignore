@@ -6,3 +6,4 @@ metabase_id.json
 *.box
 packer_cache
 .python-version
+basic.pkrvars.hcl
